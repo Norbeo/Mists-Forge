@@ -349,6 +349,24 @@ button,canvas,a{touch-action:manipulation}
 .diffs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 .diffs .pp{padding:10px 4px}
 .unitcard.compact{width:auto;min-width:150px;padding:6px 10px}
+/* ── Guide (tutoriel) ── */
+#coach{position:fixed;z-index:45;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));width:min(360px,calc(100vw - 32px));padding:12px 14px;box-shadow:0 10px 30px rgba(0,0,0,.65),inset 0 0 0 1px var(--gold);animation:min .25s ease-out}
+#coach.dun{top:auto;bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+#coach.min{width:auto;padding:4px;box-shadow:0 6px 18px rgba(0,0,0,.6),inset 0 0 0 1px var(--line-hi)}
+#coach p{margin:6px 0 10px;font-size:15px;line-height:1.4}
+.coach-h{display:flex;align-items:center;gap:8px}.coach-h b{font-family:var(--f-display);color:var(--gold-hi);font-size:15.5px;flex:1}
+.coach-n{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;padding:1px 7px;border-radius:9px;box-shadow:inset 0 0 0 1px var(--line)}
+.coach-x{border:0;background:transparent;color:var(--muted);font-size:20px;line-height:1;cursor:pointer;width:28px;height:28px}
+.coach-f{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.coach-pill{display:flex;align-items:center;gap:8px;border:0;background:transparent;color:var(--gold-hi);font-family:var(--f-display);font-size:13px;padding:6px 10px;cursor:pointer}.coach-pill svg{width:18px;height:18px}
+.coach-hl{position:relative;z-index:2;outline:2px solid var(--gold-hi)!important;outline-offset:3px;animation:hl 1.3s ease-in-out infinite!important}
+@keyframes hl{50%{outline-color:rgba(241,214,149,.25);box-shadow:0 0 22px rgba(241,214,149,.55)}}
+/* ── Chroniques ── */
+.bestiary{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.beast{display:grid;gap:3px;justify-items:center;text-align:center;padding:8px;border-radius:4px;background:var(--well);box-shadow:inset 0 0 0 1px #2a2219;font-size:13px}
+.beast canvas{width:120px;height:110px}.beast b{font-family:var(--f-display);font-size:14px;color:var(--text)}
+.beast.boss{box-shadow:inset 0 0 0 1px #8a4a20,0 0 12px rgba(236,122,48,.15)}.beast.boss b{color:var(--gold-hi)}
+.beast.unk b{color:var(--faint)}
 @media (max-width:1180px){.home{grid-template-columns:1fr}.home-side{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}.forge{grid-template-columns:170px minmax(0,1fr)}.forge .detail{grid-column:1/-1}}
 @media (max-width:980px){.create{grid-template-columns:1fr;height:auto;overflow:visible}.classlist{max-height:none}#app.solo #view{overflow:auto}.cards4{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:820px){
@@ -382,6 +400,14 @@ button,canvas,a{touch-action:manipulation}
   .classlist{grid-template-columns:repeat(2,minmax(0,1fr))}
   .ccls{padding:7px 8px;gap:8px}.ccls span{display:none}.ccls .ci{width:32px;height:32px}.ccls .ci svg{width:20px;height:20px}.ccls b{font-size:13px}
   .mini .bar .lab{white-space:nowrap;font-size:12px}
+  #coach{right:12px;left:12px;width:auto;bottom:calc(86px + env(safe-area-inset-bottom,0px));padding:10px 12px}
+  #coach.dun{top:calc(8px + env(safe-area-inset-top,0px));bottom:auto}
+  #coach.min{left:auto}
+  body.has-coach #view{padding-bottom:230px}
+  body.has-coach #toasts{bottom:calc(270px + env(safe-area-inset-bottom,0px))}
+  body.has-coach #modal .panel{margin-bottom:200px}
+  #coach p{font-size:14px;margin:4px 0 8px}
+  .bestiary{grid-template-columns:repeat(2,minmax(0,1fr))}
   #toasts{left:12px;right:12px;bottom:calc(86px + env(safe-area-inset-bottom,0px));justify-items:center}
   #app.solo~#toasts{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
   .brand span,.clock{display:none}
@@ -923,7 +949,7 @@ Object.assign(ENEMIES, {
   chevalier: { n: "Chevalier spectral", kind: "knight", hp: 56, atk: 12, def: 8, mv: 3, range: 1 },
   reine: { n: "Reine de givre", kind: "frostqueen", hp: 250, atk: 15, def: 6, mv: 2, range: 3, boss: 1, aoe: 1, summon: "chauve", enrage: 1 },
   hydre: { n: "Hydre des marais", kind: "hydra", hp: 320, atk: 17, def: 7, mv: 1, range: 2, boss: 1, aoe: 1, poison: 6, enrage: 1 },
-  liche: { n: "Liche de l'Aube", kind: "lich", hp: 330, atk: 20, def: 8, mv: 2, range: 3, boss: 1, aoe: 1, summon: "chevalier", enrage: 1 },
+  liche: { n: "Liche de l'Aube", kind: "lich", hp: 305, atk: 19, def: 8, mv: 2, range: 3, boss: 1, aoe: 1, summon: "follet", enrage: 1 },
 });
 /* ── Nouveaux lieux + l'Abysse infinie ── */
 DUNGEONS.splice(1, 0, { id: "grottes", n: "Grottes de Givrecœur", rec: 2, scale: .95, theme: "cave", pool: ["chauve", "troll", "goule", "araignee"], boss: "reine", floor: ["#3e4e5c", "#28343f"], light: "#9fe0ff",
@@ -1044,6 +1070,96 @@ const DIFFS = [
   { id: "cauchemar", n: "Cauchemar", d: "Ennemis +35 % de santé et +25 % d'attaque. Or, expérience et éclats +30 %.", hp: 1.35, atk: 1.25, rw: 1.3 },
 ];
 const DIFF = () => DIFFS.find(d => d.id === (S && S.diff)) || DIFFS[1];
+
+/* ── Hauts faits (Chroniques) : récompenses en cristaux, parfois en or ou en points ── */
+const ACHIEVEMENTS = [
+  { id: "a_forge1", n: "Premier coup de marteau", d: "Forger une arme.", g: s => [s.st.weapon || 0, 1], rw: { crys: 3 } },
+  { id: "a_rare", n: "Main de maître", d: "Forger 5 équipements Rares ou mieux.", g: s => [s.st.rareCrafts || 0, 5], rw: { crys: 6 } },
+  { id: "a_legend", n: "Œuvre légendaire", d: "Obtenir un objet Légendaire.", g: s => [s.st.legend || 0, 1], rw: { crys: 15 } },
+  { id: "a_kill50", n: "Faucheur de brume", d: "Vaincre 50 ennemis.", g: s => [s.st.kills || 0, 50], rw: { crys: 5 } },
+  { id: "a_kill500", n: "Légende de Sombreval", d: "Vaincre 500 ennemis.", g: s => [s.st.kills || 0, 500], rw: { crys: 20, pts: 1 } },
+  { id: "a_elite", n: "Briseur de couronnes", d: "Vaincre 25 élites.", g: s => [s.st.elites || 0, 25], rw: { crys: 8 } },
+  { id: "a_boss3", n: "Tueur de gardiens", d: "Vaincre 3 gardiens différents.", g: s => [Object.keys(s.st.boss || {}).filter(k => s.st.boss[k]).length, 3], rw: { crys: 10 } },
+  { id: "a_boss6", n: "Le voile se lève", d: "Vaincre les 6 gardiens des lieux.", g: s => [["esprit", "reine", "contremaitre", "hydre", "colosse", "liche"].filter(k => (s.st.boss || {})[k]).length, 6], rw: { crys: 25, pts: 1 } },
+  { id: "a_bestiary", n: "Naturaliste", d: "Inscrire 15 créatures au bestiaire.", g: s => [Object.keys(s.st.killed || {}).length, 15], rw: { crys: 10 } },
+  { id: "a_abyss10", n: "Plongeur intrépide", d: "Atteindre l'étage 10 de l'Abysse.", g: s => [(s.abyss && s.abyss.best) || 0, 10], rw: { crys: 12 } },
+  { id: "a_abyss25", n: "Sans fond", d: "Atteindre l'étage 25 de l'Abysse.", g: s => [(s.abyss && s.abyss.best) || 0, 25], rw: { crys: 30, pts: 1 } },
+  { id: "a_orders", n: "Fournisseur attitré", d: "Livrer 20 commandes de villageois.", g: s => [s.st.orders || 0, 20], rw: { crys: 8, gold: 300 } },
+  { id: "a_contracts", n: "Homme de la Guilde", d: "Remplir 10 contrats.", g: s => [s.st.contracts || 0, 10], rw: { crys: 10 } },
+  { id: "a_company", n: "Compagnie complète", d: "Recruter 3 mercenaires.", g: s => [(s.mercs || []).length, 3], rw: { crys: 8 } },
+  { id: "a_rank", n: "Au cœur de la brume", d: "Nettoyer un donjon au rang de brume 3.", g: s => [s.st.maxRank || 0, 3], rw: { crys: 12 } },
+  { id: "a_lvl10", n: "Forgeron accompli", d: "Atteindre le niveau 10.", g: s => [s.lvl, 10], rw: { crys: 8 } },
+  { id: "a_lvl20", n: "Maître de Sombreval", d: "Atteindre le niveau 20.", g: s => [s.lvl, 20], rw: { crys: 20, pts: 1 } },
+  { id: "a_night", n: "Cauchemar apprivoisé", d: "Vaincre un gardien en difficulté Cauchemar.", g: s => [s.st.nightBoss || 0, 1], rw: { crys: 15 } },
+];
+/* Où trouver chaque créature (pour le bestiaire) */
+const enemyPlaces = key => DUNGEONS.filter(d => !d.infinite && (d.pool.includes(key) || d.boss === key)).map(d => d.n);
+
+/* ── Salles spéciales (étages 2 à 4, et hors paliers dans l'Abysse) ── */
+const ROOM_MODS = [
+  { id: "embuscade", n: "Embuscade", c: "#ff9a5a", d: "Les ennemis surgissent tout près du groupe. Butin +1.", loot: 1 },
+  { id: "horde", n: "Horde", c: "#d8a860", d: "Deux ennemis de plus, mais affaiblis (−25 % de santé). Expérience +40 %.", xp: .4 },
+  { id: "champion", n: "Champion", c: "#c9a6ff", d: "Un champion d'élite garde la salle. Un équipement Épique enchanté garanti.", rare: 1 },
+  { id: "tresor", n: "Salle au trésor", c: "#f1d695", d: "Deux coffres de plus, mais les pièges sont nombreux.", traps: 2 },
+  { id: "givre", n: "Brume glacée", c: "#9fe0ff", d: "Tout le monde perd 1 déplacement dans cette salle. Butin +1.", loot: 1 },
+];
+/* ═══════════════════════ Effets sonores synthétisés (WebAudio, aucun fichier) ═══════════════════════
+   Chaque son est fabriqué à la volée : oscillateurs + bruit filtré + enveloppes.
+   Le contexte audio n'est créé qu'au premier geste du joueur (règle des navigateurs). */
+const SFX = {
+  ctx: null, master: null, noiseBuf: null, last: {},
+  on() { return !(S && S.opts && S.opts.sound === false); },
+  vol() { return S && S.opts && S.opts.vol != null ? S.opts.vol : .7; },
+  init() {
+    if (this.ctx || typeof window === "undefined") return !!this.ctx;
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return false;
+    try {
+      this.ctx = new AC(); this.master = this.ctx.createGain(); this.master.connect(this.ctx.destination);
+      const n = this.ctx.sampleRate * .6, b = this.ctx.createBuffer(1, n, this.ctx.sampleRate), d = b.getChannelData(0);
+      for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1; this.noiseBuf = b;
+    } catch (e) { this.ctx = null; }
+    return !!this.ctx;
+  },
+  unlock() { if (this.init() && this.ctx.state === "suspended") this.ctx.resume().catch(() => { }); },
+  // briques de base
+  tone(type, f0, f1, dur, gain, delay = 0) {
+    const c = this.ctx, t = c.currentTime + delay, o = c.createOscillator(), g = c.createGain();
+    o.type = type; o.frequency.setValueAtTime(f0, t); if (f1 !== f0) o.frequency.exponentialRampToValueAtTime(Math.max(20, f1), t + dur);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(gain, t + .008); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.connect(g); g.connect(this.master); o.start(t); o.stop(t + dur + .02);
+  },
+  noise(dur, gain, type = "bandpass", freq = 1800, q = 1, delay = 0, sweep) {
+    const c = this.ctx, t = c.currentTime + delay, s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+    s.buffer = this.noiseBuf; f.type = type; f.frequency.setValueAtTime(freq, t); if (sweep) f.frequency.exponentialRampToValueAtTime(sweep, t + dur); f.Q.value = q;
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(gain, t + .005); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    s.connect(f); f.connect(g); g.connect(this.master); s.start(t); s.stop(t + dur + .02);
+  },
+  play(name) {
+    if (!this.on() || !this.ctx || this.ctx.state !== "running") return;
+    const now = performance.now(); if (this.last[name] && now - this.last[name] < 45) return; this.last[name] = now; // évite les rafales
+    this.master.gain.value = this.vol() * .55;
+    const P = this.SOUNDS[name]; if (P) try { P.call(this); } catch (e) { }
+  },
+  SOUNDS: {
+    click() { this.tone("triangle", 660, 520, .05, .12); },
+    tab() { this.tone("triangle", 520, 620, .06, .1); },
+    anvil() { this.tone("square", 1250, 1180, .35, .12); this.tone("sine", 2480, 2400, .5, .1); this.tone("sine", 3720, 3700, .3, .05); this.noise(.06, .35, "highpass", 3000); },
+    bellows() { this.noise(.35, .18, "lowpass", 500, .7, 0, 1200); },
+    quench() { this.noise(.7, .25, "highpass", 4000, .5, 0, 1500); this.tone("sine", 220, 110, .4, .05); },
+    hit() { this.noise(.09, .5, "bandpass", 900, 1.2); this.tone("triangle", 180, 90, .1, .25); },
+    crit() { this.noise(.12, .6, "bandpass", 1400, 1); this.tone("square", 900, 300, .14, .14); this.tone("triangle", 140, 60, .18, .3); },
+    hurt() { this.tone("sawtooth", 220, 110, .18, .14); this.noise(.1, .3, "lowpass", 700); },
+    magic() { this.tone("sine", 520, 1040, .25, .12); this.tone("sine", 780, 1560, .25, .08, .04); this.noise(.25, .08, "highpass", 5000); },
+    heal() { [523, 659, 784].forEach((f, i) => this.tone("sine", f, f, .3, .1, i * .07)); },
+    coin() { this.tone("square", 1320, 1320, .06, .07); this.tone("square", 1760, 1760, .12, .07, .06); },
+    death() { this.noise(.4, .25, "lowpass", 1200, .7, 0, 200); this.tone("triangle", 300, 70, .4, .12); },
+    level() { [523, 659, 784, 1047].forEach((f, i) => this.tone("triangle", f, f, .28, .12, i * .09)); },
+    victory() { [392, 523, 659, 784].forEach((f, i) => this.tone("triangle", f, f, .4, .12, i * .12)); this.tone("sine", 1047, 1047, .7, .08, .5); },
+    defeat() { [392, 330, 262, 196].forEach((f, i) => this.tone("sawtooth", f, f * .98, .4, .07, i * .18)); },
+    door() { this.noise(.3, .2, "lowpass", 400, .8); this.tone("triangle", 90, 60, .3, .15); },
+    quest() { [659, 784, 988].forEach((f, i) => this.tone("sine", f, f, .35, .11, i * .1)); },
+  },
+};
 /* ═══════════════════════ État & sauvegarde ═══════════════════════ */
 const SAVE_KEY = "forge-des-brumes-v1";
 const MAX_STACK = 99;
@@ -1070,6 +1186,7 @@ function newState(name, cls, ppl, look) {
   s.equip.armure = makeItem("armure_cuir", 0, 45);
   const st = stats(); s.vit.hp = st.hp; s.vit.en = st.en; s.wolf.hp = wolfMax();
   S.orders = [genOrder(), genOrder()]; S.orderDay = S.day; ensureContracts();
+  s.tuto = { step: 0, w0: s.equip.arme.u }; s.achv = []; s.opts = { sound: true, vol: .7 };
   return s;
 }
 function save() {
@@ -1085,10 +1202,15 @@ function migrate(s) {
   s.rank = s.rank || {}; s.seen = s.seen || {}; s.bought = s.bought || {};
   s.pet = s.pet || { id: "loup", owned: ["loup"], lvl: { loup: 1 }, xp: { loup: 0 }, cd: 0 }; s.orders = s.orders || []; s.orderDay = s.orderDay || 0; s.renown = s.renown || 0;
   s.perma = s.perma || {}; s.bonusPts = s.bonusPts || 0; s.spec = s.spec || null; s.bless = s.bless || []; s.contracts = s.contracts || []; s.contractDay = s.contractDay || 0;
-  s.diff = s.diff || "normal"; s.mercs = s.mercs || []; s.party = s.party || []; s.hired = s.hired || []; s.abyss = s.abyss || { best: 0, shards: 0, up: {} }; s.abyss.up = s.abyss.up || {};
+  s.diff = s.diff || "normal"; s.tuto = s.tuto || { off: 1 }; s.achv = s.achv || []; s.opts = s.opts || { sound: true, vol: .7 }; s.mercs = s.mercs || []; s.party = s.party || []; s.hired = s.hired || []; s.abyss = s.abyss || { best: 0, shards: 0, up: {} }; s.abyss.up = s.abyss.up || {};
   s.st = Object.assign({ kills: 0, chests: 0, legend: 0, maxRank: 0, deaths: 0, boss: {}, orders: 0, elites: 0, rareCrafts: 0, contracts: 0, abyssFloors: 0 }, s.st); s.st.depth = Object.assign({ murmures: 0, mines: 0, vallee: 0 }, s.st.depth);
   return s;
 }
+/* Hauts faits */
+const achState = a => { if (S.achv.includes(a.id)) return { st: "claimed", cur: 1, max: 1 }; const [c, m] = a.g(S); return { st: c >= m ? "done" : "active", cur: Math.min(c, m), max: m }; };
+const achReady = () => ACHIEVEMENTS.filter(a => achState(a).st === "done").length;
+function claimAch(id) { const a = ACHIEVEMENTS.find(x => x.id === id); if (!a || achState(a).st !== "done") return "Pas encore accompli."; S.achv.push(id);
+  if (a.rw.crys) S.crys += a.rw.crys; if (a.rw.gold) S.gold += a.rw.gold; if (a.rw.pts) S.bonusPts = (S.bonusPts || 0) + a.rw.pts; save(); return null; }
 function wipe() { try { localStorage.removeItem(SAVE_KEY); } catch (e) { } }
 
 /* ═══════════════════════ Objets & inventaires ═══════════════════════ */
@@ -1221,7 +1343,7 @@ const xpNeed = l => Math.round(90 * Math.pow(l, 1.6));
 function gainXp(n) {
   n = Math.round(n * (1 + bonus("xp"))); S.xp += n; let up = 0;
   while (S.xp >= xpNeed(S.lvl)) { S.xp -= xpNeed(S.lvl); S.lvl++; up++; }
-  if (up) { const st = stats(); S.vit.hp = st.hp; S.vit.en = st.en; toast(`Niveau ${S.lvl} atteint · +${up} point${up > 1 ? "s" : ""} de maîtrise`, "gold"); }
+  if (up) { const st = stats(); S.vit.hp = st.hp; S.vit.en = st.en; SFX.play("level"); toast(`Niveau ${S.lvl} atteint · +${up} point${up > 1 ? "s" : ""} de maîtrise`, "gold"); }
   return n;
 }
 const masteryPoints = () => S.lvl + (S.bonusPts || 0) - S.mastery.length;
@@ -1394,8 +1516,9 @@ function sell(it, where) {
 }
 const restCost = () => 15 + 5 * S.lvl;
 /* Repos gratuit à la forge : moitié de la récupération, mais on a faim et soif. Évite tout blocage sans or. */
-function nap() { const st = stats(); S.vit.hp = Math.max(S.vit.hp, Math.round(st.hp * .6)); S.vit.en = Math.max(S.vit.en, Math.round(st.en * .6)); S.wolf.hp = Math.max(S.wolf.hp, Math.round(wolfMax() * .6)); for (const m of S.mercs || []) m.hp = Math.max(m.hp || 0, Math.round(mercStats(m.type, m.lvl).hp * .6)); S.vit.faim = Math.max(0, S.vit.faim - 15); S.vit.soif = Math.max(0, S.vit.soif - 15); S.day++; ensureOrders(); ensureContracts(); save(); }
-function rest() { const REST_COST = restCost(); if (S.gold < REST_COST) return "Or insuffisant."; S.gold -= REST_COST; const st = stats(); S.vit.hp = st.hp; S.vit.en = st.en; S.wolf.hp = wolfMax(); for (const m of S.mercs || []) m.hp = mercStats(m.type, m.lvl).hp; S.vit.faim = Math.max(0, S.vit.faim - 5); S.vit.soif = Math.max(0, S.vit.soif - 5); S.day++; ensureOrders(); ensureContracts(); save(); return null; }
+function nap() { S.st.rests = (S.st.rests || 0) + 1; return nap0(); }
+function nap0() { const st = stats(); S.vit.hp = Math.max(S.vit.hp, Math.round(st.hp * .6)); S.vit.en = Math.max(S.vit.en, Math.round(st.en * .6)); S.wolf.hp = Math.max(S.wolf.hp, Math.round(wolfMax() * .6)); for (const m of S.mercs || []) m.hp = Math.max(m.hp || 0, Math.round(mercStats(m.type, m.lvl).hp * .6)); S.vit.faim = Math.max(0, S.vit.faim - 15); S.vit.soif = Math.max(0, S.vit.soif - 15); S.day++; ensureOrders(); ensureContracts(); save(); }
+function rest() { const REST_COST = restCost(); if (S.gold < REST_COST) return "Or insuffisant."; S.gold -= REST_COST; S.st.rests = (S.st.rests || 0) + 1; const st = stats(); S.vit.hp = st.hp; S.vit.en = st.en; S.wolf.hp = wolfMax(); for (const m of S.mercs || []) m.hp = mercStats(m.type, m.lvl).hp; S.vit.faim = Math.max(0, S.vit.faim - 5); S.vit.soif = Math.max(0, S.vit.soif - 5); S.day++; ensureOrders(); ensureContracts(); save(); return null; }
 
 /* Quêtes */
 function questState(q) {
@@ -2158,7 +2281,7 @@ function makeElite(e, affix) {
   e.hp = e.max; return e;
 }
 function enemyFrom(key, depth, dg) {
-  const e = ENEMIES[key], sc = (dg.infinite ? dg.scale * (1 + .2 * (depth - 1)) * (e.boss ? 1.3 : 1) : dg.scale * (e.boss ? 1.75 : 1 + .26 * (depth - 1)) * rankMul()) * (boonN("r_avare") ? 1.15 : 1);
+  const e = ENEMIES[key], sc = (dg.infinite ? dg.scale * (1 + .2 * (depth - 1)) * (e.boss ? 1.3 : 1) : dg.scale * (e.boss ? 1.75 : 1 + .3 * (depth - 1)) * rankMul()) * (boonN("r_avare") ? 1.15 : 1);
   const DF = DIFF(); return { side: "enemy", key, name: e.n, kind: e.kind, col: e.col, max: Math.round(e.hp * sc * DF.hp), atk: Math.round(e.atk * sc * DF.atk), def: Math.round(e.def * (1 + .1 * (depth - 1)) * (1 + .15 * EX.rank)), mag: 0, crit: .05, mv: e.mv, range: e.range,
     boss: e.boss, aoe: e.aoe, big: e.big ? 1.45 : (e.boss ? 1.2 : 1), fire: 0, frost: 0, poison: e.poison ? Math.round(e.poison * sc) : 0, healer: e.healer ? Math.round(e.healer * sc) : 0, summon: e.summon, enrage: e.enrage, burnHit: e.burnHit ? Math.round(e.burnHit * sc) : 0, sc };
 }
@@ -2186,14 +2309,16 @@ function genFloor() {
     while (q.length) { const [x, y] = q.shift(); for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= GN || ny >= GN || grid[ny][nx] || seen.has(K(nx, ny))) continue; seen.add(K(nx, ny)); q.push([nx, ny]); } }
     ok = foeSpots.every(([a, b]) => seen.has(K(a, b))) && seen.has(K(5, 1));
   }
+  const mod = !bossFloor && ((d >= 2 && d <= 4) || (dg.infinite && d >= 2)) && Math.random() < .38 ? pick(ROOM_MODS) : null;
   // cases spéciales : coffre, fontaine, pièges
   const tiles = new Map(); const freeTiles = [];
   for (let y = 0; y < GN; y++) for (let x = 0; x < GN; x++) if (!grid[y][x] && !reserved.has(K(x, y))) freeTiles.push([x, y]);
   freeTiles.sort(() => Math.random() - .5);
   const take = () => freeTiles.pop();
   if (Math.random() < .55 || bossFloor) { const c = take(); if (c) tiles.set(K(...c), { type: "chest" }); }
+  if (mod && mod.id === "tresor") for (let i = 0; i < 2; i++) { const c = take(); if (c) tiles.set(K(...c), { type: "chest" }); }
   if (d >= 2 && Math.random() < .35) { const c = take(); if (c) tiles.set(K(...c), { type: "fountain" }); }
-  const nTraps = d >= 2 ? ri(1, Math.min(3, Math.ceil(d / 2) + 1)) : 0;
+  const nTraps = (d >= 2 ? ri(1, Math.min(3, Math.ceil(d / 2) + 1)) : 0) + (mod && mod.traps || 0);
   for (let i = 0; i < nTraps; i++) { const c = freeTiles.find(([x, y]) => x > 0 && y < 7 && !(x <= 2 && y >= 5)); if (!c) break; freeTiles.splice(freeTiles.indexOf(c), 1); tiles.set(K(...c), { type: "trap" }); }
   const decals = []; for (let i = 0; i < 9; i++) { const c = freeTiles[i]; if (c) decals.push({ x: c[0], y: c[1], type: pick(THEME_DECALS[theme]), r: Math.random() }); }
 
@@ -2203,23 +2328,30 @@ function genFloor() {
   (EX.mercs || []).forEach((m, i) => { if (m.hp <= 0) return; const ms = mercStats(m.type, m.lvl), M = MERCS[m.type], pos = [[2, 6], [0, 6]][i];
     units.push({ side: "ally", id: "m" + i, merc: m.type, mref: i, name: M.n, kind: "merc", x: pos[0], y: pos[1], hp: Math.min(m.hp, ms.hp), max: ms.hp, atk: ms.atk, mag: ms.mag, def: ms.def, crit: ms.crit, mv: ms.mv, range: ms.range, fire: 0, frost: 0, caster: !!M.caster, cd: 0, bleed: false }); });
   if (S.wolf.hp > 0) units.push({ side: "ally", id: "wolf", name: PD().n, kind: "pet", pet: petId(), x: 0, y: 7, hp: Math.min(S.wolf.hp, wolfMax()), max: wolfMax(), atk: wolfAtk(), mag: 0, def: petDefStat(), crit: .08, mv: petMv(), range: PD().range, fire: 0, frost: 0, bleed: petLvl() >= 2 });
-  const count = bossFloor ? 2 + (EX.rank >= 2 ? 1 : 0) : Math.min(5, 2 + Math.floor((d - 1) / 2) + (Math.random() < .3 ? 1 : 0));
-  const spots = foeSpots.slice().sort(() => Math.random() - .5);
+  let count = bossFloor ? 2 + (EX.rank >= 2 ? 1 : 0) : Math.min(5, 2 + Math.floor((d - 1) / 2) + (Math.random() < .3 ? 1 : 0));
+  if (mod && mod.id === "horde") count = Math.min(6, count + 2); if (mod && mod.id === "tresor") count = Math.max(1, count - 1);
+  let spots = foeSpots.slice().sort(() => Math.random() - .5);
+  if (mod && mod.id === "embuscade") { // les ennemis apparaissent à 3 ou 4 cases du héros
+    const near = []; for (let y = 0; y < GN; y++) for (let x = 0; x < GN; x++) { const dd = Math.abs(x - 1) + Math.abs(y - 6); if (dd >= 3 && dd <= 4 && !grid[y][x] && !tiles.has(K(x, y)) && !allySpots.some(([a, b]) => a === x && b === y)) near.push([x, y]); }
+    if (near.length >= count) spots = near.sort(() => Math.random() - .5); }
   if (bossFloor) { const b = enemyFrom(bossKey, d, dg); Object.assign(b, { x: 5, y: 1 }); units.push(b); }
   for (let i = 0; i < count; i++) { const e = enemyFrom(pick(pool), d, dg); const sp = spots.find(([a, b]) => !units.some(u => u.x === a && u.y === b)); if (!sp) break; Object.assign(e, { x: sp[0], y: sp[1] }); units.push(e); }
   // élites : de plus en plus fréquentes avec la profondeur et le rang
   let nElite = 0; const foes = units.filter(u => u.side === "enemy" && !u.boss);
   if (d >= 2) { if (Math.random() < Math.min(.95, .25 + .1 * d + .1 * EX.rank)) nElite++; if (d >= 4 && Math.random() < Math.min(.9, .3 + .1 * EX.rank + (dg.infinite ? .04 * d : 0))) nElite++; if (dg.infinite && d >= 12 && Math.random() < .5) nElite++; }
-  nElite += EX.next.elite || 0;
+  nElite += EX.next.elite || 0; if (mod && mod.id === "champion") { nElite = Math.max(1, nElite); foes.sort((a, b) => b.max - a.max); }
   for (let i = 0; i < Math.min(nElite, foes.length); i++) makeElite(foes[i]);
   if (EX.next.ambush) for (const e of units) if (e.side === "enemy") e.hp = Math.round((e.hp ?? e.max) * .75);
+  if (mod && mod.id === "horde") for (const e of units) if (e.side === "enemy") { e.max = Math.round(e.max * .75); e.hp = Math.min(e.hp ?? e.max, e.max); }
+  if (mod && mod.id === "champion" && foes[0]) { foes[0].max = Math.round(foes[0].max * 1.3); foes[0].atk = Math.round(foes[0].atk * 1.15); foes[0].name = "Champion · " + foes[0].name; }
   const poisonStart = EX.next.poison; EX.next = {};
   applyBoons(units);
   for (const u of units) { const keep = u.hp; initUnit(u); if (keep != null) u.hp = Math.min(keep, u.max); }
   if (poisonStart) addStatusRaw(units[0], "poison", 3, Math.round(units[0].max * .04));
   units[0].max = Math.round(units[0].max * abyssHp);
+  if (mod && mod.id === "givre") for (const u of units) u.mv = Math.max(1, u.mv - 1);
   const torches = theme === "mine" ? [[1, -1], [4, -1], [6, -1], [-1, 3], [-1, 6]] : [[2, -1], [5, -1], [-1, 2], [-1, 5]];
-  EX.F = { grid, props, tiles, decals, theme, floorCols: dg.infinite && bossFloor ? dg.floor : src.floor, placeName: dg.infinite ? (bossFloor ? "Palier du gardien" : src.n) : "", light: dg.infinite && bossFloor ? dg.light : src.light, units, sel: null, mode: "atk", reach: new Map(), targets: new Set(), phase: "player", busy: false, fx: [], torches, sparks: [], mist: makeMist(8), turn: 1, inspect: null };
+  EX.F = { grid, props, tiles, decals, theme, floorCols: dg.infinite && bossFloor ? dg.floor : src.floor, placeName: dg.infinite ? (bossFloor ? "Palier du gardien" : src.n) : "", light: dg.infinite && bossFloor ? dg.light : src.light, mod, units, sel: null, mode: "atk", reach: new Map(), targets: new Set(), phase: "player", busy: false, fx: [], torches, sparks: [], mist: makeMist(8), turn: 1, inspect: null };
   if (d > 1) {
     const hm = hungerMul(); S.vit.faim = Math.max(0, S.vit.faim - 7 * hm); S.vit.soif = Math.max(0, S.vit.soif - 9 * hm);
     if (S.vit.faim <= 0 || S.vit.soif <= 0) { const h = units[0]; const loss = Math.round(h.max * .12); h.hp = Math.max(1, h.hp - loss); S.vit.hp = h.hp; elog(`La faim et la soif vous affaiblissent : −${loss} santé.`); }
@@ -2227,6 +2359,7 @@ function genFloor() {
   }
   S.vit.en = Math.min(st.en, S.vit.en + 10);
   elog(bossFloor ? `${ENEMIES[bossKey].n} surgit de la brume !` : dg.infinite ? `Étage ${d} de l'Abysse : ${count} ennemis.` : `Profondeur ${d} : ${count} ennemis vous attendent.`);
+  if (mod) elog(`Salle spéciale · ${mod.n} : ${mod.d}`);
   if (tiles.size) { const types = [...tiles.values()].map(t => t.type); if (types.includes("chest")) elog("Un coffre luit dans la pénombre."); if (types.includes("trap")) elog("Attention aux pièges à pointes."); }
   selectUnit(units[0]);
 }
@@ -2344,7 +2477,7 @@ function openChest(u) {
   const dg = DG(EX.d); const items = rollLoot(dg, EX.depth, true);
   const g = Math.round(rnd(10, 22) * (DG(EX.d).infinite ? Math.min(EX.depth, 4) + Math.max(0, EX.depth - 4) * .15 : EX.depth) * (1 + .4 * EX.rank) * (1 + bonus("gold")) * (1 + .4 * boonN("fortune")) * DIFF().rw);
   EX.gold += g; let n = 0; for (const it of items) if (addInst(EX.bag, it, bagCap())) n++;
-  S.st.chests = (S.st.chests || 0) + 1; fxText(u, `+${g} or`, "#f1d695"); spark(u.x, u.y, "#f1d695");
+  S.st.chests = (S.st.chests || 0) + 1; SFX.play("coin"); fxText(u, `+${g} or`, "#f1d695"); spark(u.x, u.y, "#f1d695");
   elog(`Coffre ouvert : ${items.map(it => itemName(it) + (it.q > 1 ? " ×" + it.q : "")).join(", ")} et ${g} or.`);
 }
 function spark(x, y, col) { const f = F(); for (let i = 0; i < 16; i++) f.sparks.push({ x, y, vx: rnd(-1, 1), vy: rnd(-2.4, -.6), l: 0, col }); }
@@ -2366,6 +2499,7 @@ function rollDmg(att, tgt, mult, stat, sure) {
 function applyDmg(tgt, dmg, crit, col) {
   if (tgt.hp <= 0) return;
   tgt.hp = Math.max(0, tgt.hp - dmg); tgt.flash = .35;
+  SFX.play(crit ? "crit" : tgt.side === "ally" ? "hurt" : "hit");
   { const f = F(); const big = crit || (tgt.side === "ally" && dmg > tgt.max * .18) || tgt.boss; f.shake = Math.max(f.shake || 0, big ? 6 : 2.2);
     (f.slashes = f.slashes || []).push({ x: tgt.x, y: tgt.y, t: 0, col: crit ? "#ffd36a" : tgt.side === "ally" ? "#ff8a7a" : "#fff4e0", a: rnd(-.5, .5) }); }
   if (tgt.id === "hero" && tgt.hp <= 0) { // derniers recours : rempart, phénix
@@ -2387,6 +2521,7 @@ function fxText(u, s, col) { F().fx.push({ x: u.x, y: u.y, s, col, t: 0, big: /C
 function syncAllies() { for (const a of F().units) { if (a.id === "hero") S.vit.hp = a.hp; if (a.id === "wolf") S.wolf.hp = a.hp; if (a.merc && EX.mercs[a.mref]) EX.mercs[a.mref].hp = a.hp; } }
 function onDeath(u) {
   u.dead = .01;
+  if (u.side === "enemy" && u.key) { S.st.killed = S.st.killed || {}; S.st.killed[u.key] = (S.st.killed[u.key] || 0) + 1; if (u.boss && S.diff === "cauchemar") S.st.nightBoss = (S.st.nightBoss || 0) + 1; SFX.play("death"); }
   { const f = F(), col = u.side === "enemy" ? (["spirit", "wraith", "wisp", "frostqueen"].includes(u.kind) ? "#bfe8ff" : u.kind === "lich" || u.kind === "knight" ? "#c9a6ff" : "#e8d8c0") : "#ff9a8a";
     for (let i = 0; i < (u.boss ? 60 : 26); i++) f.sparks.push({ x: u.x, y: u.y, vx: rnd(-.7, .7), vy: rnd(-1.6, -.3), l: rnd(-.2, .2), col, soul: 1 }); }
   if (u.side === "enemy") {
@@ -2423,6 +2558,7 @@ async function castSkill(a, t, sk) {
   a.acted = a.moved = true; a.lunge = .25;
   await sleep(150 / SPEED);
   const mag = a.mag || 0;
+  SFX.play(sk.heal || sk.selfHeal ? "heal" : sk.st === "mag" || sk.buff ? "magic" : "crit");
   if (sk.heal) { const hv = Math.round(sk.heal + mag * .65); for (const al of alive("ally")) { al.hp = Math.min(al.max, al.hp + hv); al.sts = Object.fromEntries(Object.entries(al.sts || {}).filter(([k]) => !["poison", "burn", "bleed", "fear"].includes(k))); fxText(al, "+" + hv, "#8fe08a"); } syncAllies(); elog(`${sk.n} : le groupe récupère ${hv} santé.`); }
   else if (sk.selfHeal) { const h = Math.round(a.max * sk.selfHeal); a.hp = Math.min(a.max, a.hp + h); fxText(a, "+" + h, "#8fe08a"); syncAllies(); elog(`${sk.n} : +${h} santé.`); }
   else if (sk.buff) { for (const al of alive("ally")) if (dist(al, a) <= sk.buff.r) addStatus(al, sk.buff.k, sk.buff.t, 0); elog(`${sk.n} !`); }
@@ -2566,9 +2702,11 @@ function rollLoot(dg, depth, chest) {
   return out;
 }
 function victory() {
-  const f = F(); if (f.phase === "won") return; f.phase = "won"; const dg = DG(EX.d);
+  const f = F(); if (f.phase === "won") return; f.phase = "won"; SFX.play("victory"); const dg = DG(EX.d);
   EX.elitesRoom = f.units.filter(u => u.side === "enemy" && u.elite).length;
-  const loot = rollLoot(dg, EX.depth); const lost = []; EX.elitesRoom = 0;
+  const loot = rollLoot(dg, EX.depth); const lost = []; EX.elitesRoom = 0; const mod = f.mod;
+  if (mod && mod.loot) for (let i = 0; i < mod.loot; i++) loot.push(...rollLoot(dg, EX.depth).slice(0, 1));
+  if (mod && mod.rare) { const pool = REC.filter(r => isEquip(IT[r.out]) && !r.fixed && IT[r.out].lvl <= S.lvl + 1 && IT[r.out].lvl >= Math.max(1, S.lvl - 4) && !IT[r.out].minR); const r = pool.length ? pick(pool) : null; if (r) loot.push(enchant(makeItem(r.out, 2, 70))); }
   gainPetXp(Math.round(4 * EX.depth * dg.scale));
   const inf = dg.infinite, picks = 3 + ((S.inst && S.inst.autel) || 0) + bonus("boonPick");
   if (inf && EX.depth % 5 === 0) EX.offer = RELICS.filter(r => !EX.boons.includes(r.id)).sort(() => Math.random() - .5).slice(0, 3).map(r => r.id); // reliques après chaque gardien
@@ -2578,7 +2716,7 @@ function victory() {
   if (inf) { const sh = Math.round((1 + Math.floor(EX.depth / 5) + (EX.depth % 5 === 0 ? 5 : 0)) * (1 + .25 * abyssUp("recolte")) * (boonN("r_prisme") ? 2 : 1) * DIFF().rw); EX.shards += sh; S.st.abyssFloors = (S.st.abyssFloors || 0) + 1; }
   for (const m of EX.mercs || []) if (m.ref) { const rm = S.mercs.find(x => x.id === m.ref); if (rm) gainMercXp(rm, Math.round(6 * EX.depth * dg.scale)); }
   for (const it of loot) { if (!addInst(EX.bag, it, bagCap())) lost.push(it); }
-  const xp = gainXp(16 * EX.depth * dg.scale * (1 + .4 * EX.rank) * DIFF().rw); EX.xp += xp;
+  const xp = gainXp(16 * EX.depth * dg.scale * (1 + .4 * EX.rank) * DIFF().rw * (1 + (mod && mod.xp || 0))); EX.xp += xp;
   S.st.depth[EX.d] = Math.max(S.st.depth[EX.d] || 0, EX.depth);
   for (const k in S.equip) { const it = S.equip[k]; if (it && D(it).dur < 999) it.dur = Math.max(0, it.dur - 1); }
   save(); refreshDun();
@@ -2637,7 +2775,7 @@ function flee() {
   else { elog("La fuite échoue !"); for (const a of alive("ally")) a.acted = a.moved = true; enemyPhase(); }
 }
 function defeat() {
-  const f = F(); if (f.phase === "lost") return; f.phase = "lost"; S.st.deaths = (S.st.deaths || 0) + 1;
+  const f = F(); if (f.phase === "lost") return; f.phase = "lost"; SFX.play("defeat"); S.st.deaths = (S.st.deaths || 0) + 1;
   const st = stats(); S.vit.hp = Math.round(st.hp * .3); S.wolf.hp = Math.round(wolfMax() * .3); EX.offer = null;
   for (const m of EX.mercs || []) m.hp = Math.max(1, Math.round(m.hp * .3));
   setTimeout(() => returnHome(.5, "Vous êtes tombé. Des villageois vous ramènent à la Forge, mais la moitié de la besace est perdue."), 700 / SPEED);
@@ -3022,6 +3160,10 @@ function openSettings() {
   openModal(`<div class="mtitle">Réglages</div>
    <div class="ph" style="margin-bottom:6px">Difficulté</div><div class="list" style="gap:6px">${DIFFS.map(x => `<button class="row ${DIFF().id === x.id ? "on" : ""}" data-act="setdiff" data-id="${x.id}"><div class="t"><b>${x.n}${DIFF().id === x.id ? ' <span class="chip done" style="padding:1px 8px">actuelle</span>' : ""}</b><span>${x.d}</span></div></button>`).join("")}</div>
    <p class="faint" style="margin:6px 0 14px;font-size:13.5px">Modifiable à tout moment, sauf pendant une expédition.</p>
+   <div class="ph" style="margin-bottom:6px">Son</div>
+   <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px"><button class="btn sm ${S.opts.sound !== false ? "ember" : "ghost"}" data-act="sound">${S.opts.sound !== false ? "Effets sonores : activés" : "Effets sonores : coupés"}</button>
+    <label class="muted" style="display:flex;gap:8px;align-items:center;font-size:14px">Volume <input type="range" min="0" max="100" value="${Math.round((S.opts.vol ?? .7) * 100)}" data-vol style="accent-color:var(--ember)"></label></div>
+   <div class="ph" style="margin-bottom:6px">Guide</div><button class="btn ghost wide" style="margin-bottom:14px" data-act="tutorestart">${tutoOn() ? "Recommencer le tutoriel" : "Relancer le tutoriel"}</button>
    <div class="ph" style="margin-bottom:6px">Appli</div>${installHTML()}
    ${fs && !PWA.standalone ? `<button class="btn ghost wide" style="margin-top:10px" data-act="fullscreen">Plein écran</button>` : ""}
    <div class="mfoot"><button class="btn ghost" data-act="askreset">Nouvelle partie</button><button class="btn ember" data-act="close">Fermer</button></div>`);
@@ -3046,7 +3188,7 @@ function render() {
   if (VIEW === "dungeon" && EX) { app.classList.add("solo"); renderDungeon(); return; }
   app.classList.remove("solo");
   renderHud(); renderNav();
-  const V = { home: vHome, perso: vPerso, forge: vForge, inv: vInv, map: vMap, taverne: vTavern, quests: vQuests, mastery: vMastery, events: vEvents }[VIEW] || vHome;
+  const V = { home: vHome, perso: vPerso, forge: vForge, inv: vInv, map: vMap, taverne: vTavern, chron: vChron, quests: vQuests, mastery: vMastery, events: vEvents }[VIEW] || vHome;
   V();
 }
 function rerender() { const st = viewEl.scrollTop; render(); viewEl.scrollTop = st; }
@@ -3068,8 +3210,8 @@ function renderHud() {
   <div class="clock"><b>Jour ${S.day} · ${per}</b>Sombreval${DIFF().id !== "normal" ? ` · ${DIFF().n}` : ""}</div>
   <button class="gearb" data-act="settings" title="Réglages" aria-label="Réglages">${nico("gear")}</button>`;
 }
-const NAV = [["home", "Accueil", "home"], ["perso", "Personnage", "armor"], ["forge", "Atelier", "forge"], ["inv", "Inventaire", "bag"], ["map", "Expéditions", "dungeon"], ["taverne", "Taverne", "mug"], ["quests", "Quêtes", "scroll"], ["mastery", "Maîtrise", "tree"], ["events", "Événements", "banner"]];
-const navDots = () => ({ quests: questsReady() + contractsReady(), mastery: masteryPoints() + (S.lvl >= 5 && !S.spec ? 1 : 0) });
+const NAV = [["home", "Accueil", "home"], ["perso", "Personnage", "armor"], ["forge", "Atelier", "forge"], ["inv", "Inventaire", "bag"], ["map", "Expéditions", "dungeon"], ["taverne", "Taverne", "mug"], ["quests", "Quêtes", "scroll"], ["mastery", "Maîtrise", "tree"], ["chron", "Chroniques", "book"], ["events", "Événements", "banner"]];
+const navDots = () => ({ chron: achReady(), quests: questsReady() + contractsReady(), mastery: masteryPoints() + (S.lvl >= 5 && !S.spec ? 1 : 0) });
 function renderNav() {
   const dots = navDots(), secDots = NAV.filter(([id]) => !NAV_MAIN.includes(id)).reduce((a, [id]) => a + (dots[id] || 0), 0), secOn = !NAV_MAIN.includes(VIEW);
   $("#nav").innerHTML = NAV.map(([id, n, ic]) => `<button class="navb ${NAV_MAIN.includes(id) ? "" : "sec"} ${VIEW === id ? "on" : ""}" data-act="go" data-v="${id}">${nico(ic)}<span>${n}</span>${dots[id] ? `<span class="dot">${dots[id]}</span>` : ""}</button>`).join("") +
@@ -3247,7 +3389,7 @@ function renderForgeStep() {
 function tickForge(g, dt) {
   if (g.step === 0) { g.temp = clamp(g.temp + (g.heating ? .5 : -.16) * dt, 0, 1); if (g.temp > .97) g.burnt = true; }
   if (g.step === 1) { g.pos += g.dir * g.sp * dt; if (g.pos > 1) { g.pos = 1; g.dir = -1; } if (g.pos < 0) { g.pos = 0; g.dir = 1; } const c = $("#cur"); if (c) c.style.left = g.pos * 100 + "%"; }
-  if (g.step === 2 && g.rings < 4) { g.ringR -= 75 * dt; if (g.ringR <= 0) { g.hits.push(0); g.rings++; g.ringR = 80; g.miss = .5; if (g.rings >= 4) finishPolish(g); } }
+  if (g.step === 2 && g.rings < 4) { SFX.play("anvil"); g.ringR -= 75 * dt; if (g.ringR <= 0) { g.hits.push(0); g.rings++; g.ringR = 80; g.miss = .5; if (g.rings >= 4) finishPolish(g); } }
   g.spark = Math.max(0, g.spark - dt * 1.6); g.steam = Math.max(0, g.steam - dt * .8); g.miss = Math.max(0, (g.miss || 0) - dt);
 }
 function drawForge(g) {
@@ -3280,8 +3422,8 @@ function drawForge(g) {
 }
 function forgeAction() {
   const g = forgeGame; if (!g) return;
-  if (g.step === 0) { const v = clamp(100 - Math.abs(g.temp * 100 - 75) * 5, 0, 100); g.sc.heat = g.burnt ? Math.min(v, 35) : v; g.heating = false; g.spark = 1; g.step = 1; renderForgeStep(); return; }
-  if (g.step === 1) { if (g.sc.quench != null) return; g.sc.quench = clamp(100 - Math.abs(g.pos - .5) * 320, 0, 100); g.steam = 1; setTimeout(() => { if (forgeGame === g) { g.step = 2; renderForgeStep(); } }, 650); return; }
+  if (g.step === 0) { SFX.play("anvil"); const v = clamp(100 - Math.abs(g.temp * 100 - 75) * 5, 0, 100); g.sc.heat = g.burnt ? Math.min(v, 35) : v; g.heating = false; g.spark = 1; g.step = 1; renderForgeStep(); return; }
+  if (g.step === 1) { if (g.sc.quench != null) return; SFX.play("quench"); g.sc.quench = clamp(100 - Math.abs(g.pos - .5) * 320, 0, 100); g.steam = 1; setTimeout(() => { if (forgeGame === g) { g.step = 2; renderForgeStep(); } }, 650); return; }
   if (g.step === 2 && g.rings < 4) { const v = clamp(100 - Math.abs(g.ringR - 22) * 4.5, 0, 100); g.hits.push(v); g.rings++; g.ringR = 80; g.spark = v > 60 ? .8 : .3; if (v < 30) g.miss = .5; if (g.rings >= 4) finishPolish(g); }
 }
 function finishPolish(g) {
@@ -3289,7 +3431,7 @@ function finishPolish(g) {
   setTimeout(() => { if (forgeGame !== g || !S) return; closeModal(); doCraft(r, sc); }, 450);
 }
 function doCraft(r, q) {
-  const res = craft(r, q); if (!res.ok) { toast(res.why, "bad"); rerender(); return; }
+  const res = craft(r, q); if (!res.ok) { toast(res.why, "bad"); rerender(); return; } SFX.play(res.rar >= 2 ? "level" : "coin");
   const d = IT[r.out]; const it = res.item;
   openModal(`<div class="result"><div class="muted" style="letter-spacing:.14em;text-transform:uppercase;font-size:13px">Création réussie</div>
    <div class="burst">${slotHTML({ ...it, u: "x" }, { size: "lg" })}</div><div class="mtitle c${res.rar}" style="margin:0">${d.n}${res.qty > 1 ? ` ×${res.qty}` : ""}</div>
@@ -3424,6 +3566,28 @@ function vMastery() {
    <div style="display:flex;justify-content:center;margin-top:16px"><button class="btn ghost sm" data-act="respec" ${S.mastery.length ? "" : "disabled"}>Réinitialiser l'arbre · ${50 + S.lvl * 10} or</button></div></div></div>`;
 }
 
+/* ── Chroniques : bestiaire et hauts faits ── */
+function vChron() {
+  const tab = UI.ctab || "best", K = S.st.killed || {};
+  const keys = Object.keys(ENEMIES).filter(k => !ENEMIES[k].hidden), seen = keys.filter(k => K[k]).length;
+  const tabs = `<div class="tabs" style="margin:0">${[["best", `Bestiaire · ${seen}/${keys.length}`], ["ach", `Hauts faits${achReady() ? " ●" : ""}`]].map(([id, n]) => `<button class="tab ${tab === id ? "on" : ""}" data-act="ctab" data-t="${id}">${n}</button>`).join("")}</div>`;
+  let body;
+  if (tab === "best") {
+    const order = keys.sort((a, b) => (ENEMIES[a].boss ? 1 : 0) - (ENEMIES[b].boss ? 1 : 0) || ENEMIES[a].hp - ENEMIES[b].hp);
+    body = `<div class="panel"><div class="ph">Bestiaire de Sombreval <small>chaque créature vaincue s'inscrit ici</small></div><div class="bestiary">${order.map(k => { const e = ENEMIES[k], n = K[k] || 0, pl = enemyPlaces(k);
+      return `<div class="beast ${n ? "" : "unk"} ${e.boss ? "boss" : ""}"><canvas data-beast="${k}" width="120" height="110"></canvas><b>${n ? e.n : "???"}</b>
+        ${n ? `<span class="faint">${e.boss ? "Gardien · " : ""}vaincu ${n} fois</span><span>Santé ${e.hp} · attaque ${e.atk} · défense ${e.def}${e.range > 1 ? ` · portée ${e.range}` : ""}</span>${[e.poison && "poison", e.healer && "soigneur", e.summon && "invocateur", e.aoe && "frappe de zone", e.burnHit && "brûlure", e.enrage && "rage"].filter(Boolean).length ? `<span class="muted">${[e.poison && "poison", e.healer && "soigneur", e.summon && "invocateur", e.aoe && "frappe de zone", e.burnHit && "brûlure", e.enrage && "rage"].filter(Boolean).join(" · ")}</span>` : ""}` : `<span class="faint">Rencontré ${pl.length ? "dans : " + pl.join(", ") : "dans l'Abysse"}</span>`}</div>`; }).join("")}</div></div>`;
+  } else {
+    body = `<div class="panel"><div class="ph">Hauts faits <small class="num">${S.achv.length} / ${ACHIEVEMENTS.length}</small></div><div class="list" style="gap:8px">${ACHIEVEMENTS.map(a => { const s = achState(a);
+      return `<div class="row quest ${s.st === "claimed" ? "off" : ""}" style="cursor:default"><div class="qicon" style="color:${s.st === "active" ? "var(--muted)" : "var(--gold-hi)"}">${nico("star")}</div><div class="t"><b>${a.n}</b><span style="color:var(--text)">${a.d}</span>${s.st === "active" ? `<div class="prog"><i style="width:${s.cur / s.max * 100}%"></i></div><span class="num">${s.cur} / ${s.max}</span>` : ""}<div style="margin-top:4px"><span class="chip gold">${rwText(a.rw)}</span></div></div>
+        ${s.st === "done" ? `<button class="btn ember sm" data-act="achclaim" data-id="${a.id}">Réclamer</button>` : s.st === "claimed" ? `<span class="chip done">Obtenu</span>` : ""}</div>`; }).join("")}</div></div>`;
+  }
+  viewEl.innerHTML = `<div class="grid">${tabs}${body}</div>`;
+  document.querySelectorAll("canvas[data-beast]").forEach(c => { const k = c.dataset.beast, e = ENEMIES[k], x = c.getContext("2d"); x.clearRect(0, 0, 120, 110);
+    glow(x, 60, 90, 60, e.boss ? "#ff8a3d" : "#a3c4d8", .14); drawEnemy(x, e.kind, 60, 98, e.boss ? 1.1 : 1.35, 0, e.big ? 1.2 : 1, e.col);
+    if (!(K[k])) { x.globalCompositeOperation = "source-atop"; x.fillStyle = "#3a332c"; x.fillRect(0, 0, 120, 110); x.globalCompositeOperation = "source-over"; } });
+}
+
 /* ── Taverne : mercenaires à louer ou recruter ── */
 function vTavern() {
   const row = (type) => { const M = MERCS[type], own = S.mercs.find(m => m.type === type), lvl = own ? own.lvl : Math.max(1, S.lvl - 1), st = mercStats(type, lvl), hire = hireCost(type);
@@ -3456,7 +3620,7 @@ function vEvents() {
 
 /* ── Donjon ──────────────────────────────────── */
 function renderDungeon() {
-  if (!S.seen.tuto) { S.seen.tuto = 1; save(); setTimeout(() => openModal(`<div class="mtitle">Premiers pas dans la brume</div><ul class="traits" style="padding:0;display:grid;gap:8px">
+  if (!S.seen.tuto && !tutoOn()) { S.seen.tuto = 1; save(); setTimeout(() => openModal(`<div class="mtitle">Premiers pas dans la brume</div><ul class="traits" style="padding:0;display:grid;gap:8px">
     <li><span>Touchez un allié, puis une <b>case bleue</b> pour le déplacer. Le trajet s'affiche en pointillés.</span></li>
     <li><span>Un ennemi sur <b>case rouge</b> est à portée : touchez-le pour frapper. Chaque allié bouge puis agit une fois par tour.</span></li>
     <li><span>Touchez ou survolez un ennemi hors de portée pour voir sa <b>zone de menace</b> et les dégâts que vous lui feriez.</span></li>
@@ -3470,7 +3634,7 @@ function refreshDun() {
   $("#dtop").innerHTML = `<div><h2>${dg.n}</h2><div class="sub">${inf ? `Étage ${EX.depth} · ${f.placeName || ""}` : `Niveau ${EX.depth}`}${bossF && inf ? "" : " · "}${bossF ? (inf ? "" : "Antre du gardien") : EX.depth >= 3 ? "Profondeurs" : "Galeries"} · tour ${f.turn}</div></div>
    ${inf ? `<span class="chip" style="color:#c9a6ff" title="Éclats d'abysse gagnés pendant cette plongée">${nico("gem").replace("<svg", '<svg width="14" height="14"')} ${EX.shards || 0} éclats · record ${S.abyss.best || 0}</span>` : `<div class="depths" style="width:120px">${[1, 2, 3, 4, 5].map(i => `<i class="${i <= EX.depth ? "on" : ""} ${i === 5 ? "boss" : ""}"></i>`).join("")}</div>`}
    <div class="mini">${bar("Santé", S.vit.hp, st.hp, "#c63d30")}${bar("Énergie", S.vit.en, st.en, "#3e86cc")}${bar("Faim", S.vit.faim, 100, "#d69c2f")}${bar("Soif", S.vit.soif, 100, "#36a6c8")}</div>
-   ${EX.rank ? `<span class="chip" style="color:var(--mist)">Rang de brume ${EX.rank}</span>` : ""}${EX.boons.length ? `<span class="chip gold" title="${EX.boons.map(b => boonDef(b).n).join(", ")}">${EX.boons.length} bonus</span>` : ""}<div class="chip gold" title="Besace : butin à rapporter">${nico("bag").replace("<svg", '<svg width="14" height="14"')} ${EX.bag.length} / ${bagCap()} · ${EX.gold} or</div>`;
+   ${f.mod ? `<span class="chip" style="color:${f.mod.c}" title="${f.mod.d}">${f.mod.n}</span>` : ""}${EX.rank ? `<span class="chip" style="color:var(--mist)">Rang de brume ${EX.rank}</span>` : ""}${EX.boons.length ? `<span class="chip gold" title="${EX.boons.map(b => boonDef(b).n).join(", ")}">${EX.boons.length} bonus</span>` : ""}<div class="chip gold" title="Besace : butin à rapporter">${nico("bag").replace("<svg", '<svg width="14" height="14"')} ${EX.bag.length} / ${bagCap()} · ${EX.gold} or</div>`;
   const pl = f.phase === "player";
   $("#turnflag").innerHTML = pl ? "VOTRE TOUR" : f.phase === "enemy" ? "TOUR ENNEMI" : f.phase === "won" ? "SALLE NETTOYÉE" : "DÉFAITE";
   $("#turnflag").style.color = pl ? "var(--gold-hi)" : "var(--bad)";
@@ -3614,7 +3778,7 @@ const ACT = {
   close: () => { closeModal(); rerender(); },
   rest: () => openRest(),
   eat: () => { const msgs = []; if (S.vit.faim < 70 && count(S.stash, "ration")) msgs.push(useConsumable("ration")); if (S.vit.soif < 70 && count(S.stash, "gourde")) msgs.push(useConsumable("gourde")); toast(msgs.length ? msgs.join(" · ") : "Pas besoin, ou plus de rations ni de gourdes.", msgs.length ? "" : "bad"); rerender(); },
-  claim: d => { const q = QUESTS.find(x => x.id === d.q); if (questState(q).st !== "done") return; claim(q); rerender(); if (q.main) openLore(q, true); else toast(`Quête terminée : ${q.n} · ${rwText(q.rw)}`, "gold"); },
+  claim: d => { const q = QUESTS.find(x => x.id === d.q); if (questState(q).st !== "done") return; claim(q); SFX.play("quest"); rerender(); if (q.main) openLore(q, true); else toast(`Quête terminée : ${q.n} · ${rwText(q.rw)}`, "gold"); },
   quickforge: d => { UI.tab = "fab"; const r = REC.find(x => x.id === d.r); UI.cat = r.cat; UI.rec = r.id; go("forge"); },
   ftab: d => { UI.tab = d.t; rerender(); }, fcat: d => { UI.cat = d.c; rerender(); }, frec: d => { UI.rec = d.r; rerender(); }, fsel: d => { UI.sel = d.u; rerender(); },
   forge: d => { const r = REC.find(x => x.id === d.r); if (!checkRecipe(r).ok) return; if (isEquip(IT[r.out])) openForgeGame(r); else doCraft(r, 60); },
@@ -3638,6 +3802,9 @@ const ACT = {
   enter: d => { const dg = DG(d.d); if (dg.infinite && S.vit.hp < stats().hp * .3) { toast("Reposez-vous avant de plonger dans l'Abysse.", "bad"); return; } if (S.lvl < dg.rec - 1) { toast(`Trop dangereux : niveau ${dg.rec - 1} minimum.`, "bad"); return; } startExpedition(d.d, UI.rank[d.d] || 0); },
   dmode: d => { if (d.k) UI.lastSk = d.k; setMode(d.m, d.k); },
   salvjunk: () => { const n = salvageJunk(); UI.sel = null; toast(n ? `${n} objets recyclés en matériaux.` : "Rien à recycler.", n ? "" : "bad"); rerender(); },
+  sound: () => { S.opts.sound = S.opts.sound === false; save(); SFX.unlock(); SFX.play("coin"); openSettings(); },
+  achclaim: d => { const a = ACHIEVEMENTS.find(x => x.id === d.id); const e = claimAch(d.id); if (!e) SFX.play("quest"); toast(e || `Haut fait : ${a.n} · ${rwText(a.rw)}`, e ? "bad" : "gold"); rerender(); },
+  ctab: d => { UI.ctab = d.t; rerender(); },
   more: () => openMore(), gosheet: d => { closeModal(); go(d.v); },
   settings: () => openSettings(), installinfo: () => openInstall(),
   install: async () => { const p = PWA.prompt; if (!p) { openInstall(); return; } PWA.prompt = null; p.prompt(); try { await p.userChoice; } catch (e) { } closeModal(); rerender(); },
@@ -3664,7 +3831,8 @@ const ACT = {
   descend: () => descend(),
   home: () => returnHome(0),
 };
-document.addEventListener("click", e => { const t = e.target.closest("[data-act]"); if (!t || t.disabled) return; const f = ACT[t.dataset.act]; if (f) { e.preventDefault(); f(t.dataset, t); } });
+document.addEventListener("click", e => { SFX.unlock(); const t = e.target.closest("[data-act]"); if (!t || t.disabled) return; const f = ACT[t.dataset.act]; if (f) { e.preventDefault(); SFX.play(/tab|go|more|gosheet/.test(t.dataset.act) ? "tab" : "click"); f(t.dataset, t); } });
+document.addEventListener("input", e => { if (e.target && e.target.dataset && "vol" in e.target.dataset && S) { S.opts.vol = +e.target.value / 100; save(); SFX.unlock(); SFX.play("click"); } });
 document.addEventListener("keyup", e => { if (e.code === "Space" && forgeGame && forgeGame.step === 0) forgeGame.heating = false; });
 document.addEventListener("keydown", e => { if (e.code === "Space" && forgeGame) { e.preventDefault(); if (forgeGame.step === 0) { if (!e.repeat) forgeGame.heating = true; } else if (!e.repeat) forgeAction(); } if (e.key === "Enter" && forgeGame && forgeGame.step === 0) forgeAction(); if (e.key === "Escape" && !$("#modal").hidden && !forgeGame && !(EX && (EX.pending || (EX.F && EX.F.phase === "won")))) closeModal(); });
 setInterval(() => { document.querySelectorAll("[data-timer]").forEach(el => { el.textContent = fmtLeft(+el.dataset.timer - Date.now()); }); }, 1000);
@@ -3675,4 +3843,79 @@ setInterval(() => { document.querySelectorAll("[data-timer]").forEach(el => { el
   if (s) { S = s; VIEW = "home"; }
   render();
 })();
+/* ═══════════════════════ Tutoriel guidé ═══════════════════════
+   Un « guide » accompagne le nouveau joueur : chaque étape se valide toute seule quand l'action est faite,
+   et la surbrillance montre le bouton à toucher selon l'écran où l'on se trouve. */
+const TUTO = [
+  { id: "hello", t: "Bienvenue à Sombreval", d: "La brume a envahi la vallée et la vieille forge de votre père se réveille. Ce guide vous montre l'essentiel en quelques minutes. Vous pouvez le passer à tout moment.", next: 1 },
+  { id: "forge", t: "Forgez votre première arme", d: "Ouvrez l'Atelier, choisissez l'Épée de fer puis touchez « Fabriquer ». Le mini-jeu a trois temps : chauffer jusqu'à la zone dorée, tremper au bon moment, puis frapper quand le cercle se resserre.",
+    done: s => s.st.weapon >= 1, hl: () => VIEW !== "forge" ? ['.navb[data-v="forge"]', '[data-act="gosheet"][data-v="forge"]'] : forgeGame ? ['#modal .btn.ember', '#modal [data-act="fstep"]'] : UI.tab !== "fab" ? ['[data-act="ftab"][data-t="fab"]'] : ['[data-act="forge"]'] },
+  { id: "equip", t: "Équipez-la", d: "Une arme fraîchement forgée vaut mieux que votre vieille lame. Touchez « Équiper » à la sortie de la forge, ou passez par l'Inventaire. La flèche verte ▲ signale toujours un objet meilleur que celui porté.",
+    done: s => s.equip.arme && s.equip.arme.u !== s.tuto.w0, hl: () => $("#modal:not([hidden]) [data-act='equipnew']") ? ['[data-act="equipnew"]'] : VIEW !== "inv" ? ['#modal [data-act="gosheet"][data-v="inv"]', '.navb[data-v="inv"]', '[data-act="more"]'] : ['.slot .better', '[data-act="equip"]'] },
+  { id: "go", t: "Partez en expédition", d: "Ouvrez Expéditions et entrez dans le Donjon des Murmures, le plus accessible. Votre compagnon animal vous accompagne toujours.",
+    done: s => !!EX || (s.st.depth.murmures || 0) >= 1, hl: () => VIEW !== "map" ? ['.navb[data-v="map"]'] : ['[data-act="enter"][data-d="murmures"]'] },
+  { id: "move", t: "Déplacez-vous", d: "Touchez un allié pour le sélectionner, puis une case bleue pour le déplacer : le trajet s'affiche en pointillés. Chaque allié se déplace puis agit une fois par tour.",
+    done: s => !!(EX && EX.F && EX.F.units.some(u => u.side === "ally" && u.moved)) || (s.st.kills || 0) >= 1, inDun: 1 },
+  { id: "attack", t: "Frappez", d: "Un ennemi entouré de rouge est à portée : touchez-le pour attaquer. Touchez un ennemi éloigné pour voir sa zone de menace. Votre compétence, en bleu, coûte de l'énergie mais frappe plus fort.",
+    done: s => (s.st.kills || 0) >= 1, inDun: 1, hl: () => ['[data-act="dmode"][data-m="skill"]'] },
+  { id: "room", t: "Fin de salle", d: "Après chaque salle, choisissez un bonus pour la suite. Descendez pour plus de butin, ou rentrez à la Forge pour le mettre en sûreté : une défaite coûte la moitié de la besace.",
+    done: s => !EX && (s.st.depth.murmures || 0) >= 1, hl: () => EX && EX.offer ? ['.boon'] : ['[data-act="home"]', '[data-act="descend"]'] },
+  { id: "quest", t: "Réclamez votre chapitre", d: "Votre première arme a fait avancer l'histoire. Ouvrez Quêtes et réclamez la récompense du chapitre 1 : or, cristaux et un point de maîtrise.",
+    done: s => s.claimed.includes("m1"), hl: () => VIEW !== "quests" ? ['.navb[data-v="quests"]'] : ['[data-act="claim"][data-q="m1"]', '[data-act="qtab"][data-t="story"]'] },
+  { id: "mastery", t: "Apprenez une maîtrise", d: "Chaque niveau et chaque chapitre rapportent des points. Ouvrez Maîtrise et apprenez un premier nœud : six branches, des compétences à débloquer, et une spécialisation au niveau 5.",
+    done: s => s.mastery.length >= 1, hl: () => VIEW !== "mastery" ? ['#modal [data-act="gosheet"][data-v="mastery"]', '.navb[data-v="mastery"]', '[data-act="more"]'] : ['.node.can'] },
+  { id: "rest", t: "Reprenez des forces", d: "Santé et énergie ne remontent pas toutes seules. Dormez à l'auberge (tout revient) ou à la forge (gratuit, 60 %). Chaque nuit fait passer un jour : commandes et contrats ont des échéances.",
+    done: s => (s.st.rests || 0) >= 1, hl: () => VIEW !== "home" ? ['.navb[data-v="home"]'] : ['[data-act="rest"]', '[data-act="nap"]'] },
+  { id: "end", t: "À vous de jouer", d: "Il reste beaucoup à découvrir : commandes des villageois, contrats de la Guilde, mercenaires à la Taverne, six lieux et leurs gardiens, et l'Abysse sans fond. Les Chroniques gardent la trace de vos exploits. Bonne forge !", next: 1, last: 1 },
+];
+const tutoOn = () => S && S.tuto && !S.tuto.off && S.tuto.step < TUTO.length;
+function tutoStep() { return tutoOn() ? TUTO[S.tuto.step] : null; }
+/* Valide les étapes accomplies (plusieurs d'un coup si le joueur a pris de l'avance) */
+function tutoCheck() {
+  if (!tutoOn()) return false; let moved = false;
+  while (tutoOn()) { const st = TUTO[S.tuto.step]; if (st.next || !st.done || !st.done(S)) break; S.tuto.step++; moved = true; }
+  if (moved) { save(); if (typeof SFX !== "undefined") SFX.play("quest"); S.tuto.min = false; }
+  return moved;
+}
+function tutoNext() { if (!tutoOn()) return; S.tuto.step++; if (S.tuto.step >= TUTO.length) S.tuto.off = 1; S.tuto.min = false; save(); }
+function tutoSkip() { if (!S.tuto) S.tuto = {}; S.tuto.off = 1; save(); }
+function tutoRestart() { S.tuto = { step: 0, w0: S.equip.arme ? S.equip.arme.u : null }; save(); }
+
+/* ── Affichage : carte du guide + surbrillance ── */
+let COACH_SIG = "";
+function renderCoach() {
+  if (typeof document === "undefined" || !document.body || !document.createElement || !document.getElementById) return;
+  let el = document.getElementById("coach");
+  document.querySelectorAll(".coach-hl").forEach(n => n.classList.remove("coach-hl"));
+  const st = tutoStep(); const dun = VIEW === "dungeon" && EX;
+  const cls = document.body.classList; if (cls) cls.toggle("has-coach", !!(st && S && !S.tuto.min && !(st.inDun && !dun)));
+  if (!st || (!S) || (st.inDun && !dun)) { if (el) el.hidden = true; return; }
+  if (!el) { el = document.createElement("div"); el.id = "coach"; el.setAttribute("role", "status"); document.body.appendChild(el); }
+  const i = S.tuto.step, sig = i + "|" + (S.tuto.min ? 1 : 0) + "|" + (dun ? 1 : 0);
+  if (sig !== COACH_SIG || el.hidden) {
+    COACH_SIG = sig; el.hidden = false; el.className = "panel" + (S.tuto.min ? " min" : "") + (dun ? " dun" : "");
+    el.innerHTML = S.tuto.min ? `<button class="coach-pill" data-act="tutomax">${nico("book")}<span>Guide · ${i + 1}/${TUTO.length}</span></button>`
+      : `<div class="coach-h"><span class="coach-n">${i + 1}/${TUTO.length}</span><b>${st.t}</b><button class="coach-x" data-act="tutomin" aria-label="Réduire le guide">–</button></div>
+         <p>${st.d}</p><div class="coach-f">${st.next ? `<button class="btn ember sm" data-act="tutonext">${st.last ? "Terminer" : "Commencer"}</button>` : `<span class="faint" style="font-size:13px">Se valide tout seul une fois fait.</span>`}
+         ${st.last ? "" : `<button class="btn ghost sm" data-act="tutoskip">Passer le tutoriel</button>`}</div>`;
+  }
+  if (!S.tuto.min && st.hl) for (const sel of st.hl()) { const n = [...document.querySelectorAll(sel)].find(x => x.offsetParent !== null || x.getClientRects().length); if (n) { n.classList.add("coach-hl"); keepVisible(n, el); break; } }
+}
+/* Si l'élément désigné est caché par le guide ou la barre du bas, on le fait défiler au centre (une fois par cible) */
+let COACH_TARGET = null;
+function keepVisible(n, coach) {
+  if (n === COACH_TARGET) return; COACH_TARGET = n;
+  const r = n.getBoundingClientRect(), cr = coach.getBoundingClientRect(), nav = document.getElementById("nav"), nr = nav ? nav.getBoundingClientRect() : null;
+  const bottomLimit = Math.min(cr.top > innerHeight / 2 ? cr.top : innerHeight, nr && nr.top > innerHeight / 2 ? nr.top : innerHeight) - 8;
+  const topLimit = cr.top < innerHeight / 2 ? cr.bottom + 8 : 0;
+  if (r.bottom > bottomLimit || r.top < topLimit) n.scrollIntoView({ block: "center" });
+}
+function coachTick() { if (!S) return; if (tutoCheck() && typeof rerender === "function" && VIEW !== "dungeon") { /* l'écran se met à jour au prochain rendu */ } renderCoach(); }
+Object.assign(ACT, {
+  tutonext: () => { tutoNext(); renderCoach(); },
+  tutoskip: () => { tutoSkip(); renderCoach(); toast("Tutoriel passé. Vous pouvez le relancer dans les Réglages."); },
+  tutomin: () => { S.tuto.min = true; save(); renderCoach(); }, tutomax: () => { S.tuto.min = false; save(); renderCoach(); },
+  tutorestart: () => { tutoRestart(); closeModal(); go("home"); renderCoach(); toast("Le guide reprend depuis le début.", "gold"); },
+});
+if (typeof setInterval === "function" && typeof document !== "undefined" && document.body) setInterval(coachTick, 450);
 </script></body></html>
