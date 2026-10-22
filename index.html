@@ -494,7 +494,7 @@ body{background:radial-gradient(1100px 700px at 50% -8%,rgba(236,122,48,.13),tra
   background:linear-gradient(180deg,#fbe7b0,#cda45e 60%,#9a7034);-webkit-background-clip:text;background-clip:text;color:transparent;
   border:0;border-image:none;position:relative}
 .ph::after{content:"";position:absolute;left:12px;right:12px;bottom:0;height:9px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10' viewBox='0 0 16 10'%3E%3Cpath d='M8 1l4 4-4 4-4-4z' fill='%23cda45e'/%3E%3Cpath d='M8 3.2l1.8 1.8L8 6.8 6.2 5z' fill='%230d0a08'/%3E%3C/svg%3E") center/12px 8px no-repeat,linear-gradient(90deg,transparent,rgba(205,164,94,.75) 30%,rgba(205,164,94,.75) 70%,transparent) center/100% 1px no-repeat}
-.ph small{white-space:nowrap;-webkit-text-fill-color:var(--muted);color:var(--muted);text-transform:none;letter-spacing:.02em;font-family:var(--f-body);font-size:13.5px}
+.ph small{white-space:normal;text-align:right;-webkit-text-fill-color:var(--muted);color:var(--muted);text-transform:none;letter-spacing:.02em;font-family:var(--f-body);font-size:13.5px}
 .ph small b,.ph small span{-webkit-text-fill-color:currentColor}
 h1,h2,h3{font-weight:500;letter-spacing:.08em}
 h3{color:var(--gold-hi)}
@@ -590,6 +590,38 @@ h3{color:var(--gold-hi)}
 .runebtn.proj{font-size:9.5px;padding:3px 7px;opacity:0;pointer-events:none;transition:opacity .2s}.runebtn.proj.hot{opacity:1;pointer-events:auto}
 .runebtn.proj svg{display:none}
 @media (max-width:700px){.scene .hint{display:none}#hud.panel,#hud{background-size:14px 14px,14px 14px,14px 14px,14px 14px,auto,auto,auto,auto}.brand{padding-left:8px}.runebtn{font-size:9.5px;letter-spacing:.08em;padding:3px 6px 3px 5px;gap:3px}.runebtn svg{width:9px;height:9px}}
+
+/* Maîtrise : arbres à trois branches */
+.mtabs{flex-wrap:wrap}
+.mtabs .tab{display:inline-flex;align-items:center;gap:6px}
+.mtabs .tab svg{width:16px;height:16px;color:var(--tc)}
+.mtabs .tab em{font-style:normal;font-size:11px;color:var(--faint);letter-spacing:0}
+.treehint{margin:4px 0 10px;font-size:13.5px}
+.tree3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:14px;align-items:start}
+.br12{padding:12px 12px 8px;border-radius:4px;background:radial-gradient(120% 50% at 50% 0%,color-mix(in srgb,var(--bc,#cda45e) 12%,transparent),transparent 70%),linear-gradient(180deg,#120d09,#0a0706);box-shadow:inset 0 0 0 1px rgba(163,131,74,.3),inset 0 2px 10px rgba(0,0,0,.6)}
+.br12.locked{opacity:.75}
+.brh{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.brh .qicon{width:30px;height:30px}
+.brh b{font-family:var(--f-display);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:13.5px;flex:1}
+.brprog{height:4px;border-radius:2px;background:#050403;box-shadow:0 0 0 1px rgba(163,131,74,.25);margin-bottom:8px;overflow:hidden}
+.brprog i{display:block;height:100%;background:linear-gradient(90deg,var(--bc),#f3d48e)}
+.nrow{display:grid;grid-template-columns:38px 1fr;gap:10px;align-items:center;position:relative;padding:4px 0}
+.nrow+.nrow::before{content:"";position:absolute;left:18px;top:-5px;height:10px;width:2px;background:linear-gradient(rgba(163,131,74,.25),rgba(163,131,74,.5))}
+.nrow.on+.nrow::before{background:linear-gradient(var(--bc),var(--bc))}
+.nrow .node{width:38px;height:38px}
+.nrow .node svg{width:18px;height:18px}
+.nnum{font-family:var(--f-num);font-size:12px;font-weight:600;color:var(--muted)}
+.node.on .nnum{color:#fff3d6}
+.nrow .nodetxt{font-size:13px;max-width:none;text-align:left;line-height:1.35;color:var(--muted)}
+.nrow.on .nodetxt{color:var(--text)}
+.nrow .nodetxt b{font-size:13px;display:block}
+.sktag{font-family:var(--f-num);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-hi);border:1px solid rgba(243,212,142,.4);border-radius:8px;padding:0 5px;margin-left:4px;vertical-align:1px}
+.nrow.can .node{box-shadow:0 0 0 1px var(--gold-hi),0 0 10px rgba(243,212,142,.4)}
+.master .mhead{display:grid;grid-template-columns:96px 1fr;gap:10px;align-items:center}
+.master .mhead canvas{width:96px;height:120px;border-radius:4px;background:radial-gradient(circle at 50% 70%,color-mix(in srgb,var(--mc) 22%,transparent),#0a0706 75%);box-shadow:inset 0 0 0 1px rgba(163,131,74,.35)}
+.master .mname{font-family:var(--f-display);font-size:16px;letter-spacing:.06em;color:var(--mc);display:block;margin-bottom:4px}
+.ph{flex-wrap:wrap;row-gap:2px}.ph small.num{white-space:nowrap}.master .chips{display:flex;gap:6px;flex-wrap:wrap}.master .chip{white-space:normal;text-align:left}.grid>*,.tree3>*{min-width:0}
+.master.on{box-shadow:inset 0 0 0 1px var(--mc),0 0 18px color-mix(in srgb,var(--mc) 30%,transparent)}
 </style>
 </head><body>
 <div id="app">
@@ -1567,6 +1599,309 @@ const SEASON_SHOP = s => [
   { id: "carte", n: "Fragment de carte", d: "Un morceau de la carte d'un lieu oublié.", price: 25 },
 ];
 ACHIEVEMENTS.push({ id: "a_season", n: "Enfant de Sombreval", d: "Obtenir un objet exclusif d'événement saisonnier.", g: s => [Object.keys(s.seasonItems || {}).length, 1], rw: { crys: 15 } });
+/* ═══════════════════════ Contenu v10 : arbres à trois branches, classes maîtres, Acte V ═══════════════════════
+   Chaque discipline de maîtrise se divise en trois branches de 12 nœuds. Chaque spécialisation et chaque classe
+   maître a aussi sa branche de 12 nœuds. Les nœuds sont décrits ici de façon compacte ; leurs textes sont générés. */
+
+/* ── Lecture des définitions compactes ── */
+// passif : "atkPct:.04 crit:.02"
+function pbonus(s) { const b = {}; for (const t of s.trim().split(/\s+/)) { const [k, v] = t.split(":"); b[k] = +v; } return b; }
+// compétence : "r3 m1.5 mag aoe burn3:6 c18" (portée, multiplicateur, magie, zone, effets, coût)
+function pskill(s) {
+  const o = {}; for (const t of s.trim().split(/\s+/)) { let m;
+    if ((m = t.match(/^r(\d+)$/))) o.range = +m[1];
+    else if ((m = t.match(/^m([\d.]+)$/))) o.mult = +m[1];
+    else if (t === "mag" || t === "atk") o.st = t;
+    else if (t === "aoe") o.aoe = 1;
+    else if ((m = t.match(/^ar(\d+)$/))) { o.around = +m[1]; o.target = "self"; o.range = 0; }
+    else if ((m = t.match(/^h(\d+)$/))) o.hits = +m[1];
+    else if (t === "sure") o.sure = 1;
+    else if ((m = t.match(/^fin([\d.]+)$/))) o.finisher = +m[1];
+    else if ((m = t.match(/^(stun|fear|mark)(\d+)$/))) o.onHit = { k: m[1], t: +m[2] };
+    else if ((m = t.match(/^(burn|poison|bleed)(\d+):(\d+)$/))) o.onHit = { k: m[1], t: +m[2], d: +m[3] };
+    else if ((m = t.match(/^heal(\d+)$/))) { o.heal = +m[1]; o.range = 0; }
+    else if ((m = t.match(/^self([\d.]+)$/))) { o.selfHeal = +m[1]; o.range = 0; o.target = "self"; }
+    else if ((m = t.match(/^buff:(\w+):(\d+):(\d+)$/))) { o.buff = { k: m[1], t: +m[2], r: +m[3] }; o.range = 0; o.target = "self"; }
+    else if (t === "taunt") o.taunt = 1;
+    else if (t === "replay") { o.replay = 1; o.target = "ally"; }
+    else if ((m = t.match(/^leech([\d.]+)$/))) o.leech = +m[1];
+    else if ((m = t.match(/^gh(\d+)$/))) o.groupHeal = +m[1];
+    else if ((m = t.match(/^c(\d+)$/))) o.cost = +m[1];
+  }
+  if (o.mult && !o.st) o.st = "atk"; if (o.range == null) o.range = 1; if (o.replay && !o.range) o.range = 4; return o;
+}
+const _f = v => String(+v.toFixed(2)).replace(".", ",");
+const _pc = v => Math.round(v * 100);
+const BUFF_TXT = { guard: "défense +50 %", thorns: "renvoie 50 % des coups de mêlée", inspired: "+25 % de dégâts", bear: "+30 % d'attaque et +50 % de défense" };
+function skillDesc(o) {
+  const p = [];
+  if (o.heal) p.push(`Soigne le groupe (${o.heal} + magie) et le purifie`);
+  if (o.selfHeal) p.push(`Récupère ${_pc(o.selfHeal)} % de santé`);
+  if (o.buff) p.push(`${o.buff.r >= 9 ? "Le groupe" : o.buff.r ? `Alliés à ${o.buff.r} cases` : "Vous"} : ${BUFF_TXT[o.buff.k]} pendant ${o.buff.t} tours`);
+  if (o.replay) p.push(`Un allié à ${o.range} cases peut rejouer son tour`);
+  if (o.mult) { const where = o.around ? (o.around >= 9 ? "Tous les ennemis" : o.around === 1 ? "Ennemis au contact" : `Ennemis à ${o.around} cases`) : o.range > 1 ? `À ${o.range} cases` : "Au contact";
+    p.push(`${where} (${o.hits > 1 ? o.hits + " coups ×" : "×"}${_f(o.mult)}${o.st === "mag" ? " magique" : ""})${o.aoe ? ", zone autour de la cible" : ""}`); }
+  if (o.finisher) p.push(`×${_f(o.finisher)} si la cible a moins de 40 % de santé`);
+  if (o.sure) p.push("critique assuré");
+  if (o.onHit) { const h = o.onHit; p.push({ stun: `étourdit ${h.t - 1} tour${h.t > 2 ? "s" : ""}`, fear: `effraie ${h.t - 1} tour${h.t > 2 ? "s" : ""}`, mark: `marque la cible (+30 % de dégâts subis)`, burn: `brûle ${h.t} tours`, poison: `empoisonne ${h.t} tours`, bleed: `fait saigner ${h.t} tours` }[h.k]); }
+  if (o.taunt) p.push("attire les coups des ennemis proches");
+  if (o.leech) p.push(`rend ${_pc(o.leech)} % des dégâts en santé`);
+  if (o.groupHeal) p.push(`soigne le groupe (${o.groupHeal} + niveau)`);
+  const s = p.join(", "); return s.charAt(0).toUpperCase() + s.slice(1) + ".";
+}
+const BONUS_TXT = {
+  quality: v => `+${_pc(v)} % de qualité de forge`, rarity: v => `+${_pc(v)} % de chance de rareté au craft`, salvage: v => `+${_pc(v)} % de rendement au recyclage`,
+  sell: v => `+${_pc(v)} % au prix de vente`, shop: v => `−${_pc(v)} % aux prix de la caravane`, gold: v => `+${_pc(v)} % d'or trouvé`, orderGold: v => `+${_pc(v)} % d'or sur les commandes`,
+  loot: v => `+${_pc(v)} % de chance de butin`, hunger: v => `−${_pc(v)} % de faim et de soif`, flee: v => `+${_pc(v)} % de chance de fuite`, regen: v => `+${_pc(v)} % de santé récupérée par salle`,
+  boonPick: () => "un bonus de plus proposé en fin de salle", atkPct: v => `+${_pc(v)} % d'attaque`, def: v => `+${_pc(v)} % de défense`, crit: v => `+${_pc(v)} % de critique`,
+  execute: v => `+${_pc(v)} % de dégâts sur les ennemis affaiblis`, magPct: v => `+${_pc(v)} % de puissance magique`, enFlat: v => `+${v} énergie max`, skillCheap: v => `compétences −${v} énergie`,
+  dotPct: v => `brûlures et poisons +${_pc(v)} %`, hpPct: v => `+${_pc(v)} % de santé max`, allyPow: v => `compagnon et mercenaires +${_pc(v)} %`, potion: v => `potions +${_pc(v)} %`,
+  xp: v => `+${_pc(v)} % d'expérience`, mvBonus: v => `+${v} déplacement`, hireCut: v => `−${_pc(v)} % sur la location de mercenaires`, immPoison: () => "insensible au poison", lastStand: () => "une fois par expédition, survit à un coup fatal",
+};
+function bonusDesc(b) { const s = Object.entries(b).map(([k, v]) => (BONUS_TXT[k] || (() => k))(v)).join(", "); return s.charAt(0).toUpperCase() + s.slice(1) + "."; }
+// nœud compact : ["Nom", "passif" | "!compétence"]
+function mkNode(id, [n, def]) {
+  if (def[0] === "!") { const sk = pskill(def.slice(1)); SKILLS[id] = { n, d: skillDesc(sk), ...sk }; return { id, n, d: "Compétence : " + skillDesc(sk), b: {}, skill: id }; }
+  const b = pbonus(def); return { id, n, d: bonusDesc(b), b };
+}
+
+/* ── Les six disciplines, trois branches chacune ── */
+const TREES = [
+  { id: "fab", n: "Fabrication", ic: "hammer", col: "#ec7a30", br: ["fab", "fab2", "fab3"] },
+  { id: "com", n: "Commerce", ic: "coin", col: "#d5ae63", br: ["com", "com2", "com3"] },
+  { id: "exp", n: "Exploration", ic: "compass", col: "#7fb6d0", br: ["exp", "exp2", "exp3"] },
+  { id: "war", n: "Guerre", ic: "sword", col: "#d0503a", br: ["war", "war2", "war3"] },
+  { id: "arc", n: "Arcanes", ic: "star", col: "#9a6aff", br: ["arc", "arc2", "arc3"] },
+  { id: "surv", n: "Survie", ic: "flask", col: "#5fb06a", br: ["surv", "surv2", "surv3"] },
+];
+// les branches d'origine prennent un nom de branche et gagnent 5 nœuds (8 à 12)
+const BRANCH_EXT = {
+  fab: ["Enclume", [["Trempe parfaite", "quality:.04"], ["Martelage", "rarity:.04"], ["Marteau ardent", "!r1 m1.7 burn2:6 c16"], ["Œil de l'artisan", "quality:.05 rarity:.04"], ["Colère de la forge", "!ar2 m1.5 burn3:7 c30"]]],
+  com: ["Négoce", [["Marchandage", "shop:.05 sell:.05"], ["Clientèle fidèle", "orderGold:.08"], ["Pièce lestée", "!r3 m1.3 stun2 c14"], ["Coffres pleins", "gold:.08"], ["Fortune de guerre", "!ar9 m.8 c30"]]],
+  exp: ["Sentiers", [["Foulée légère", "hunger:.1"], ["Œil du guide", "loot:.06"], ["Balise de brume", "!buff:guard:2:9 c14"], ["Coureur des brumes", "flee:.15 regen:.03"], ["Grand périple", "!buff:inspired:3:9 c26"]]],
+  war: ["Fer", [["Brise-garde", "atkPct:.04"], ["Vétéran", "hpPct:.04 def:.03"], ["Frappe brutale", "!r1 m2 c16"], ["Soif de sang", "crit:.03 execute:.08"], ["Décapitation", "!r1 m1.4 fin2.6 c28"]]],
+  arc: ["Brume", [["Focalisation", "magPct:.04"], ["Puits d'énergie", "enFlat:15"], ["Javelot astral", "!r5 m1.7 mag c16"], ["Esprit clair", "skillCheap:2"], ["Effondrement stellaire", "!r4 m2 mag aoe stun2 c34"]]],
+  surv: ["Endurance", [["Peau tannée", "hpPct:.04"], ["Repos du soldat", "regen:.03"], ["Bandage serré", "!self.25 c10"], ["Cœur vaillant", "hpPct:.05 def:.03"], ["Rempart vivant", "!buff:guard:3:9 gh15 c26"]]],
+};
+const NEW_BRANCHES = {
+  fab2: ["fab", "Fonderie", "#ff9a4a", "ingot", [["Creuset", "salvage:.08"], ["Alliages", "quality:.03 rarity:.03"], ["Coulée de fonte", "!r3 m1.3 burn2:5 aoe c16"], ["Fourneau vif", "rarity:.05"], ["Scories utiles", "salvage:.1"], ["Lingot brûlant", "!r4 m1.6 burn3:6 c18"],
+    ["Métal-brume", "quality:.04"], ["Mains calleuses", "def:.04"], ["Vague de métal fondu", "!ar2 m1.2 burn3:7 c26"], ["Grand fondeur", "rarity:.05 salvage:.06"], ["Âme d'acier", "hpPct:.05 atkPct:.03"], ["Cœur du haut fourneau", "!ar9 m1.1 burn3:9 c40"]]],
+  fab3: ["fab", "Ciselure", "#ffc06a", "gem", [["Burin fin", "quality:.03"], ["Sertissage", "rarity:.03"], ["Éclat de gemme", "!r4 m1.4 mag stun2 c16"], ["Filigrane", "quality:.04"], ["Gravure de garde", "def:.04"], ["Prisme aveuglant", "!ar2 m.9 mag fear3 c20"],
+    ["Joaillier", "sell:.06 rarity:.03"], ["Patience", "enFlat:10"], ["Rune de rupture", "!r4 m1.8 mag mark3 c20"], ["Main d'orfèvre", "quality:.05 rarity:.04"], ["Cristal vivant", "magPct:.05"], ["Joyau de la couronne", "!r5 m2.4 mag aoe stun2 c38"]]],
+  com2: ["com", "Caravanes", "#e8c070", "scroll", [["Routes sûres", "shop:.05"], ["Escorte", "hireCut:.08"], ["Appel des gardes", "!buff:guard:2:9 c16"], ["Comptoirs", "orderGold:.08"], ["Bourse commune", "gold:.05"], ["Tir de couverture", "!r4 m1.3 aoe c18"],
+    ["Mercenaires fidèles", "allyPow:.06"], ["Ballots légers", "hunger:.08"], ["Charge de la caravane", "!buff:inspired:2:9 c20"], ["Grand convoi", "sell:.06 orderGold:.06"], ["Prime d'escorte", "hireCut:.1 allyPow:.05"], ["Mur de chariots", "!buff:guard:3:9 gh20 c32"]]],
+  com3: ["com", "Pègre", "#b8a040", "dice", [["Doigts agiles", "loot:.05"], ["Coup bas", "crit:.03"], ["Poudre aux yeux", "!r2 m.6 fear3 c12"], ["Recel", "sell:.06"], ["Lame cachée", "execute:.1"], ["Poignard dans le dos", "!r1 m1.8 sure c18"],
+    ["Racket", "gold:.08"], ["Ombre furtive", "flee:.2"], ["Bombe de suie", "!r3 m1.2 aoe fear2 c20"], ["Maître chanteur", "gold:.06 sell:.05"], ["Instinct du voleur", "crit:.04 loot:.05"], ["Règlement de comptes", "!ar2 m1.4 bleed3:7 c32"]]],
+  exp2: ["exp", "Cartographe", "#9fd0e0", "map", [["Carnet de route", "xp:.05"], ["Relevés", "loot:.05"], ["Lecture du terrain", "!buff:guard:2:9 c12"], ["Raccourcis", "hunger:.08"], ["Sixième sens", "boonPick:1"], ["Repérage", "!r6 m.8 mark3 sure c12"],
+    ["Mémoire des lieux", "xp:.06"], ["Abris secrets", "regen:.04"], ["Guet-apens", "!ar3 m1 stun2 c22"], ["Grand atlas", "loot:.08 xp:.05"], ["Explorateur aguerri", "hpPct:.04 flee:.1"], ["Route des légendes", "!buff:inspired:3:9 heal20 c30"]]],
+  exp3: ["exp", "Pistage", "#6fa0b8", "boot", [["Traque", "crit:.02 execute:.05"], ["Pas de loup", "mvBonus:1"], ["Tir d'appel", "!r5 m1.3 c12"], ["Appâts", "loot:.05"], ["Œil de lynx", "crit:.04"], ["Piège à mâchoires", "!r3 m.9 stun2 bleed2:5 c16"],
+    ["Chasseur patient", "execute:.1"], ["Camouflage", "flee:.15 def:.03"], ["Volée perçante", "!r5 m1.2 aoe c22"], ["Prédateur", "atkPct:.05"], ["Instinct de chasse", "crit:.04 loot:.04"], ["Tir du traqueur", "!r6 m2.6 sure mark3 c34"]]],
+  war2: ["war", "Berserker", "#ff5a3a", "axe", [["Fureur", "atkPct:.04"], ["Peau de cicatrices", "hpPct:.04"], ["Coup sauvage", "!r1 m1.5 bleed3:6 c14"], ["Sang chaud", "crit:.03"], ["Rage aveugle", "execute:.1"], ["Saignée", "!r1 m1.3 leech.5 c18"],
+    ["Hurlement", "atkPct:.04"], ["Insensible", "def:.03 hpPct:.03"], ["Moulinet sanglant", "!ar1 m1.2 bleed3:7 h2 c24"], ["Carnage", "execute:.12"], ["Frénésie", "crit:.05 atkPct:.03"], ["Massacre", "!ar2 m1.8 leech.3 c38"]]],
+  war3: ["war", "Bouclier", "#c0a070", "shield", [["Garde haute", "def:.04"], ["Robuste", "hpPct:.05"], ["Coup de bouclier", "!r1 m1.1 stun2 c12"], ["Parade", "def:.05"], ["Défi", "!r1 m1 taunt c10"], ["Rempart", "!buff:guard:2:2 c14"],
+    ["Inébranlable", "hpPct:.05"], ["Dernier rempart", "def:.05 regen:.03"], ["Charge au bouclier", "!r2 m1.4 stun2 aoe c20"], ["Forteresse", "def:.06 hpPct:.04"], ["Gardien du groupe", "allyPow:.06"], ["Égide du héros", "!buff:guard:3:9 taunt c28"]]],
+  arc2: ["arc", "Pyromancie", "#ff7a3a", "flask", [["Étincelle", "dotPct:.1"], ["Chaleur", "magPct:.04"], ["Trait de feu", "!r4 m1.3 mag burn2:6 c12"], ["Cendres", "dotPct:.12"], ["Feu intérieur", "enFlat:10"], ["Boule de feu", "!r4 m1.4 mag aoe burn2:6 c20"],
+    ["Combustion", "dotPct:.12"], ["Peau de braise", "def:.03 hpPct:.03"], ["Anneau de flammes", "!ar2 m1.1 mag burn3:7 c24"], ["Brasier", "magPct:.06"], ["Feu éternel", "dotPct:.15"], ["Pluie de météores", "!ar9 m1.3 mag burn3:9 c42"]]],
+  arc3: ["arc", "Givre & foudre", "#7ab8ff", "gem", [["Froid mordant", "magPct:.04"], ["Conduction", "crit:.03"], ["Éclat de givre", "!r4 m1.3 mag fear2 c12"], ["Statique", "skillCheap:2"], ["Cristaux", "def:.04"], ["Arc électrique", "!r4 m1.1 mag aoe stun2 c20"],
+    ["Hiver", "magPct:.05"], ["Surtension", "crit:.04"], ["Blizzard", "!ar3 m1 mag fear3 c26"], ["Tempête", "magPct:.05 enFlat:10"], ["Cœur de glace", "hpPct:.04 def:.04"], ["Jugement de foudre", "!r5 m2.8 mag sure stun2 c40"]]],
+  surv2: ["surv", "Herboristerie", "#7fd08a", "herb", [["Simples", "potion:.1"], ["Infusions", "regen:.03"], ["Cataplasme", "!self.3 c12"], ["Antidotes", "immPoison:1"], ["Racines", "hpPct:.04"], ["Fumée de sauge", "!heal20 c18"],
+    ["Distillation", "potion:.12"], ["Sève", "regen:.04"], ["Poudre d'ortie", "!r3 m.8 mag aoe poison3:6 c16"], ["Grand herboriste", "potion:.12 regen:.03"], ["Corps sain", "hpPct:.05"], ["Jardin de vie", "!heal35 buff:guard:2:9 c32"]]],
+  surv3: ["surv", "Meute", "#a08a60", "paw", [["Lien animal", "allyPow:.05"], ["Flair partagé", "loot:.04"], ["Appel de la meute", "!buff:inspired:2:9 c14"], ["Crocs aiguisés", "allyPow:.06"], ["Instinct grégaire", "hpPct:.03 def:.03"], ["Hurlement", "!ar3 m.5 fear3 c16"],
+    ["Chef de meute", "allyPow:.07"], ["Peau de bête", "def:.04"], ["Curée", "!r1 m1.3 h2 bleed2:5 c18"], ["Fraternité", "allyPow:.08 regen:.02"], ["Esprit de la horde", "atkPct:.04 hpPct:.04"], ["Grande chasse", "!buff:inspired:3:9 ar2 m1 c32"]]],
+};
+for (const [bid, [name, ext]] of Object.entries(BRANCH_EXT)) { const br = MASTERY.find(b => b.id === bid); const T = TREES.find(t => t.br.includes(bid)); br.tree = T.id; br.n = name;
+  ext.forEach((nd, i) => br.nodes.push(mkNode(`${bid}_x${i + 8}`, nd))); }
+for (const [bid, [tree, name, col, ic, nodes]] of Object.entries(NEW_BRANCHES)) MASTERY.push({ id: bid, tree, n: name, col, ic, nodes: nodes.map((nd, i) => mkNode(`${bid}_${i + 1}`, nd)) });
+
+/* ── Branches de spécialisation : de 5 à 12 nœuds ── */
+const SPEC_EXT = {
+  runes: [["Glyphe d'acier", "def:.04"], ["Mot de pouvoir", "magPct:.05"], ["Rune de givre", "!r4 m1.4 mag fear2 c18"], ["Calligraphie", "quality:.05"], ["Rune de sang", "!r1 m1.6 mag leech.4 c20"], ["Sceaux jumeaux", "rarity:.06 skillCheap:2"], ["Verbe primordial", "!ar9 m1.5 mag stun2 c44"]],
+  briseur: [["Épaules d'ours", "hpPct:.05"], ["Coup de bélier", "!r1 m1.5 stun2 c16"], ["Fureur du fer", "atkPct:.05"], ["Masse critique", "crit:.04"], ["Fracasse-crâne", "!r1 m1.6 fin2.4 c22"], ["Inarrêtable", "def:.05 hpPct:.04"], ["Tremblement de terre", "!ar3 m1.7 stun2 c42"]],
+  contrebande: [["Double fond", "gold:.06"], ["Couteau de lancer", "!r3 m1.4 bleed2:5 c12"], ["Réseau d'ombres", "loot:.06"], ["Esquive", "def:.04 flee:.1"], ["Barils de poudre", "!r3 m1.6 aoe burn2:7 c24"], ["Prince des voleurs", "crit:.04 gold:.05"], ["Feu d'artifice", "!ar9 m1.1 burn2:8 fear2 c40"]],
+  negoce: [["Taux d'usure", "sell:.06"], ["Garde du corps", "!buff:guard:2:9 c16"], ["Monopole", "orderGold:.1"], ["Avocat", "hireCut:.1"], ["Mercenaires d'élite", "!buff:inspired:3:9 c24"], ["Banque de Sombreval", "gold:.08 sell:.05"], ["Rachat de dette", "!r3 m2.4 sure c36"]],
+  rodeur: [["Flèches barbelées", "execute:.08"], ["Tir double", "!r4 m.9 h2 c16"], ["Vent dans le dos", "mvBonus:1"], ["Concentration", "crit:.04"], ["Flèche enflammée", "!r5 m1.4 burn3:6 aoe c22"], ["Œil du vent", "crit:.04 atkPct:.04"], ["Tempête de flèches", "!ar9 m1.1 c42"]],
+  pisteur: [["Odorat", "loot:.06"], ["Collet", "!r3 m.7 stun2 c12"], ["Patience du chasseur", "execute:.1"], ["Peau de bête", "def:.04 hpPct:.03"], ["Coup du pisteur", "!r2 m1.7 mark3 c20"], ["Roi de la traque", "crit:.04 loot:.05"], ["Hallali", "!r1 m1.6 fin2.6 c38"]],
+  apothicaire: [["Mortier", "potion:.1"], ["Pommade", "!self.3 c12"], ["Vapeurs", "regen:.04"], ["Remède universel", "immPoison:1"], ["Panacée", "!heal40 c26"], ["Alchimie de vie", "hpPct:.06 potion:.1"], ["Élixir de résurrection", "!heal60 buff:guard:2:9 c44"]],
+  pyro: [["Mèche courte", "dotPct:.12"], ["Grenade", "!r3 m1.3 aoe burn2:6 c16"], ["Bouilloire", "magPct:.05"], ["Fumées toxiques", "!r3 m.9 mag aoe poison3:7 c18"], ["Chimie instable", "dotPct:.15"], ["Pyromane", "magPct:.05 crit:.03"], ["Grand embrasement", "!ar9 m1.4 mag burn3:10 c46"]],
+  rempart: [["Plastron", "def:.05"], ["Bouclier levé", "!r1 m1 taunt stun2 c14"], ["Constance", "hpPct:.05"], ["Gardien", "allyPow:.06"], ["Muraille", "!buff:guard:3:9 c22"], ["Roc", "def:.06 hpPct:.05"], ["Bastion éternel", "!buff:guard:4:9 gh30 taunt c40"]],
+  vengeur: [["Rancœur", "atkPct:.04"], ["Châtiment", "!r1 m1.6 fin2 c16"], ["Juste colère", "crit:.04"], ["Cicatrices", "hpPct:.05"], ["Feu vengeur", "!ar2 m1.3 burn2:6 c24"], ["Ange de la vengeance", "atkPct:.05 execute:.1"], ["Jugement dernier", "!r1 m3.2 sure c42"]],
+  chrono: [["Sablier", "enFlat:15"], ["Accélération", "!replay r5 c20"], ["Boucle", "skillCheap:2"], ["Rides du temps", "magPct:.05"], ["Arrêt du temps", "!ar3 m.7 mag stun2 c28"], ["Maître des heures", "magPct:.05 enFlat:10"], ["Fin des temps", "!ar9 m1.6 mag stun2 c48"]],
+  element: [["Élément pur", "magPct:.05"], ["Éclair en chaîne", "!r4 m1.2 mag aoe stun2 c20"], ["Mana vif", "enFlat:15"], ["Chaleur et froid", "dotPct:.12"], ["Séisme", "!ar2 m1.4 mag stun2 c26"], ["Fureur des éléments", "magPct:.06 crit:.03"], ["Cataclysme", "!ar9 m1.7 mag burn3:8 c50"]],
+  pilleur: [["Sacoches", "loot:.06"], ["Coup de pied", "!r1 m1.1 stun2 c10"], ["Pillard né", "gold:.08"], ["Riposte sournoise", "crit:.04"], ["Saccage", "!ar1 m1.4 bleed3:6 c22"], ["Roi des pillards", "loot:.06 gold:.06"], ["Razzia sanglante", "!ar2 m1.6 leech.3 c40"]],
+  archeo: [["Pinceau d'archéologue", "rarity:.05"], ["Sceau ancien", "!r3 m1 mag stun2 c14"], ["Érudit", "xp:.06"], ["Amulette protectrice", "def:.04 hpPct:.03"], ["Relique maudite", "!r4 m1.6 mag fear3 c22"], ["Savant", "xp:.06 rarity:.05"], ["Colère des anciens", "!ar9 m1.4 mag fear2 c44"]],
+  guerre: [["Fifre", "allyPow:.05"], ["Marche forcée", "!buff:guard:2:9 c14"], ["Voix de stentor", "atkPct:.04"], ["Tambour de cuir", "hpPct:.04"], ["Cri de ralliement", "!buff:inspired:3:9 gh15 c24"], ["Hérault", "allyPow:.08 atkPct:.03"], ["Symphonie de guerre", "!buff:inspired:4:9 ar2 m1.2 c44"]],
+  conteur: [["Mémoire", "xp:.05"], ["Mots blessants", "!r4 m1.3 mag fear2 c14"], ["Charisme", "magPct:.05"], ["Légende vivante", "xp:.06"], ["Récit envoûtant", "!ar3 m.8 mag stun2 c24"], ["Barde illustre", "magPct:.05 skillCheap:2"], ["Chant du cygne", "!ar9 m1.3 mag stun2 c44"]],
+  danse: [["Volte", "crit:.04"], ["Pirouette", "!ar1 m1 h2 c16"], ["Grâce", "def:.04"], ["Valse des lames", "atkPct:.05"], ["Entrechat", "!r2 m1.5 bleed3:6 c20"], ["Prima ballerina", "crit:.05 mvBonus:1"], ["Danse de la mort", "!ar2 m.9 h3 c42"]],
+  spadassin: [["Garde", "def:.04"], ["Estocade", "!r2 m1.7 c16"], ["Coup droit", "execute:.1"], ["Feinte", "crit:.04"], ["Désarmement", "!r1 m1.2 stun2 c18"], ["Maître d'armes", "crit:.04 atkPct:.05"], ["Botte de Nevers", "!r1 m3 sure fin1.4 c42"]],
+  bosquet: [["Racines", "regen:.04"], ["Lianes", "!r3 m.8 mag stun2 c14"], ["Esprit des bois", "allyPow:.06"], ["Mousse", "hpPct:.05"], ["Pluie d'été", "!heal35 c24"], ["Gardien sylvestre", "allyPow:.08 regen:.03"], ["Colère de la forêt", "!ar9 m1.3 mag bleed3:7 c44"]],
+  forme: [["Crocs", "atkPct:.05"], ["Rugissement", "!ar2 m.6 fear3 c14"], ["Cuir de bête", "def:.05"], ["Faim du loup", "execute:.1"], ["Morsure sauvage", "!r1 m1.5 leech.4 c20"], ["Alpha", "atkPct:.05 hpPct:.05"], ["Forme primordiale", "!buff:bear:4:0 self.3 c36"]],
+};
+for (const [spec, ext] of Object.entries(SPEC_EXT)) { const br = MASTERY.find(b => b.id === "s_" + spec); if (!br) continue; ext.forEach((nd, i) => br.nodes.push(mkNode(`s_${spec}_${i + 6}`, nd))); }
+
+/* ── Classes maîtres : au niveau 15, chaque classe évolue vers l'une de deux voies ── */
+// [id, nom, description, bonus de stats, bonus passif, compétence de maître, apparence {aura, crown}, branche de 12 nœuds]
+const MASTER_DEFS = {
+  forgeron: [
+    ["seigneur_runes", "Seigneur des runes", "Le métal obéit à sa voix ; ses runes brûlent dans l'air.", { mag: 6, hp: 20 }, { quality: .08, magPct: .08 }, ["Inscription céleste", "r5 m2.2 mag aoe burn3:8 c30"], { aura: "#ff9a3d", crown: "runes" },
+      [["Verbe de fer", "magPct:.04"], ["Encre de braise", "dotPct:.1"], ["Rune du bouclier", "!buff:guard:3:9 c18"], ["Graveur royal", "quality:.05"], ["Rune d'attraction", "!ar3 m.8 mag stun2 c20"], ["Langue des dieux", "magPct:.05 rarity:.04"], ["Mémoire du métal", "hpPct:.05"], ["Mots de feu", "dotPct:.12"], ["Pilier de runes", "!r4 m1.8 mag aoe fear2 c28"], ["Sagesse runique", "skillCheap:3"], ["Forge stellaire", "quality:.06 magPct:.05"], ["Apocalypse runique", "!ar9 m1.8 mag burn3:10 c52"]]],
+    ["titan_enclume", "Titan de l'enclume", "Il porte son enclume comme un bouclier et frappe comme un éboulement.", { hp: 50, def: 4, atk: 4 }, { hpPct: .1, def: .08 }, ["Chute de l'enclume", "r1 m2.6 aoe stun2 c30"], { aura: "#c8a070", crown: "horns" },
+      [["Bras d'enclume", "atkPct:.04"], ["Peau de forge", "def:.05"], ["Coup de marteau-pilon", "!r1 m1.8 stun2 c18"], ["Carrure", "hpPct:.05"], ["Défi du titan", "!r1 m1.2 taunt c14"], ["Muraille de fer", "def:.06"], ["Force tranquille", "atkPct:.05"], ["Endurci", "hpPct:.06"], ["Onde sismique", "!ar2 m1.5 stun2 c28"], ["Inflexible", "def:.05 regen:.03"], ["Colosse", "hpPct:.06 atkPct:.04"], ["Courroux du titan", "!ar3 m2 stun2 leech.2 c54"]]],
+  ],
+  marchand: [
+    ["prince_marchand", "Prince marchand", "Il achète les loyautés comme d'autres achètent le pain.", { en: 20, def: 2 }, { gold: .15, sell: .15 }, ["Armée de mercenaires", "buff:inspired:3:9 gh25 c28"], { aura: "#ffd27a", crown: "circlet" },
+      [["Coffre-fort", "gold:.06"], ["Lettres de change", "sell:.06"], ["Garde prétorienne", "!buff:guard:3:9 c18"], ["Monopole", "orderGold:.1"], ["Pluie d'or", "!ar3 m1 c20"], ["Banquier", "gold:.08"], ["Mécène", "allyPow:.08"], ["Escorte royale", "hireCut:.12"], ["Contrat de mort", "!r4 m2.4 sure c30"], ["Trésorier", "sell:.08 orderGold:.08"], ["Pouvoir de l'or", "allyPow:.08 gold:.06"], ["Rançon du roi", "!ar9 m1.4 fear2 c50"]]],
+    ["contrebandier", "Contrebandier des brumes", "Il passe là où personne ne passe, et ne laisse que de la fumée.", { atk: 4, crit: .04 }, { crit: .06, loot: .12 }, ["Écran de fumée", "ar2 m1.3 fear3 c26"], { aura: "#8aa070", crown: "hood" },
+      [["Contrebande", "loot:.06"], ["Planque", "flee:.2"], ["Couteaux jumeaux", "!r2 m.9 h2 bleed2:5 c14"], ["Ruse", "crit:.04"], ["Poudre noire", "!r3 m1.6 aoe burn2:7 c22"], ["Passeur", "hunger:.1"], ["Fourbe", "execute:.1"], ["Ombre", "def:.04 flee:.1"], ["Embuscade", "!r1 m2.2 sure c26"], ["Roi de la contrebande", "loot:.08 gold:.06"], ["Instinct du fuyard", "crit:.05 hpPct:.04"], ["Explosion des docks", "!ar9 m1.5 burn3:9 c52"]]],
+  ],
+  eclaireur: [
+    ["rodeur_cimes", "Rôdeur des cimes", "Ses flèches tombent du ciel avant même qu'on l'aperçoive.", { atk: 6, mv: 1 }, { crit: .08, atkPct: .06 }, ["Flèche du zénith", "r7 m2.8 sure c30"], { aura: "#9fe0ff", crown: "feather" },
+      [["Altitude", "crit:.04"], ["Arc long", "atkPct:.04"], ["Tir plongeant", "!r6 m1.5 c16"], ["Vent du nord", "mvBonus:1"], ["Grêle de flèches", "!r5 m1.1 aoe c22"], ["Patience", "execute:.1"], ["Œil de l'aigle", "crit:.05"], ["Cape de nuages", "def:.04 flee:.1"], ["Tir transperçant", "!r6 m2 sure mark3 c28"], ["Maître archer", "atkPct:.06"], ["Seigneur du ciel", "crit:.05 atkPct:.05"], ["Déluge céleste", "!ar9 m1.6 c52"]]],
+    ["maitre_pisteur", "Maître-pisteur", "Aucune proie ne lui échappe ; les bêtes le suivent comme leur chef.", { hp: 30, atk: 3 }, { allyPow: .15, loot: .1 }, ["Curée sauvage", "r1 m1.2 h3 bleed3:7 c28"], { aura: "#a0c070", crown: "antler" },
+      [["Piste fraîche", "loot:.05"], ["Pacte des bêtes", "allyPow:.06"], ["Piège à fosse", "!r3 m1 stun2 c14"], ["Peaux de loup", "def:.04"], ["Appel du fauve", "!buff:inspired:3:9 c20"], ["Traqueur", "execute:.1"], ["Seigneur des pistes", "allyPow:.08"], ["Instinct", "crit:.04"], ["Filet lesté", "!r3 m.8 aoe stun2 c26"], ["Grand veneur", "loot:.08 allyPow:.06"], ["Cœur de fauve", "hpPct:.05 atkPct:.05"], ["Chasse sauvage", "!buff:inspired:4:9 ar3 m1.3 c52"]]],
+  ],
+  alchimiste: [
+    ["grand_alchimiste", "Grand alchimiste", "Il a percé le secret de la pierre philosophale, ou presque.", { mag: 6, en: 20 }, { potion: .3, magPct: .08 }, ["Transmutation", "heal45 buff:guard:2:9 c30"], { aura: "#6fe08a", crown: "lenses" },
+      [["Athanor", "potion:.1"], ["Œuvre au noir", "magPct:.04"], ["Elixir fortifiant", "!buff:guard:3:9 c16"], ["Œuvre au blanc", "regen:.04"], ["Fiole d'argent", "!r4 m1.6 mag stun2 c20"], ["Œuvre au rouge", "magPct:.05"], ["Quintessence", "potion:.12"], ["Corps alchimique", "hpPct:.06"], ["Grand œuvre", "!heal50 c30"], ["Sagesse d'Hermès", "skillCheap:3"], ["Pierre philosophale", "potion:.12 magPct:.05"], ["Rebis", "!heal70 buff:inspired:3:9 c56"]]],
+    ["maitre_fleaux", "Maître des fléaux", "Ses fioles ne soignent plus : elles rongent, pourrissent et consument.", { mag: 8 }, { dotPct: .3, magPct: .06 }, ["Peste noire", "ar3 m1 mag poison4:10 c30"], { aura: "#9ad04a", crown: "mask" },
+      [["Venin", "dotPct:.1"], ["Miasmes", "magPct:.04"], ["Fiole de peste", "!r4 m1 mag aoe poison3:7 c16"], ["Immunité", "immPoison:1"], ["Acide", "!r4 m1.5 mag burn2:7 c20"], ["Contagion", "dotPct:.12"], ["Masque de bec", "def:.04 hpPct:.03"], ["Fléau", "dotPct:.12"], ["Nuée de mouches", "!ar3 m.8 mag poison3:9 fear2 c28"], ["Maître des pestes", "magPct:.06"], ["Pourriture", "dotPct:.15 execute:.08"], ["Apocalypse verte", "!ar9 m1.2 mag poison4:12 c54"]]],
+  ],
+  gardien: [
+    ["paladin_cendres", "Paladin des cendres", "La lumière des braises guérit ses alliés et consume les morts.", { hp: 30, mag: 5 }, { hpPct: .08, magPct: .08 }, ["Lumière des braises", "heal40 ar1 m1.6 mag c30"], { aura: "#ffe08a", crown: "halo" },
+      [["Foi", "magPct:.04"], ["Serment", "def:.04"], ["Imposition des mains", "!heal25 c16"], ["Lumière", "hpPct:.05"], ["Marteau saint", "!r1 m1.7 mag fear2 c20"], ["Aura de courage", "allyPow:.06"], ["Purification", "immPoison:1"], ["Grâce", "regen:.04"], ["Consécration", "!ar2 m1.3 mag burn2:6 heal20 c30"], ["Champion de l'aube", "magPct:.06 hpPct:.04"], ["Saint guerrier", "def:.05 allyPow:.06"], ["Jugement de l'aube", "!ar9 m1.5 mag fear2 heal30 c56"]]],
+    ["champion_bastion", "Champion du bastion", "Tant qu'il tient debout, aucun ennemi ne passe.", { hp: 60, def: 6 }, { def: .12, hpPct: .08 }, ["Mur vivant", "buff:guard:4:9 taunt c26"], { aura: "#9fc0d8", crown: "helm" },
+      [["Plates épaisses", "def:.05"], ["Constitution", "hpPct:.05"], ["Coup de pavois", "!r1 m1.3 stun2 c14"], ["Tenir la ligne", "def:.05"], ["Provocation", "!ar2 m.8 taunt c14"], ["Inébranlable", "hpPct:.06"], ["Forteresse", "def:.06"], ["Second souffle", "regen:.04"], ["Contre-charge", "!r2 m1.6 stun2 aoe c26"], ["Bouclier de la cité", "allyPow:.06 def:.04"], ["Montagne", "hpPct:.07"], ["Citadelle", "!buff:guard:5:9 gh35 taunt c52"]]],
+  ],
+  arcaniste: [
+    ["archimage", "Archimage", "Il ne lance plus de sorts : il réécrit les lois du monde.", { mag: 10, en: 20 }, { magPct: .14 }, ["Rayon de l'oubli", "r6 m3 mag sure c34"], { aura: "#b48cff", crown: "orbit" },
+      [["Arcanes majeurs", "magPct:.04"], ["Réservoir", "enFlat:15"], ["Projectiles magiques", "!r5 m.8 mag h3 c16"], ["Économie", "skillCheap:2"], ["Explosion arcanique", "!r4 m1.6 mag aoe c22"], ["Haute magie", "magPct:.05"], ["Surpuissance", "crit:.04"], ["Bouclier de mana", "def:.04 hpPct:.04"], ["Faille", "!ar3 m1.3 mag fear2 c30"], ["Maîtrise absolue", "magPct:.06 enFlat:10"], ["Œil du cosmos", "crit:.05 magPct:.04"], ["Singularité", "!ar9 m2 mag stun2 c60"]]],
+    ["maitre_temps", "Maître du temps", "Une seconde pour lui dure une heure pour ses ennemis.", { mag: 6, mv: 1 }, { skillCheap: 4, magPct: .06 }, ["Paradoxe", "replay r6 c24"], { aura: "#8ad0ff", crown: "orbit" },
+      [["Battement", "enFlat:15"], ["Pressentiment", "def:.04"], ["Gel temporel", "!r4 m.9 mag stun2 c16"], ["Chronologie", "skillCheap:2"], ["Hâte", "!replay r5 c20"], ["Écho", "magPct:.05"], ["Instant figé", "def:.04 flee:.1"], ["Fil du destin", "crit:.04"], ["Retour en arrière", "!heal40 c28"], ["Seigneur des heures", "magPct:.06 enFlat:15"], ["Éternité", "hpPct:.05 skillCheap:2"], ["Arrêt du monde", "!ar9 m1.4 mag stun3 c58"]]],
+  ],
+  chasseur: [
+    ["pilleur_tombes", "Pilleur de tombes", "Aucun caveau ne lui résiste, aucun trésor ne reste enfoui.", { atk: 4, crit: .03 }, { loot: .2, gold: .12 }, ["Butin du roi mort", "ar2 m1.5 leech.3 c28"], { aura: "#e8c060", crown: "hat" },
+      [["Crochetage", "loot:.06"], ["Torche", "def:.03 hpPct:.03"], ["Fouet", "!r2 m1.4 stun2 c14"], ["Œil pour l'or", "gold:.08"], ["Pièges déjoués", "flee:.15"], ["Coup de pioche", "!r1 m1.8 bleed2:6 c20"], ["Collectionneur", "rarity:.06"], ["Dernier souffle", "execute:.1"], ["Éboulement", "!r3 m1.4 aoe stun2 c28"], ["Roi des caveaux", "loot:.08 gold:.08"], ["Chance insolente", "crit:.05"], ["Trésor maudit", "!ar9 m1.3 fear3 c52"]]],
+    ["briseur_maledictions", "Briseur de malédictions", "Il lit les sceaux anciens et retourne leur pouvoir contre les morts.", { mag: 8, hp: 20 }, { magPct: .1, rarity: .08 }, ["Sceau brisé", "r4 m2 mag aoe fear3 c30"], { aura: "#c9a6ff", crown: "runes" },
+      [["Exorcisme", "magPct:.04"], ["Amulettes", "def:.04"], ["Lien du sceau", "!r4 m1 mag stun2 c14"], ["Glyphes", "magPct:.05"], ["Contre-malédiction", "!heal30 c22"], ["Érudition", "xp:.08"], ["Œil des morts", "crit:.04"], ["Talisman", "hpPct:.05"], ["Bannissement", "!r4 m2.2 mag fin1.6 c30"], ["Grand exorciste", "magPct:.06 rarity:.04"], ["Sang béni", "immPoison:1"], ["Rupture des sceaux", "!ar9 m1.6 mag fear3 c56"]]],
+  ],
+  barde: [
+    ["maestro", "Maestro de guerre", "Ses tambours font marcher les morts au pas de charge.", { hp: 20, atk: 4 }, { allyPow: .18 }, ["Ouverture héroïque", "buff:inspired:4:9 gh20 c28"], { aura: "#ffb04a", crown: "feather" },
+      [["Tempo", "allyPow:.05"], ["Fanfare", "atkPct:.04"], ["Roulement de tambour", "!buff:guard:2:9 c14"], ["Crescendo", "allyPow:.06"], ["Coup de cymbale", "!ar2 m.8 stun2 c20"], ["Chef d'orchestre", "allyPow:.07"], ["Souffle", "hpPct:.05"], ["Cadence", "atkPct:.05"], ["Marche triomphale", "!buff:inspired:3:9 heal25 c30"], ["Virtuose", "allyPow:.08 skillCheap:2"], ["Héros des ballades", "atkPct:.05 hpPct:.05"], ["Finale grandiose", "!buff:inspired:5:9 ar3 m1.4 c56"]]],
+    ["enchanteur", "Enchanteur", "Sa voix endort les monstres et fait pleurer les pierres.", { mag: 8, en: 15 }, { magPct: .1, xp: .1 }, ["Chant de sommeil", "ar3 m.6 mag stun3 c28"], { aura: "#e080ff", crown: "circlet" },
+      [["Voix d'or", "magPct:.04"], ["Charme", "xp:.05"], ["Mélodie troublante", "!r4 m1.1 mag fear3 c14"], ["Harmonie", "skillCheap:2"], ["Berceuse", "!ar2 m.5 mag stun2 c20"], ["Enchantements", "magPct:.05"], ["Chœur céleste", "regen:.04"], ["Ensorcellement", "crit:.04"], ["Cri de la sirène", "!ar3 m1.2 mag fear3 c30"], ["Muse", "magPct:.06 xp:.06"], ["Âme du chant", "hpPct:.05 enFlat:15"], ["Requiem", "!ar9 m1.6 mag stun2 c58"]]],
+  ],
+  duelliste: [
+    ["hors_la_loi", "Hors-la-loi", "Sa tête est mise à prix dans trois royaumes ; il en est fier.", { atk: 6, crit: .05 }, { crit: .08, gold: .1 }, ["Tir à bout portant", "r2 m2.8 sure c28"], { aura: "#ff7a5a", crown: "hat" },
+      [["Prime", "gold:.06"], ["Dégaine", "crit:.04"], ["Coup de crosse", "!r1 m1.2 stun2 c12"], ["Sans foi ni loi", "atkPct:.04"], ["Pluie de plombs", "!r3 m1.1 aoe bleed2:5 c20"], ["Recherché", "crit:.05"], ["Cavale", "flee:.2 mvBonus:1"], ["Tête brûlée", "execute:.1"], ["Duel au soleil", "!r3 m2.2 sure fin1.5 c30"], ["Légende de l'Ouest", "crit:.05 gold:.08"], ["Instinct du bandit", "atkPct:.05 loot:.05"], ["Dernier coup de feu", "!ar9 m1.5 sure c56"]]],
+    ["coupe_jarret", "Coupe-jarret", "Il frappe là où le sang coule le plus vite, puis disparaît.", { atk: 5, mv: 1 }, { execute: .25, dotPct: .2 }, ["Tranche-jarret", "r1 m1.8 bleed4:10 stun2 c26"], { aura: "#c03050", crown: "mask" },
+      [["Lame courbe", "execute:.08"], ["Pas feutrés", "mvBonus:1"], ["Entaille", "!r1 m1.2 bleed3:7 c12"], ["Sang froid", "crit:.04"], ["Saignée", "dotPct:.12"], ["Coup sournois", "!r1 m2 sure c20"], ["Ombre", "def:.04 flee:.1"], ["Artère", "dotPct:.12 execute:.06"], ["Mille coupures", "!ar1 m.7 h3 bleed3:6 c30"], ["Égorgeur", "execute:.12"], ["Fantôme", "crit:.05 mvBonus:1"], ["Nuit des longs couteaux", "!ar2 m1.4 h2 bleed4:12 c56"]]],
+  ],
+  druide: [
+    ["archidruide", "Archidruide", "La forêt entière lui répond ; les saisons se plient à ses chants.", { mag: 8, hp: 20 }, { magPct: .1, regen: .06 }, ["Floraison sacrée", "heal50 ar3 m1.2 mag c32"], { aura: "#7fe08a", crown: "antler" },
+      [["Graines", "regen:.03"], ["Sève sacrée", "magPct:.04"], ["Fouet de ronces", "!r3 m1.2 mag bleed3:6 c14"], ["Écorce", "def:.05"], ["Pluie de printemps", "!heal35 c22"], ["Cercle de pierres", "magPct:.05"], ["Arbre-cœur", "hpPct:.06"], ["Esprits sylvestres", "allyPow:.06"], ["Tempête de feuilles", "!ar3 m1.2 mag stun2 c30"], ["Gardien des saisons", "magPct:.06 regen:.03"], ["Cœur de la forêt", "hpPct:.05 immPoison:1"], ["Éveil de la forêt", "!ar9 m1.5 mag heal40 c58"]]],
+    ["seigneur_betes", "Seigneur des bêtes", "Mi-homme mi-ours, il mène la meute au combat.", { hp: 50, atk: 6 }, { atkPct: .1, allyPow: .12 }, ["Fureur de l'ours-roi", "buff:bear:4:0 ar1 m1.6 c28"], { aura: "#c08a50", crown: "horns" },
+      [["Griffes", "atkPct:.04"], ["Fourrure", "def:.05"], ["Coup de patte", "!r1 m1.5 stun2 c14"], ["Meute", "allyPow:.06"], ["Rugissement", "!ar3 m.6 fear3 c16"], ["Faim", "execute:.1"], ["Sang de bête", "hpPct:.06"], ["Chef de horde", "allyPow:.08"], ["Ruée sauvage", "!r3 m1.8 aoe stun2 c28"], ["Roi des bêtes", "atkPct:.06 hpPct:.04"], ["Peau de pierre", "def:.06"], ["Grande migration", "!buff:inspired:4:9 ar3 m1.6 c56"]]],
+  ],
+};
+const MASTERS = {};
+for (const [cls, defs] of Object.entries(MASTER_DEFS)) MASTERS[cls] = defs.map(([id, n, d, stats, b, [skn, sks], look, nodes]) => {
+  const sk = pskill(sks); const skill = { n: skn, d: skillDesc(sk), ...sk };
+  MASTERY.push({ id: "mc_" + id, master: id, n, ic: "star", col: look.aura, nodes: nodes.map((nd, i) => mkNode(`mc_${id}_${i + 1}`, nd)) });
+  return { id, n, d, stats, b, skill, look };
+});
+const MASTER_LVL = 15;
+
+/* ── Nouveaux ennemis, gardiens et lieux de l'Acte V ── */
+Object.assign(ENEMIES, {
+  noye_elite: { n: "Marin noyé", kind: "drowned", col: "#5a8aa0", hp: 78, atk: 18, def: 6, mv: 3, range: 1 },
+  sirene: { n: "Sirène des abysses", kind: "wisp", col: "#6ad0e0", hp: 60, atk: 17, def: 3, mv: 4, range: 3 },
+  amiral: { n: "L'Amiral englouti", kind: "drowned", big: 1.6, col: "#3a7a90", hp: 560, atk: 27, def: 12, mv: 2, range: 2, boss: 1, aoe: 1, summon: "noye_elite", enrage: 1 },
+  ossuaire: { n: "Garde d'ossements", kind: "skel", col: "#e8dcc0", hp: 70, atk: 19, def: 7, mv: 3, range: 1 },
+  necromant: { n: "Nécromant", kind: "shaman", col: "#9a6aff", hp: 62, atk: 16, def: 4, mv: 3, range: 3, healer: 26 },
+  roi_os: { n: "Le Roi-Ossuaire", kind: "lich", big: 1.5, col: "#e8dcc0", hp: 600, atk: 28, def: 13, mv: 2, range: 3, boss: 1, aoe: 1, summon: "ossuaire", enrage: 1 },
+  magma: { n: "Golem de magma", kind: "golem", col: "#c84a1a", hp: 110, atk: 22, def: 10, mv: 2, range: 1, burnHit: 6 },
+  salamandre: { n: "Salamandre", kind: "dragon", big: .7, col: "#ff6a2a", hp: 66, atk: 19, def: 4, mv: 4, range: 2, burnHit: 5 },
+  seigneur_braises: { n: "Le Seigneur des braises", kind: "golem", big: 1.7, col: "#ff5a1a", hp: 680, atk: 30, def: 14, mv: 2, range: 2, boss: 1, aoe: 1, burnHit: 10, summon: "magma", enrage: 1 },
+  astral: { n: "Feu-follet astral", kind: "wisp", col: "#9ab8ff", hp: 58, atk: 20, def: 3, mv: 5, range: 3 },
+  gardien_astre: { n: "Automate céleste", kind: "automaton", col: "#8aa0d0", hp: 96, atk: 21, def: 11, mv: 2, range: 2 },
+  astrologue: { n: "L'Astrologue sans visage", kind: "spirit", big: 1.4, col: "#7a8aff", hp: 640, atk: 31, def: 12, mv: 3, range: 3, boss: 1, aoe: 1, summon: "astral", enrage: 1 },
+  ombre_brume: { n: "Ombre de la Brume", kind: "wraith", col: "#7a6aa0", hp: 84, atk: 23, def: 6, mv: 4, range: 1 },
+  chevalier_brume: { n: "Chevalier de la Brume", kind: "knight", col: "#5a5070", hp: 120, atk: 24, def: 13, mv: 3, range: 1 },
+  roi_brume: { n: "Le Roi-Brume", kind: "spirit", big: 1.8, col: "#b07aff", hp: 900, atk: 34, def: 15, mv: 3, range: 3, boss: 1, aoe: 1, summon: "ombre_brume", enrage: 1, burnHit: 6 },
+});
+// équilibrage : l'Acte V reste exigeant sans devenir un mur
+for (const k of ["noye_elite", "sirene", "amiral", "ossuaire", "necromant", "roi_os", "magma", "salamandre", "seigneur_braises", "astral", "gardien_astre", "astrologue", "ombre_brume", "chevalier_brume", "roi_brume"]) { const e = ENEMIES[k]; e.hp = Math.round(e.hp * .88); e.atk = Math.round(e.atk * .9); }
+const ACT5_DUNGEONS = [
+  { id: "bastion", n: "Bastion englouti", rec: 10, scale: 2.05, theme: "cave", pool: ["noye_elite", "sirene", "noye", "chevalier"], boss: "amiral", floor: ["#26404a", "#16282e"], light: "#6ad0e0",
+    d: "Une forteresse avalée par le lac Noir. À marée basse, ses cloches sonnent encore pour un équipage mort.",
+    loot: [["acier", 3, 20], ["gemme", 2, 18], ["essence", 3, 18], ["eau", 4, 16], ["potion_maj", 1, 10], ["elixir", 1, 6]] },
+  { id: "necropole", n: "Nécropole d'Ossegrave", rec: 11, scale: 2.2, theme: "crypt", pool: ["ossuaire", "necromant", "archer", "goule"], boss: "roi_os", floor: ["#3a3632", "#221f1c"], light: "#c9a6ff",
+    d: "Une cité de tombes sous la montagne. Le Roi-Ossuaire y lève une armée qui ne connaît ni la faim ni la peur.",
+    loot: [["acier", 3, 20], ["gemme", 2, 18], ["essence", 4, 20], ["lingot", 4, 14], ["rune_aube", 1, 5], ["potion_maj", 1, 10]] },
+  { id: "volcan", n: "Cœur du volcan", rec: 12, scale: 2.4, theme: "lair", pool: ["magma", "salamandre", "golem", "troll"], boss: "seigneur_braises", floor: ["#4a2418", "#2a120a"], light: "#ff6a2a",
+    d: "Sous le mont Fournaise, la roche coule comme de l'eau. Un seigneur de feu y forge des armes pour la Brume.",
+    loot: [["charbon", 6, 24], ["acier", 4, 22], ["lingot", 5, 18], ["gemme", 2, 16], ["rune_braise", 1, 6], ["essence", 3, 16]] },
+  { id: "observatoire", n: "Observatoire des Astres", rec: 13, scale: 2.6, theme: "abyss", pool: ["astral", "gardien_astre", "automate", "rodeur"], boss: "astrologue", floor: ["#26284a", "#14162e"], light: "#9ab8ff",
+    d: "Une tour plus haute que les nuages. L'Astrologue y lit dans les étoiles le retour du Roi-Brume.",
+    loot: [["gemme", 3, 22], ["essence", 4, 20], ["acier", 3, 18], ["rune_givre", 1, 6], ["elixir", 1, 8], ["potion_maj", 1, 10]] },
+  { id: "trone", n: "Trône de la Brume", rec: 14, scale: 2.9, theme: "abyss", floors: 6, pool: ["ombre_brume", "chevalier_brume", "astral", "necromant"], boss: "roi_brume", floor: ["#2a2036", "#140f1c"], light: "#b07aff",
+    d: "Au cœur du brouillard, un palais qui n'existe que la nuit. Le Roi-Brume y attend celui qui a rallumé la forge.",
+    loot: [["essence", 5, 24], ["gemme", 3, 22], ["acier", 4, 20], ["eclat_vide", 1, 4], ["elixir", 1, 10], ["potion_maj", 2, 12]] },
+];
+DUNGEONS.splice(DUNGEONS.findIndex(d => d.infinite), 0, ...ACT5_DUNGEONS);
+ABYSS_THEMES.push(["cave", "bastion"], ["crypt", "necropole"], ["lair", "volcan"]); ABYSS_BOSSES.push("amiral", "roi_os", "seigneur_braises");
+
+/* Matériaux et objets légendaires des nouveaux gardiens */
+Object.assign(IT, {
+  perle_noire: { n: "Perle noire", t: "component", ic: "gem", tint: "#3a6a80", stack: 9, val: 260, d: "Arrachée à la couronne de l'Amiral englouti.", leg: 1 },
+  os_roi: { n: "Os du Roi", t: "component", ic: "fragment", tint: "#e8dcc0", stack: 9, val: 270, d: "Il pulse, comme un cœur qui refuse de mourir.", leg: 1 },
+  braise_eternelle: { n: "Braise éternelle", t: "component", ic: "ore", tint: "#ff6a2a", stack: 9, val: 280, d: "Elle brûle sans combustible depuis mille ans.", leg: 1 },
+  poussiere_etoile: { n: "Poussière d'étoile", t: "component", ic: "essence", tint: "#9ab8ff", stack: 9, val: 290, d: "Elle scintille même dans la main fermée.", leg: 1 },
+  couronne_brume: { n: "Couronne de la Brume", t: "component", ic: "ring", tint: "#b07aff", stack: 9, val: 400, d: "Le Roi-Brume la portait. Elle est froide comme un matin d'hiver.", leg: 1 },
+  trident_amiral: { n: "Trident de l'Amiral", t: "weapon", ic: "spear", tint: "frost", lvl: 13, stats: { atk: [34, 40], frost: [7, 10], hp: [20, 30] }, slots: 3, dur: 150, minR: 3, val: 1800, range: 2, leg: { d: "+10 % de défense et +5 % de santé récupérée par salle.", b: { def: .1, regen: .05 } }, d: "Il ruisselle encore d'une eau qui ne sèche jamais." },
+  sceptre_os: { n: "Sceptre d'Ossegrave", t: "weapon", ic: "staff", tint: "#e8dcc0", lvl: 14, stats: { mag: [36, 42], en: [25, 35], hp: [20, 30] }, slots: 3, dur: 130, minR: 3, val: 1900, range: 2, leg: { d: "Les compétences coûtent 3 énergie de moins, +8 % de puissance magique.", b: { skillCheap: 3, magPct: .08 } }, d: "Les morts s'inclinent quand il passe." },
+  marteau_fournaise: { n: "Marteau de la Fournaise", t: "weapon", ic: "hammer", tint: "#ff6a2a", lvl: 15, stats: { atk: [38, 45], fire: [9, 12] }, slots: 3, dur: 160, minR: 3, val: 2100, leg: { d: "+12 % de qualité de forge et +8 % d'attaque.", b: { quality: .12, atkPct: .08 } }, d: "Forgé dans le volcan, il forge à son tour." },
+  manteau_astres: { n: "Manteau des Astres", t: "armor", ic: "armor", tint: "robe", lvl: 15, stats: { def: [14, 18], mag: [10, 14], en: [30, 40] }, slots: 2, dur: 170, minR: 3, val: 2000, leg: { d: "+1 déplacement et +6 % de critique.", b: { mvBonus: 1, crit: .06 } }, d: "Une nuit étoilée cousue de fil d'argent." },
+  diademe_brume: { n: "Diadème du Roi-Brume", t: "jewel", slot: "amulette", ic: "amulet", tint: "#b07aff", lvl: 16, stats: { hp: [50, 60], atk: [8, 10], mag: [8, 10] }, slots: 3, dur: 999, minR: 3, val: 2600, leg: { d: "+10 % d'attaque, de magie et de santé.", b: { atkPct: .1, magPct: .1, hpPct: .1 } }, d: "Celui qui le porte ne craint plus la brume : il la commande." },
+});
+for (const k in IT) IT[k].id = k;
+Object.assign(BOSS_MATS, { amiral: "perle_noire", roi_os: "os_roi", seigneur_braises: "braise_eternelle", astrologue: "poussiere_etoile", roi_brume: "couronne_brume" });
+REC.push(
+  { id: "l_trident", out: "trident_amiral", cat: "legende", station: "legend", lvl: 13, gold: 2400, en: 35, w: [0, 0, 0, 100], ing: [["perle_noire", 3], ["acier", 5], ["essence", 4]] },
+  { id: "l_sceptre", out: "sceptre_os", cat: "legende", station: "legend", lvl: 14, gold: 2600, en: 35, w: [0, 0, 0, 100], ing: [["os_roi", 3], ["bois", 8], ["gemme", 4]] },
+  { id: "l_fournaise", out: "marteau_fournaise", cat: "legende", station: "legend", lvl: 15, gold: 2800, en: 40, w: [0, 0, 0, 100], ing: [["braise_eternelle", 3], ["acier", 6], ["lingot", 8]] },
+  { id: "l_astres", out: "manteau_astres", cat: "legende", station: "legend", lvl: 15, gold: 2800, en: 40, w: [0, 0, 0, 100], ing: [["poussiere_etoile", 3], ["cuir", 8], ["essence", 6]] },
+  { id: "l_diademe", out: "diademe_brume", cat: "legende", station: "legend", lvl: 16, gold: 4000, en: 45, w: [0, 0, 0, 100], ing: [["couronne_brume", 2], ["gemme", 6], ["essence", 8]] },
+);
+
+/* ── Acte V : le Roi-Brume ── */
+const ACT5 = "Acte V · Le Roi-Brume";
+const STORY5 = [
+  { act: ACT5, id: "m17", n: "Les cloches du lac Noir", d: "Vainquez l'Amiral englouti dans le Bastion englouti.", goal: s => [s.st.boss.amiral || 0, 1], req: "m16", rw: { gold: 2000, xp: 3200, crys: 30, pts: 1 },
+    intro: "Le dragon mort, la brume aurait dû disparaître. Elle recule, oui… mais chaque nuit, elle revient du lac Noir, où sonnent des cloches que personne n'a remontées.", outro: "L'Amiral coule une seconde fois. Dans sa cabine, un journal de bord : « Le Roi nous a promis la vie éternelle. Il a menti. »" },
+  { act: ACT5, id: "m18", n: "L'armée d'Ossegrave", d: "Vainquez le Roi-Ossuaire dans la Nécropole.", goal: s => [s.st.boss.roi_os || 0, 1], req: "m17", rw: { gold: 2200, xp: 3600, crys: 30, perma: { def: 3 }, pts: 1 },
+    intro: "Le journal parle d'un roi qui lève les morts sous la montagne. Les tombes d'Ossegrave sont vides depuis une semaine.", outro: "Le Roi-Ossuaire tombe en poussière. Ses gardes s'arrêtent, désemparés, puis s'effondrent à leur tour. Il n'était qu'un vassal. Bonus permanent : +3 défense." },
+  { act: ACT5, id: "m19", n: "La forge du traître", d: "Vainquez le Seigneur des braises au Cœur du volcan.", goal: s => [s.st.boss.seigneur_braises || 0, 1], req: "m18", rw: { gold: 2500, xp: 4000, crys: 35, pts: 1 },
+    intro: "Quelqu'un arme la Brume. Les lames des chevaliers morts portent un poinçon que vous connaissez : celui de la forge de votre père.", outro: "Le Seigneur des braises s'éteint. Sur son enclume, la vérité : votre père n'est pas mort dans la brume. Il l'a servie, pour vous protéger." },
+  { act: ACT5, id: "m20", n: "Ce que disent les étoiles", d: "Vainquez l'Astrologue sans visage dans l'Observatoire des Astres.", goal: s => [s.st.boss.astrologue || 0, 1], req: "m19", rw: { gold: 2600, xp: 4400, crys: 35, perma: { crit: .03 }, pts: 1 },
+    intro: "L'Astrologue a lu la date du retour du Roi-Brume. Il faut savoir où frapper, et quand.", outro: "Avant de se dissoudre, l'Astrologue murmure : « Cette nuit. Au trône. Ton père t'attend. » Bonus permanent : +3 % de critique." },
+  { act: ACT5, id: "m21", n: "Le Roi-Brume", d: "Vainquez le Roi-Brume sur son trône.", goal: s => [s.st.boss.roi_brume || 0, 1], req: "m20", rw: { gold: 5000, xp: 6000, crys: 60, perma: { atkPct: .08, hpPct: .08 }, pts: 3 },
+    intro: "Le palais n'existe que la nuit. Au bout de la salle du trône, sous une couronne de brume, un visage que vous n'avez pas vu depuis vingt ans.", outro: "Le Roi-Brume se brise, et votre père tombe à genoux, libéré. « Rallume la forge, dit-il. Cette fois, pour de bon. » Bonus permanent : +8 % d'attaque et de santé." },
+  { act: ACT5, id: "m22", n: "L'aube de Sombreval", d: "Atteignez l'étage 30 de l'Abysse des Brumes.", goal: s => [(s.abyss && s.abyss.best) || 0, 30], req: "m21", rw: { gold: 6000, xp: 5000, crys: 80, pts: 2 },
+    intro: "La Brume n'a plus de roi, mais son puits reste ouvert. Tant que l'Abysse respire, elle reviendra. Descendez jusqu'à son cœur.", outro: "Au trentième étage, vous scellez le puits d'une rune de votre forge. Sombreval s'éveille sous un ciel clair. L'histoire est finie ; la légende commence." },
+];
+STORY.push(...STORY5);
+{ const last = QUESTS.map(q => !!q.main).lastIndexOf(true); QUESTS.splice(last + 1, 0, ...STORY5.map(c => ({ ...c, main: 1, ch: c.act }))); }
+QUESTS.push(
+  { id: "s20", ch: "Quête secondaire", n: "Une voie de maître", d: "Faites évoluer votre classe en classe maître.", goal: s => [s.master ? 1 : 0, 1], rw: { gold: 1500, xp: 1500, pts: 2 } },
+  { id: "s21", ch: "Quête secondaire", n: "Érudit des arts", d: "Apprenez 40 nœuds de maîtrise.", goal: s => [(s.mastery || []).length, 40], rw: { gold: 1200, crys: 20, pts: 1 } },
+  { id: "s22", ch: "Quête secondaire", n: "Chasseur de rois", d: "Vainquez 4 gardiens de l'Acte V.", goal: s => [["amiral", "roi_os", "seigneur_braises", "astrologue"].filter(b => s.st.boss[b]).length, 4], rw: { gold: 2000, xp: 2000, items: [["eclat_vide", 1]] } },
+  { id: "s23", ch: "Quête secondaire", n: "Cartes des terres brumeuses", d: "Atteignez l'étage 3 dans trois lieux de l'Acte V.", goal: s => [["bastion", "necropole", "volcan", "observatoire", "trone"].filter(d => ((s.st.depth || {})[d] || 0) >= 3).length, 3], rw: { gold: 1800, crys: 25 } },
+);
+ACHIEVEMENTS.push(
+  { id: "a_master", n: "Voie de maître", d: "Devenir une classe maître.", g: s => [s.master ? 1 : 0, 1], rw: { crys: 20 } },
+  { id: "a_roi", n: "Régicide", d: "Vaincre le Roi-Brume.", g: s => [s.st.boss.roi_brume ? 1 : 0, 1], rw: { crys: 40 } },
+  { id: "a_tree", n: "Grand maître", d: "Apprendre 60 nœuds de maîtrise.", g: s => [(s.mastery || []).length, 60], rw: { crys: 30 } },
+);
 /* ═══════════════════════ Effets sonores synthétisés (WebAudio, aucun fichier) ═══════════════════════
    Chaque son est fabriqué à la volée : oscillateurs + bruit filtré + enveloppes.
    Le contexte audio n'est créé qu'au premier geste du joueur (règle des navigateurs). */
@@ -1764,6 +2099,7 @@ function bonus(k) {
   let v = (CLS(S.cls).b[k] || 0) + (PPL(S.ppl).b[k] || 0);
   for (const br of MASTERY) for (const n of br.nodes) if (hasNode(n.id)) v += n.b[k] || 0;
   const sp = specOf(); if (sp) v += sp.b[k] || 0;
+  const mc = masterOf(); if (mc) v += mc.b[k] || 0;
   const se = SEASON(); if (se && se.b) v += se.b[k] || 0;
   // chantiers de Sombreval et effets des objets légendaires portés
   if (S.rebuild) for (const r of REBUILD) { const l = S.rebuild[r.id] || 0; if (l) { v += (r.b[k] || 0) * l; if (l >= 3 && r.b3) v += r.b3[k] || 0; } }
@@ -1779,6 +2115,7 @@ function stats() {
   const c = CLS(S.cls), p = PPL(S.ppl), L = S.lvl - 1;
   const s = { hp: c.base.hp + L * 9, en: c.base.en + L * 4, atk: c.base.atk + L * 1.2, mag: c.base.mag + L * 1.2, def: c.base.def + L * .6, crit: c.base.crit, mv: c.base.mv, fire: 0, frost: 0, range: 1 };
   for (const k in p.mods) s[k] = (s[k] || 0) + p.mods[k];
+  const mc = masterOf(); if (mc) for (const k in mc.stats) s[k] = (s[k] || 0) + mc.stats[k];
   if (c.id === "gardien") s.hp += 10;
   if (hasNode("e1")) s.mv += 1; if (hasNode("e4")) s.hp += 30;
   for (const k in S.equip) { const it = S.equip[k]; if (!it) continue; const m = itemMods(it); for (const x in m) s[x] = (s[x] || 0) + m[x]; if (k === "arme" && D(it).range) s.range = D(it).range; }
@@ -1815,13 +2152,18 @@ function gainXp(n) {
   if (up) { const st = stats(); S.vit.hp = st.hp; S.vit.en = st.en; SFX.play("level"); toast(`Niveau ${S.lvl} atteint · +${up} point${up > 1 ? "s" : ""} de maîtrise`, "gold"); }
   return n;
 }
-const masteryPoints = () => S.lvl + (S.bonusPts || 0) - S.mastery.length;
+const masteryPoints = () => S.lvl + Math.floor(S.lvl / 3) + (S.bonusPts || 0) + (S.master ? 3 : 0) - S.mastery.length;
+/* Classe maître (niveau 15, après la spécialisation) : une évolution définitive parmi deux voies */
+const masterOf = () => S && S.master && typeof MASTERS !== "undefined" ? (MASTERS[S.cls] || []).find(x => x.id === S.master) : null;
+const clsName = () => { const m = masterOf(); return m ? m.n : CLS(S.cls).n; };
+function chooseMaster(id) { if (S.master) return "Classe maître déjà choisie."; if (S.lvl < MASTER_LVL) return `Disponible au niveau ${MASTER_LVL}.`; if (!S.spec) return "Choisissez d'abord une spécialisation.";
+  if (!(MASTERS[S.cls] || []).some(x => x.id === id)) return "Voie inconnue."; S.master = id; clampVit(); const st = stats(); S.vit.hp = st.hp; S.vit.en = st.en; save(); return null; }
 /* Spécialisation de classe (niveau 5) */
 const specOf = () => S && S.spec ? (SPECS[S.cls] || []).find(x => x.id === S.spec) : null;
 function chooseSpec(id) { if (S.spec) return "Spécialisation déjà choisie."; if (S.lvl < 5) return "Disponible au niveau 5."; if (!(SPECS[S.cls] || []).some(x => x.id === id)) return "Spécialisation inconnue."; S.spec = id; clampVit(); save(); return null; }
 /* Compétences du héros : classe, spécialisation, nœuds de maîtrise */
 function heroSkills() {
-  const out = [{ key: "cls", ...CLS(S.cls).skill }]; const sp = specOf(); if (sp) out.push({ key: "spec", ...sp.skill });
+  const out = [{ key: "cls", ...CLS(S.cls).skill }]; const sp = specOf(); if (sp) out.push({ key: "spec", ...sp.skill }); const mc = masterOf(); if (mc) out.push({ key: "master", ...mc.skill });
   for (const br of MASTERY) for (const n of br.nodes) if (n.skill && hasNode(n.id)) out.push({ key: n.skill, ...SKILLS[n.skill] });
   return out;
 }
@@ -2053,6 +2395,7 @@ function learnNode(id) {
   if (S.mastery.includes(id)) return "Déjà appris.";
   if (masteryPoints() <= 0) return "Aucun point disponible.";
   if (br.spec && S.spec !== br.spec) return "Branche réservée à cette spécialisation.";
+  if (br.master && S.master !== br.master) return "Branche réservée à cette classe maître.";
   if (i > 0 && !S.mastery.includes(br.nodes[i - 1].id)) return "Apprenez d'abord le nœud précédent.";
   S.mastery.push(id); clampVit(); save(); return null;
 }
@@ -2399,7 +2742,7 @@ function drawEnemy(x, kind, cx, cy, s, t, big = 1, tint) {
   if (kind === "wolfE") { x.restore(); drawWolf(x, cx, cy, s * 1.05, t, "#5a4a44", "#ff4a2a", -1); return; }
   x.fillStyle = "rgba(0,0,0,.45)"; x.beginPath(); x.ellipse(0, 0, 12 * k, 4.5 * k, 0, 0, 7); x.fill();
   if (kind === "spirit" || kind === "wraith") {
-    const big2 = kind === "spirit" ? 1.5 : 1, kk = k * big2, col = kind === "spirit" ? "#7fd0ff" : "#9fb8c8";
+    const big2 = kind === "spirit" ? 1.5 : 1, kk = k * big2, col = (typeof tint === "string" && tint[0] === "#" ? tint : null) || (kind === "spirit" ? "#7fd0ff" : "#9fb8c8");
     glow(x, 0, -24 * kk, 30 * kk, col, kind === "spirit" ? .55 : .3);
     const g = x.createLinearGradient(0, -44 * kk, 0, 0); g.addColorStop(0, rgba(col, .95)); g.addColorStop(.6, rgba(col, .55)); g.addColorStop(1, rgba(col, 0));
     x.fillStyle = g; x.beginPath(); x.moveTo(-9 * kk, -30 * kk + br);
@@ -2632,12 +2975,13 @@ function heroLook(clsId, pplId, look, equip) {
     const a = equip.armure && IT[equip.armure.id]; if (a) L.armor = a.tint || "leather";
     const s = equip.bouclier && IT[equip.bouclier.id]; if (s) L.shield = s.tint === "steel" || s.tint === "tower" || s.tint === "frost" ? "steel" : "wood";
     L.amulet = !!equip.amulette;
+    if (typeof S !== "undefined" && S && equip === S.equip && typeof masterOf === "function") { const mc = masterOf(); if (mc) L.master = mc.look; }
   }
   return L;
 }
 
 function drawChar(x, cx, cy, s, L, t = 0, face = 1) {
-  const fem = L.body === "f", k = s * (L.short ? .84 : 1), OF = OUTFIT[L.cls] || OUTFIT.forgeron;
+  const fem = L.body === "f", k = s * (L.short ? .84 : 1), MS = L.master, OF0 = OUTFIT[L.cls] || OUTFIT.forgeron, OF = MS ? { ...OF0, cape: OF0.cape === "long" ? "long" : OF0.cape === "half" ? "long" : OF0.cape || "long", pauld: OF0.pauld || "both" } : OF0;
   const stone = L.stone || (typeof L.armor === "string" && L.armor[0] === "#");
   const MT = MATERIAL[L.armor] || MATERIAL.leather;
   const br = Math.sin(t * 2.2) * .45, sway = Math.sin(t * 1.6) * .9;
@@ -2671,6 +3015,8 @@ function drawChar(x, cx, cy, s, L, t = 0, face = 1) {
   /* ombre portée */
   { const g = x.createRadialGradient(0, 0, 1, 0, 0, 13 * k); g.addColorStop(0, "rgba(0,0,0,.6)"); g.addColorStop(1, "rgba(0,0,0,0)"); x.fillStyle = g; x.beginPath(); x.ellipse(0, 0, 13 * k, 4.6 * k, 0, 0, 7); x.fill(); }
 
+  /* aura de la classe maître */
+  if (MS && !stone) { const ac2 = MS.aura; glow(x, 0, -2 * k, 16 * k, ac2, .35 + Math.sin(t * 2) * .08); x.save(); x.scale(1, .36); x.strokeStyle = rgba(ac2, .75); x.lineWidth = .5 * k; x.setLineDash([2 * k, 2 * k]); x.lineDashOffset = -t * 6 * k; x.beginPath(); x.arc(0, 0, 12 * k, 0, 7); x.stroke(); x.setLineDash([]); x.strokeStyle = rgba(ac2, .4); x.beginPath(); x.arc(0, 0, 9.5 * k, 0, 7); x.stroke(); x.restore(); }
   /* ── arrière-plan : cape, carquois, sac, bouclier ── */
   if (OF.cape === "long" || OF.cape === "half") {
     const half = OF.cape === "half", bot = half ? -10 : -1.2;
@@ -2903,6 +3249,10 @@ function drawChar(x, cx, cy, s, L, t = 0, face = 1) {
   if (OF.runes && !stone) for (let i = 0; i < 3; i++) { const a = t * 1.2 + i * 2.1, rx = Math.cos(a) * 10, ry = -24 + Math.sin(a) * 3 - i; if (Math.sin(a) < -.2) continue;
     x.save(); x.globalAlpha = .55 + Math.sin(a) * .3; S(`M ${rx} ${ry - 1.2} L ${rx + .9} ${ry} L ${rx} ${ry + 1.2} L ${rx - .9} ${ry} Z M ${rx} ${ry - .6} L ${rx} ${ry + .6}`, "#d8c0ff", .3); glow(x, rx * k, Y(ry), 2.4 * k, ac, .6); x.restore(); }
 
+  /* emblème flottant de la classe maître */
+  if (MS && !stone) { const ey = -49 + Math.sin(t * 1.8) * .8, ac2 = MS.aura; glow(x, 0, Y(ey), 5 * k, ac2, .55);
+    F(P(`M 0 ${ey - 2.2} L 1.6 ${ey} L 0 ${ey + 2.2} L -1.6 ${ey} Z`), lin(0, ey - 2, 0, ey + 2, "#fff6d8", ac2), .6);
+    if (MS.crown === "halo") { x.save(); x.strokeStyle = rgba("#ffe08a", .85); x.lineWidth = .6 * k; x.beginPath(); x.ellipse(.6 * k, Y(-44.6), 4.6 * k, 1.3 * k, 0, 0, 7); x.stroke(); x.restore(); } }
   /* ── lumière de forge en contre-jour ── */
   if (!stone) { x.globalCompositeOperation = "lighter"; x.globalAlpha = .55; S(`M ${-sw - .2} -29.6 C ${-sw - .6} -26 ${-ww - .8} -22 ${-ww - .2} -19`, "rgba(255,150,70,.6)", .5); S(`M ${H(-4.5, -1.4)} C ${H(-4.6, -5)} ${H(-2, -6.4)} ${H(0, -6.4)}`, "rgba(255,160,80,.5)", .45); x.globalAlpha = 1; x.globalCompositeOperation = "source-over"; }
   x.restore();
@@ -3637,17 +3987,17 @@ async function castSkill(a, t, sk) {
   const mag = a.mag || 0;
   SFX.play(sk.heal || sk.selfHeal ? "heal" : sk.st === "mag" || sk.buff ? "magic" : "crit");
   if (sk.heal) { const hv = Math.round(sk.heal + mag * .65); for (const al of alive("ally")) { al.hp = Math.min(al.max, al.hp + hv); al.sts = Object.fromEntries(Object.entries(al.sts || {}).filter(([k]) => !["poison", "burn", "bleed", "fear"].includes(k))); fxText(al, "+" + hv, "#8fe08a"); } syncAllies(); elog(`${sk.n} : le groupe récupère ${hv} santé.`); }
-  else if (sk.selfHeal) { const h = Math.round(a.max * sk.selfHeal); a.hp = Math.min(a.max, a.hp + h); fxText(a, "+" + h, "#8fe08a"); syncAllies(); elog(`${sk.n} : +${h} santé.`); }
-  else if (sk.buff) { for (const al of alive("ally")) if (dist(al, a) <= sk.buff.r) addStatus(al, sk.buff.k, sk.buff.t, 0); elog(`${sk.n} !`); }
-  else if (sk.replay) { t.acted = t.moved = false; fxText(t, "Rejoue", "#c9a0ff"); elog(`${sk.n} : ${t.name} peut rejouer.`); }
+  if (sk.selfHeal) { const h = Math.round(a.max * sk.selfHeal); a.hp = Math.min(a.max, a.hp + h); fxText(a, "+" + h, "#8fe08a"); syncAllies(); elog(`${sk.n} : +${h} santé.`); }
+  if (sk.buff) { for (const al of alive("ally")) if (dist(al, a) <= sk.buff.r) addStatus(al, sk.buff.k, sk.buff.t, 0); elog(`${sk.n} !`); }
+  if (sk.replay) { t.acted = t.moved = false; fxText(t, "Rejoue", "#c9a0ff"); elog(`${sk.n} : ${t.name} peut rejouer.`); }
   else if (sk.bribe) { if (t.boss || t.elite) { fxText(t, "Refuse", "#ff9a8a"); elog(`${t.name} refuse votre or.`); } else { t.hp = 0; t.dead = .01; t.bribed = 1; elog(`${t.name} empoche l'or et disparaît dans la brume.`); } }
-  else if (sk.taunt && !sk.mult) { addStatus(a, "taunt", 1, 0); elog(`${a.name} attire les ennemis !`); }
-  else {
+  else if (sk.taunt && !sk.mult) { addStatus(a, "taunt", 1, 0); elog(`${a.name} attire les ennemis !`); if (sk.groupHeal) { const gh = Math.round(sk.groupHeal + S.lvl); for (const al of alive("ally")) { al.hp = Math.min(al.max, al.hp + gh); fxText(al, "+" + gh, "#8fe08a"); } syncAllies(); } }
+  else if (sk.mult || sk.onHit || sk.groupHeal || !(sk.heal || sk.selfHeal || sk.buff)) {
     const hits = sk.hits || 1, st = sk.st || "atk";
     const victims = sk.around ? alive("enemy").filter(e => dist(e, a) <= sk.around) : [t].filter(v => v && v.side === "enemy");
     for (const v of victims) {
       if (sk.mult) for (let i = 0; i < hits; i++) { if (v.hp <= 0) break; let m = sk.mult; if (sk.finisher && v.hp < v.max * .4) m *= sk.finisher;
-        const r = rollDmg(a, v, m, st, sk.sure); v.lastHitBy = a.id; applyDmg(v, r.dmg + (sk.fire || 0), r.crit, st === "mag" ? "#c9a0ff" : "#ffb36a"); onHitEffects(a, v, r.dmg); if (hits > 1) await sleep(160 / SPEED); }
+        const r = rollDmg(a, v, m, st, sk.sure); v.lastHitBy = a.id; applyDmg(v, r.dmg + (sk.fire || 0), r.crit, st === "mag" ? "#c9a0ff" : "#ffb36a"); onHitEffects(a, v, r.dmg); if (sk.leech && a.hp > 0) { const lh = Math.round(r.dmg * sk.leech); a.hp = Math.min(a.max, a.hp + lh); fxText(a, "+" + lh, "#8fe08a"); syncAllies(); } if (hits > 1) await sleep(160 / SPEED); }
       if (sk.onHit && v.hp > 0) addStatus(v, sk.onHit.k, sk.onHit.t, Math.round((sk.onHit.d || 0) * (["burn", "poison", "bleed"].includes(sk.onHit.k) ? dotMul(a) : 1)));
       if (sk.fire && v.hp > 0) addStatus(v, "burn", 2, Math.round((4 + S.lvl * .6) * dotMul(a)));
       if (sk.poisonSk) for (const e of alive("enemy")) if (dist(e, v) <= 1) addStatus(e, "poison", 3, Math.round((3 + S.lvl * .5) * dotMul(a)));
@@ -4320,7 +4670,7 @@ function renderHud() {
   const per = ["Nuit", "Aube", "Matin", "Midi", "Après-midi", "Soir", "Nuit"][Math.floor(new Date().getHours() / 3.5)];
   $("#hud").innerHTML = `
   <div class="brand"><b>La Forge des Brumes</b><span>Bâtis · Forge · Explore</span></div>
-  <div class="who">${crest()}<div><div class="nm">${esc(S.name)}</div><div class="cl">${CLS(S.cls).n} · ${PPL(S.ppl).n} · Niv. ${S.lvl}</div>
+  <div class="who">${crest()}<div><div class="nm">${esc(S.name)}</div><div class="cl">${clsName()} · ${PPL(S.ppl).n} · Niv. ${S.lvl}</div>
     <div class="xpbar" title="${S.xp} / ${xpNeed(S.lvl)} XP"><i style="width:${S.xp / xpNeed(S.lvl) * 100}%"></i></div></div></div>
   <div class="curr">
     <div class="cur" title="Or">${currIco("gold")}<span>${S.gold.toLocaleString("fr-FR")}</span></div>
@@ -4375,7 +4725,7 @@ function vHome() {
     <div class="panel scene"><canvas id="village" aria-label="Village de Sombreval"></canvas><div class="vlabels"></div><div class="tag">Sombreval</div><button class="xray ${XRAY ? "on" : ""}" style="left:auto;right:10px" data-act="vxray" title="Voir à travers les décors" aria-pressed="${XRAY}">${nico("eye")}</button><div class="hint">Touchez le sol pour marcher, un lieu pour vous y rendre</div></div>
     <div class="cards4">
       <div class="panel"><div class="ph">Dernières créations</div><div class="list">${recent}</div></div>
-      <div class="panel"><div class="ph">Inventaire <small class="num">${S.stash.length} / ${stashCap()}</small></div><div class="invgrid" style="grid-template-columns:repeat(4,44px);gap:6px">${preview.map(it => slotHTML(it, { size: "sm" })).join("")}</div><button class="btn ghost sm wide" style="margin-top:10px" data-act="go" data-v="inv">Tout voir</button></div>
+      <div class="panel"><div class="ph">Inventaire <small class="num">${S.stash.length} / ${stashCap()}</small></div><div class="invgrid" style="grid-template-columns:repeat(auto-fill,44px);gap:6px">${preview.map(it => slotHTML(it, { size: "sm" })).join("")}</div><button class="btn ghost sm wide" style="margin-top:10px" data-act="go" data-v="inv">Tout voir</button></div>
       <div class="panel"><div class="ph">Fabrication</div><div class="dhead">${slotHTML({ id: sugg.out, r: IT[sugg.out].minR || 0, q: 1, u: "x" })}<div><b style="font-family:var(--f-display);font-size:15px">${sugg.name || IT[sugg.out].n}</b><div class="muted" style="font-size:14px">Niveau ${sugg.lvl}</div></div></div>
         <div class="mats" style="margin-top:8px">${ck.mats.map(m => `<div class="mat">${slotHTML({ id: m.id, r: 0, q: 1, u: "x" }, { size: "sm" })}<span class="${m.have >= m.n ? "ok" : "ko"}">${m.have}/${m.n}</span></div>`).join("")}</div>
         <button class="btn ember wide" style="margin-top:10px" data-act="quickforge" data-r="${sugg.id}">Fabriquer</button></div>
@@ -4383,7 +4733,7 @@ function vHome() {
     </div>
    </div>
    <div class="home-side">
-    <div class="panel"><div class="ph">${esc(S.name)} <small>${CLS(S.cls).n}</small></div>${vitBars()}${statsGrid()}
+    <div class="panel"><div class="ph">${esc(S.name)} <small>${clsName()}</small></div>${vitBars()}${statsGrid()}
       <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="btn sm" data-act="rest" title="Santé, énergie et loup au maximum">${nico("bed").replace("<svg", '<svg width="16" height="16" style="vertical-align:-3px"')} Auberge · ${restCost()} or</button><button class="btn ghost sm" data-act="nap" title="Récupère jusqu'à 60 %, mais creuse la faim et la soif">Dormir à la forge</button><button class="btn ghost sm" data-act="eat">Manger et boire</button></div></div>
     ${(() => { const se = ensureSeason(); return se ? `<button class="panel seasoncard" data-act="go" data-v="events" style="--sc:${se.col}"><b>${se.ic} ${se.n}</b><span>${se.bonus} · ${count(S.stash, "jeton")} jetons${seasonReady() ? ` · <b style="color:var(--gold-hi)">${seasonReady()} récompense${seasonReady() > 1 ? "s" : ""}</b>` : ""}</span></button>` : ""; })()}
     <div class="panel evcard"><div class="evart"><canvas id="evart"></canvas></div><div class="evbody"><div class="muted" style="font-size:13px;letter-spacing:.12em;text-transform:uppercase">Événement actif</div><h3>${ev.active.n}</h3><p style="margin:6px 0 8px">${ev.active.d}</p><div class="timer" data-timer="${ev.ends}">${fmtLeft(ev.ends - Date.now())}</div><button class="btn sm wide" style="margin-top:10px" data-act="go" data-v="events">Voir l'événement</button></div></div>
@@ -4642,10 +4992,10 @@ function partyRows() {
 function vMap() {
   const reg = DUNGEONS.filter(d => !d.infinite && !d.hidden), inf = DUNGEONS.find(d => d.infinite), hid = DUNGEONS.filter(d => d.hidden);
   viewEl.innerHTML = `<div class="grid" style="gap:10px">
-   ${inf ? abyssCard(inf) : ""}
    <div class="grid dgcards" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr))">${reg.map(dungeonCard).join("")}</div>
    <div class="panel"><div class="ph">Lieux cachés et insolites <small>révélés par des objets trouvés au fil des expéditions</small></div>
     <div class="grid dgcards" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr))">${hid.map(dg => isFound(dg) ? dungeonCard(dg) : hiddenCard(dg)).join("")}${shadowCard()}</div></div>
+   ${inf ? abyssCard(inf) : ""}
    <div class="panel"><div class="ph">Préparatifs</div><div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
      <div>${vitBars()}${(S.bless || []).length ? `<div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap">${S.bless.map(blessChip).join("")}</div>` : ""}</div>
      <div><div class="muted" style="margin-bottom:6px">Consommables utilisables en combat</div><div class="invgrid" style="grid-template-columns:repeat(auto-fill,44px)">${S.stash.filter(i => IT[i.id].combat).map(i => slotHTML(i, { size: "sm" })).join("") || '<span class="muted">Aucun</span>'}</div>
@@ -4717,24 +5067,43 @@ function openLore(q, end) {
 /* ── Maîtrise ────────────────────────────────── */
 function branchHTML(br, locked) {
   const got = br.nodes.filter(n => hasNode(n.id)).length;
-  return `<div class="branch ${locked ? "locked" : ""}" style="--bc:${br.col}"><div class="qicon" style="color:${br.col};width:54px;height:54px">${nico(br.ic)}</div><h3 style="color:${br.col}">${br.n} <small class="faint num">${got}/${br.nodes.length}</small></h3>
+  return `<div class="br12 ${locked ? "locked" : ""}" style="--bc:${br.col}"><div class="brh"><span class="qicon" style="color:${br.col}">${nico(br.ic)}</span><b style="color:${br.col}">${br.n}</b><small class="faint num">${got} / ${br.nodes.length}</small></div>
+    <div class="brprog"><i style="width:${got / br.nodes.length * 100}%"></i></div>
      ${br.nodes.map((n, i) => { const on = hasNode(n.id), can = !locked && !on && masteryPoints() > 0 && (i === 0 || hasNode(br.nodes[i - 1].id)); const ult = i === br.nodes.length - 1 && n.skill;
-       return `${i ? '<div class="link"></div>' : ""}<button class="node ${on ? "on" : can ? "can" : ""} ${n.skill ? "sknode" : ""} ${ult ? "ult" : ""}" style="color:${br.col}" data-act="learn" data-n="${n.id}" ${can ? "" : "disabled"} aria-label="${n.n}">${nico(n.skill ? "star" : i === 1 && br.id === "fab" ? "gem" : br.ic)}</button><div class="nodetxt"><b>${n.n}${n.skill ? ` <span style="color:var(--gold-hi)">· ${ult ? "ultime" : "compétence"}</span>` : ""}</b>${n.d}${n.skill && SKILLS[n.skill] ? ` <span class="faint">(${SKILLS[n.skill].cost} én.)</span>` : ""}</div>`; }).join("")}</div>`;
+       return `<div class="nrow ${on ? "on" : ""} ${can ? "can" : ""}"><button class="node ${on ? "on" : can ? "can" : ""} ${n.skill ? "sknode" : ""} ${ult ? "ult" : ""}" style="color:${br.col}" data-act="learn" data-n="${n.id}" ${can ? "" : "disabled"} aria-label="${n.n}">${n.skill ? nico("star") : `<span class="nnum">${i + 1}</span>`}</button><div class="nodetxt"><b>${n.n}${n.skill ? ` <span class="sktag">${ult ? "ultime" : "compétence"}</span>` : ""}</b>${n.d.replace(/^Compétence : /, "")}${n.skill && SKILLS[n.skill] ? ` <span class="faint">(${SKILLS[n.skill].cost} én.)</span>` : ""}</div></div>`; }).join("")}</div>`;
 }
+const STAT_N = { hp: "santé", en: "énergie", atk: "attaque", mag: "magie", def: "défense", mv: "déplacement", crit: "critique" };
+const statsTxt = o => Object.entries(o).map(([k, v]) => k === "crit" ? `+${Math.round(v * 100)} % ${STAT_N[k]}` : `+${v} ${STAT_N[k] || k}`).join(" · ");
 function vMastery() {
-  const sp = specOf(), specs = SPECS[S.cls] || [];
+  const sp = specOf(), specs = SPECS[S.cls] || [], mc = masterOf(), masters = MASTERS[S.cls] || [];
   const specPanel = `<div class="panel"><div class="ph">Spécialisation · ${CLS(S.cls).n} <small>${sp ? "définitive" : S.lvl >= 5 ? "à choisir" : "niveau 5"}</small></div>
-    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))">${specs.map(s => { const on = sp && sp.id === s.id, off = sp && !on, tree = MASTERY.find(b => b.spec === s.id);
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))">${specs.map(s => { const on = sp && sp.id === s.id, off = sp && !on;
       return `<div class="spec ${on ? "on" : ""} ${off ? "off" : ""}"><b>${s.n}</b><span>${s.d}</span><div class="sk"><span class="qicon">${nico("star")}</span><div><b>${s.skill.n}</b> <span class="faint">· ${s.skill.cost} énergie</span><br><span>${s.skill.d}</span></div></div>
-       ${tree ? `<div class="spectree"><span class="faint">Branche « ${tree.n} » :</span> ${tree.nodes.map(n => n.skill ? `<b style="color:var(--gold-hi)">${n.n}</b>` : n.n).join(" · ")}</div>` : ""}
        ${sp ? (on ? '<span class="chip done">Choisie</span>' : "") : `<button class="btn ${S.lvl >= 5 ? "ember" : ""} sm" data-act="spec" data-id="${s.id}" ${S.lvl >= 5 ? "" : "disabled"}>${S.lvl >= 5 ? "Choisir cette voie" : "Niveau 5 requis"}</button>`}</div>`; }).join("")}</div></div>`;
-  const skills = heroSkills(), tree = sp && MASTERY.find(b => b.spec === sp.id);
-  viewEl.innerHTML = `<div class="grid">${specPanel}
+  const canM = !mc && S.lvl >= MASTER_LVL && !!sp;
+  const masterPanel = `<div class="panel masterpanel"><div class="ph">Classe maître <small>${mc ? `${mc.n} · définitive` : `niveau ${MASTER_LVL}, après la spécialisation · +3 points de maîtrise`}</small></div>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))">${masters.map(m => { const on = mc && mc.id === m.id, off = mc && !on;
+      return `<div class="spec master ${on ? "on" : ""} ${off ? "off" : ""}" style="--mc:${m.look.aura}"><div class="mhead"><canvas data-master="${m.id}" width="120" height="150"></canvas><div><b class="mname">${m.n}</b><span>${m.d}</span></div></div>
+       <div class="chips"><span class="chip" style="color:#8fe08a">${statsTxt(m.stats)}</span><span class="chip gold">${bonusDesc(m.b)}</span></div>
+       <div class="sk"><span class="qicon" style="color:${m.look.aura}">${nico("star")}</span><div><b>${m.skill.n}</b> <span class="faint">· ${m.skill.cost} énergie</span><br><span>${m.skill.d}</span></div></div>
+       ${mc ? (on ? '<span class="chip done">Votre voie</span>' : "") : `<button class="btn ${canM ? "ember" : ""} sm" data-act="master" data-id="${m.id}" ${canM ? "" : "disabled"}>${canM ? "Évoluer vers cette classe" : S.lvl < MASTER_LVL ? `Niveau ${MASTER_LVL} requis` : "Spécialisation requise"}</button>`}</div>`; }).join("")}</div></div>`;
+  const skills = heroSkills();
+  const specTree = sp && MASTERY.find(b => b.spec === sp.id), mTree = mc && MASTERY.find(b => b.master === mc.id);
+  const tabs = [...TREES.map(t => { const brs = t.br.map(id => MASTERY.find(b => b.id === id)); const got = brs.reduce((a, b) => a + b.nodes.filter(n => hasNode(n.id)).length, 0), tot = brs.reduce((a, b) => a + b.nodes.length, 0); return [t.id, t.n, t.ic, t.col, `${got}/${tot}`]; }),
+    ["voie", "Voie de classe", "banner", "#f3d48e", `${[specTree, mTree].filter(Boolean).reduce((a, b) => a + b.nodes.filter(n => hasNode(n.id)).length, 0)}`]];
+  if (!tabs.some(t => t[0] === UI.mtab)) UI.mtab = "fab";
+  const T = TREES.find(t => t.id === UI.mtab);
+  const body = T ? `<p class="muted treehint">${T.n} : trois branches indépendantes. Chaque nœud demande le précédent de sa branche.</p><div class="tree3">${T.br.map(id => branchHTML(MASTERY.find(b => b.id === id))).join("")}</div>`
+    : `<div class="tree3">${specTree ? branchHTML(specTree) : `<div class="br12 locked"><div class="brh"><b>Spécialisation</b></div><p class="muted">Choisissez une spécialisation (niveau 5) pour ouvrir sa branche de 12 nœuds.</p></div>`}
+       ${mTree ? branchHTML(mTree) : `<div class="br12 locked"><div class="brh"><b>Classe maître</b></div><p class="muted">Au niveau ${MASTER_LVL}, votre classe évolue et ouvre une branche de 12 nœuds.</p>${masters.map(m => { const br = MASTERY.find(b => b.master === m.id); return `<div class="spectree"><b style="color:${m.look.aura}">${m.n}</b> : ${br.nodes.filter(n => n.skill).map(n => n.n).join(" · ")}</div>`; }).join("")}</div>`}</div>`;
+  viewEl.innerHTML = `<div class="grid">${specPanel}${masterPanel}
    <div class="panel"><div class="ph">Compétences de combat <small>${skills.length} apprise${skills.length > 1 ? "s" : ""}</small></div><div style="display:flex;gap:6px;flex-wrap:wrap">${skills.map(s => `<span class="chip" title="${s.d}"><b>${s.n}</b> · ${costOf(s)} én.</span>`).join("")}</div></div>
-   <div class="panel"><div class="ph">Arbre de maîtrise <small>Points disponibles : <b style="color:var(--gold-hi)" class="num">${masteryPoints()}</b> · 1 par niveau, plus les chapitres, contrats et hauts faits</small></div>
-   ${tree ? `<div class="specbranch"><div class="muted" style="text-align:center;margin-bottom:6px">Branche de votre spécialisation</div>${branchHTML(tree)}</div>` : ""}
-   <div class="grid mast">${MASTERY.filter(b => !b.spec).map(b => branchHTML(b)).join("")}</div>
+   <div class="panel"><div class="ph">Arbre de maîtrise <small>Points disponibles : <b style="color:var(--gold-hi)" class="num">${masteryPoints()}</b> · 1 par niveau (+1 tous les 3 niveaux), chapitres, contrats, hauts faits</small></div>
+   <div class="tabs mtabs" role="tablist">${tabs.map(([id, n, ic, col, c]) => `<button class="tab ${UI.mtab === id ? "on" : ""}" data-act="mtab" data-t="${id}" role="tab" style="--tc:${col}">${nico(ic)}<span>${n}</span><em class="num">${c}</em></button>`).join("")}</div>
+   ${body}
    <div style="display:flex;justify-content:center;margin-top:16px"><button class="btn ghost sm" data-act="respec" ${S.mastery.length ? "" : "disabled"}>Réinitialiser l'arbre · ${50 + S.lvl * 10} or</button></div></div></div>`;
+  document.querySelectorAll("canvas[data-master]").forEach(c => { const x = c.getContext("2d"); const m = masters.find(q => q.id === c.dataset.master); x.clearRect(0, 0, 120, 150); glow(x, 60, 110, 60, m.look.aura, .25);
+    const L = heroLook(S.cls, S.ppl, S.look, S.equip); L.master = m.look; drawChar(x, 60, 140, 2.5, L, 0, 1); });
 }
 
 /* ── Reconstruction de Sombreval ── */
@@ -4882,7 +5251,7 @@ function refreshDunCard() {
       pred = `<div style="margin-top:6px;font-size:13.5px">${esc(a.name)} infligerait <b>${lo}–${hi}</b>${dist(a, u) <= a.range ? "" : ' <span class="faint">(hors de portée)</span>'}${lo >= u.hp ? ' <span class="ok">· coup fatal</span>' : ""}</div>`; }
     card.innerHTML = `<h3 style="color:#ff9a8a">${esc(u.name)}</h3><div class="muted" style="font-size:13px">Attaque ${Math.round(u.atk * (u.enraged ? 1.3 : 1))} · défense ${u.def} · déplacement ${u.mv}</div>${bar("Santé", u.hp, u.max, "#d0453a")}${abil.length ? `<div style="margin-top:6px;font-size:13px">${abil.join(" · ")}</div>` : ""}${sts ? `<div style="margin-top:6px">${sts}</div>` : ""}${pred}<div class="faint" style="font-size:12.5px;margin-top:6px">Zone rouge : cases qu'il peut frapper ce tour.</div>`;
   } else {
-    card.innerHTML = `<h3>${esc(u.name)}</h3><div class="muted" style="font-size:13px">${u.id === "hero" ? CLS(S.cls).n : u.merc ? `Mercenaire · ${MERCS[u.merc].role}` : "Compagnon"} · déplacement ${u.mv} · portée ${u.range}</div>${bar("Santé", u.hp, u.max, "#c63d30")}${sts ? `<div style="margin-top:6px">${sts}</div>` : ""}<div style="margin-top:6px;font-size:13px" class="muted">${u.acted ? "A déjà agi ce tour." : u.moved ? "S'est déplacé : peut encore agir." : "Cases bleues : déplacement. Ennemi rouge : attaque."}</div>`;
+    card.innerHTML = `<h3>${esc(u.name)}</h3><div class="muted" style="font-size:13px">${u.id === "hero" ? clsName() : u.merc ? `Mercenaire · ${MERCS[u.merc].role}` : "Compagnon"} · déplacement ${u.mv} · portée ${u.range}</div>${bar("Santé", u.hp, u.max, "#c63d30")}${sts ? `<div style="margin-top:6px">${sts}</div>` : ""}<div style="margin-top:6px;font-size:13px" class="muted">${u.acted ? "A déjà agi ce tour." : u.moved ? "S'est déplacé : peut encore agir." : "Cases bleues : déplacement. Ennemi rouge : attaque."}</div>`;
   }
 }
 function showLoot(loot, lost, xp) {
@@ -4949,7 +5318,7 @@ function lookEditor(lk, pplId, clsId) {
 }
 function vPerso() {
   viewEl.innerHTML = `<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));align-items:start">
-   <div class="panel stage" style="min-height:440px"><canvas id="stage" aria-label="Votre personnage"></canvas><div class="nameline"><b style="font-family:var(--f-display);font-size:18px">${esc(S.name)}</b><span class="muted">${CLS(S.cls).n} · ${PPL(S.ppl).n} · niveau ${S.lvl}</span></div></div>
+   <div class="panel stage" style="min-height:440px"><canvas id="stage" aria-label="Votre personnage"></canvas><div class="nameline"><b style="font-family:var(--f-display);font-size:18px">${esc(S.name)}</b><span class="muted">${clsName()} · ${PPL(S.ppl).n} · niveau ${S.lvl}</span></div></div>
    <div class="grid"><div class="panel"><div class="ph">Apparence <small>modifiable à tout moment</small></div>${lookEditor(S.look, S.ppl, S.cls)}</div>
     <div class="panel"><div class="ph">Compagnons <small>chenil niveau ${chenil()}</small></div><div class="list" style="gap:8px">${Object.entries(PETS).map(([id, P]) => { const own = S.pet.owned.includes(id), act = S.pet.id === id, l = S.pet.lvl[id] || 1, xp = S.pet.xp[id] || 0;
       return `<div class="row ${act ? "on" : ""}" style="cursor:default;align-items:flex-start"><canvas data-pet="${id}" width="120" height="90" style="width:60px;height:45px;flex:none"></canvas><div class="t"><b>${P.n}${own ? ` <span class="muted" style="font-size:13px">niv. ${l}</span>` : ""}</b><span>${P.d}</span>
@@ -5009,6 +5378,8 @@ const ACT = {
   sell: d => { const o = findAny(d.u); if (!o) return; const v = sell(o.it, o.where); if (typeof v === "number") toast(`Vendu pour ${v} or.`); if (!S.stash.includes(o.it)) UI.invSel = null; rerender(); },
   tosalv: d => { UI.tab = "salv"; UI.sel = d.u; go("forge"); },
   learn: d => { const e = learnNode(d.n); toast(e || "Maîtrise apprise.", e ? "bad" : "gold"); rerender(); },
+  mtab: d => { UI.mtab = d.t; rerender(); },
+  master: d => { const m = (MASTERS[S.cls] || []).find(x => x.id === d.id); const e = chooseMaster(d.id); if (!e) SFX.play("level"); toast(e || `Votre classe évolue : ${m.n} !`, e ? "bad" : "gold"); rerender(); },
   respec: () => { const c = 50 + S.lvl * 10; if (S.gold < c) { toast("Or insuffisant.", "bad"); return; } S.gold -= c; S.mastery = []; clampVit(); save(); rerender(); },
   buy: d => { const o = SHOP[+d.i]; const left = o.limit ? o.limit - (S.bought[o.id] || 0) : 99; if (left <= 0) return; if (o.gold) { const p = shopPrice(o); if (S.gold < p) return; if (!addId(S.stash, o.id, o.n, 0, stashCap())) { toast("Réserve pleine.", "bad"); return; } S.gold -= p; } else { if (S.crys < o.crys) return; if (!addId(S.stash, o.id, o.n, 0, stashCap())) { toast("Réserve pleine.", "bad"); return; } S.crys -= o.crys; } S.bought[o.id] = (S.bought[o.id] || 0) + 1; save(); toast(`${IT[o.id].n} acheté.`); rerender(); },
   enter: d => { const dg = DG(d.d); if (!dg || !isFound(dg)) { toast("Ce lieu n'a pas encore été révélé.", "bad"); return; } if (dg.infinite && S.vit.hp < stats().hp * .3) { toast("Reposez-vous avant de plonger dans l'Abysse.", "bad"); return; } if (S.lvl < dg.rec - 1) { toast(`Trop dangereux : niveau ${dg.rec - 1} minimum.`, "bad"); return; } startExpedition(d.d, UI.rank[d.d] || 0); },
