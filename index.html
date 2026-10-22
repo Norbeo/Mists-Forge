@@ -579,20 +579,17 @@ h3{color:var(--gold-hi)}
 @media (orientation:landscape) and (max-height:520px){.navb.on::before{display:none}}
 @keyframes halo{50%{opacity:.55;transform:scaleX(.85)}}
 
-/* Carte parchemin : boutons runiques */
-.scene.mapmode canvas{cursor:crosshair}
-.scene.mapmode .hint{color:#3a2510;text-shadow:none;font-size:13px;left:0;width:100%;text-align:center;bottom:22px;opacity:.7}
-.maplabels{position:absolute;inset:0;pointer-events:none}
-.runebtn{pointer-events:auto;position:absolute;translate:-50% -100%;display:flex;align-items:center;gap:5px;white-space:nowrap;cursor:pointer;
+/* Village : boutons runiques */
+.vlabels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.runebtn{pointer-events:auto;position:absolute;left:0;top:0;will-change:transform;display:flex;align-items:center;gap:5px;white-space:nowrap;cursor:pointer;
   font-family:var(--f-display);font-weight:600;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#f6e2b4;padding:4px 9px 4px 7px;border-radius:2px;border:1px solid transparent;
   background:linear-gradient(180deg,rgba(34,24,15,.94),rgba(14,10,7,.94)) padding-box,var(--gild) border-box;box-shadow:0 3px 8px rgba(40,20,5,.55),inset 0 1px 0 rgba(255,230,180,.15);transition:box-shadow .2s,color .2s,transform .2s}
-.runebtn.below{translate:-50% 0}
 .runebtn svg{width:11px;height:11px;color:var(--mc);filter:drop-shadow(0 0 3px var(--mc))}
 .runebtn em{font-style:normal;font-family:var(--f-num);font-size:10px;letter-spacing:0;min-width:15px;height:15px;border-radius:8px;display:grid;place-items:center;background:radial-gradient(circle at 40% 35%,#ff7a5a,#8a1a10);color:#fff}
-.runebtn:hover,.runebtn.hot,.runebtn:focus-visible{color:#fff6dc;box-shadow:0 0 0 1px rgba(0,0,0,.5),0 0 14px var(--mc),0 0 30px color-mix(in srgb,var(--mc) 45%,transparent);transform:translateY(-1px)}
-.runebtn.proj{font-size:9.5px;opacity:.85;padding:3px 7px}
+.runebtn:hover,.runebtn.hot,.runebtn:focus-visible{color:#fff6dc;box-shadow:0 0 0 1px rgba(0,0,0,.5),0 0 14px var(--mc),0 0 30px color-mix(in srgb,var(--mc) 45%,transparent)}
+.runebtn.proj{font-size:9.5px;padding:3px 7px;opacity:0;pointer-events:none;transition:opacity .2s}.runebtn.proj.hot{opacity:1;pointer-events:auto}
 .runebtn.proj svg{display:none}
-@media (max-width:700px){.scene.mapmode .hint{display:none}#hud.panel,#hud{background-size:14px 14px,14px 14px,14px 14px,14px 14px,auto,auto,auto,auto}.brand{padding-left:8px}.runebtn{font-size:9.5px;letter-spacing:.08em;padding:3px 6px 3px 5px;gap:3px}.runebtn svg{width:9px;height:9px}}
+@media (max-width:700px){.scene .hint{display:none}#hud.panel,#hud{background-size:14px 14px,14px 14px,14px 14px,14px 14px,auto,auto,auto,auto}.brand{padding-left:8px}.runebtn{font-size:9.5px;letter-spacing:.08em;padding:3px 6px 3px 5px;gap:3px}.runebtn svg{width:9px;height:9px}}
 </style>
 </head><body>
 <div id="app">
@@ -2596,10 +2593,370 @@ function drawEnemy(x, kind, cx, cy, s, t, big = 1, tint) {
 }
 function isoBlock(x, px, py, w, h, col) { const g = x.createLinearGradient(px, py, px + w, py + h); g.addColorStop(0, shade(col, .15)); g.addColorStop(1, shade(col, -.35)); x.fillStyle = g; x.fillRect(px, py, w, h); x.strokeStyle = "rgba(0,0,0,.6)"; x.lineWidth = 1; x.strokeRect(px, py, w, h); }
 
+/* ═══════════════════════ Personnages · rendu « figurine peinte » ═══════════════════════
+   Vue de trois quarts tournée vers la droite, pieds à l'origine, unité k. Repères fixes partagés avec le reste du
+   jeu : tête centrée en y = -37k, main armée en (9k, -20k).
+   La CLASSE décide de la tenue (silhouette, couvre-chef, pièces d'armure) ; l'ARMURE équipée décide du matériau
+   de ces pièces (cuir, mailles, fourrure, étoffe runique, fer de cendre, sang, givre, aube). */
+const OUTFIT = {
+  forgeron:   { top: "apron",   head: "goggles", cape: 0,      pauld: "one",  sleeve: "rolled", boots: "heavy", belt: "tools" },
+  marchand:   { top: "coat",    head: "cap",     cape: 0,      pauld: 0,      sleeve: "cuff",   boots: "tall",  belt: "pouch", pack: 1, collar: "fur" },
+  eclaireur:  { top: "jerkin",  head: "hood",    cape: "short",pauld: 0,      sleeve: "bracer", boots: "soft",  belt: "strap", quiver: 1 },
+  alchimiste: { top: "labcoat", head: "lenses",  cape: 0,      pauld: 0,      sleeve: "cuff",   boots: "tall",  belt: "vials", bando: "vials" },
+  gardien:    { top: "plate",   head: "helm",    cape: "long", pauld: "both", sleeve: "plate",  boots: "plate", belt: "plate", tabard: 1 },
+  arcaniste:  { top: "robe",    head: "cowl",    cape: "long", pauld: 0,      sleeve: "bell",   boots: 0,       belt: "sash",  runes: 1, collar: "high" },
+  chasseur:   { top: "duster",  head: "hat",     cape: 0,      pauld: 0,      sleeve: "cuff",   boots: "tall",  belt: "pouch", bando: "belt", scarf: 1 },
+  barde:      { top: "doublet", head: "beret",   cape: "half", pauld: 0,      sleeve: "puff",   boots: "tall",  belt: "sash" },
+  duelliste:  { top: "frock",   head: "mask",    cape: "half", pauld: 0,      sleeve: "cuff",   boots: "tall",  belt: "sash",  collar: "high" },
+  druide:     { top: "rags",    head: "antler",  cape: 0,      pauld: 0,      sleeve: "bell",   boots: "wrap",  belt: "rope",  mantle: 1 },
+};
+const MATERIAL = {
+  leather: { b: "#5e4128", h: "#93693f", l: "#22150b", metal: 0 },
+  mail:    { b: "#7a828b", h: "#e2e7ec", l: "#2c3238", metal: 1, fx: "chain" },
+  steel:   { b: "#7a828b", h: "#e2e7ec", l: "#2c3238", metal: 1 },
+  bear:    { b: "#5a3e26", h: "#8e6a44", l: "#24170c", metal: 0, fx: "fur" },
+  robe:    { b: "#3e2a62", h: "#8a64c8", l: "#160c28", metal: 0, fx: "rune" },
+  ash:     { b: "#2f2a28", h: "#6a605a", l: "#0c0a09", metal: 1, fx: "ember" },
+  blood:   { b: "#5c1618", h: "#b84040", l: "#1e0607", metal: 1, fx: "blood" },
+  frost:   { b: "#55788e", h: "#dff3ff", l: "#1a2c3a", metal: 1, fx: "frost" },
+  dawn:    { b: "#9a7434", h: "#fff0c2", l: "#3e2a0e", metal: 1, fx: "dawn" },
+};
+function heroLook(clsId, pplId, look, equip) {
+  const c = CLS(clsId), p = PPL(pplId), lk = Object.assign(defaultLook(pplId), look || {});
+  const skin = shade(p.skin, LOOK.skin[lk.skin] || 0);
+  const cloakBase = LOOK.cloak[lk.cloak] || shade(c.col, -.45);
+  const L = { cls: c.id, skin, hair: lk.hairCol, cloak: cloakBase, accent: c.col, weapon: c.weapon, ears: p.ears, beard: lk.beard, tusks: p.tusks, horns: p.horns, short: p.short, glow: p.glow,
+    leaf: p.leaf, fur: "#8a6a48", body: lk.body, hairStyle: lk.hair, mark: lk.mark, eyes: LOOK.eyes[lk.eyes] || "#2a1a0e", armor: "leather", shield: null, amulet: false };
+  if (equip) {
+    const w = equip.arme && IT[equip.arme.id]; if (w) L.weapon = WEAPON_STYLE[w.ic] || c.weapon;
+    const a = equip.armure && IT[equip.armure.id]; if (a) L.armor = a.tint || "leather";
+    const s = equip.bouclier && IT[equip.bouclier.id]; if (s) L.shield = s.tint === "steel" || s.tint === "tower" || s.tint === "frost" ? "steel" : "wood";
+    L.amulet = !!equip.amulette;
+  }
+  return L;
+}
+
+function drawChar(x, cx, cy, s, L, t = 0, face = 1) {
+  const fem = L.body === "f", k = s * (L.short ? .84 : 1), OF = OUTFIT[L.cls] || OUTFIT.forgeron;
+  const stone = L.stone || (typeof L.armor === "string" && L.armor[0] === "#");
+  const MT = MATERIAL[L.armor] || MATERIAL.leather;
+  const br = Math.sin(t * 2.2) * .45, sway = Math.sin(t * 1.6) * .9;
+  // filtre « pierre » (statue) : toute couleur ramenée à un calcaire doré
+  const C = col => { if (!stone || typeof col !== "string" || col[0] !== "#") return col; const n = parseInt(col.slice(1, 7), 16), l = ((n >> 16) * .3 + ((n >> 8) & 255) * .59 + (n & 255) * .11) / 255; const v = 70 + l * 150; return `rgb(${v + 14 | 0},${v + 6 | 0},${v - 12 | 0})`; };
+  const GOLD = C("#cda45e"), GOLD_HI = C("#f6dc9a"), GOLD_LO = C("#7a5a28"), OUT = "rgba(10,7,5,.88)";
+  const lift = y => y < -16 ? br * Math.min(1, (-y - 16) / 12) : 0; // la respiration soulève le buste
+  const P = d => { const p = new Path2D(), a = d.trim().split(/[\s,]+/); let i = 0, cx0 = 0, cy0 = 0, sx0 = 0, sy0 = 0; const n = () => +a[i++];
+    const T = (X, Y) => [X * k, (Y - lift(Y)) * k];
+    while (i < a.length) { const c = a[i++], rel = c === c.toLowerCase(), ox = rel ? cx0 : 0, oy = rel ? cy0 : 0;
+      switch (c.toUpperCase()) {
+        case "M": cx0 = n() + ox; cy0 = n() + oy; sx0 = cx0; sy0 = cy0; p.moveTo(...T(cx0, cy0)); break;
+        case "L": cx0 = n() + ox; cy0 = n() + oy; p.lineTo(...T(cx0, cy0)); break;
+        case "Q": { const qx = n() + ox, qy = n() + oy; cx0 = n() + ox; cy0 = n() + oy; p.quadraticCurveTo(...T(qx, qy), ...T(cx0, cy0)); break; }
+        case "C": { const ax = n() + ox, ay = n() + oy, bx = n() + ox, by2 = n() + oy; cx0 = n() + ox; cy0 = n() + oy; p.bezierCurveTo(...T(ax, ay), ...T(bx, by2), ...T(cx0, cy0)); break; }
+        case "O": { const ex = n(), ey = n(), rx = n(), ry = n(); const [X, Yy] = T(ex, ey); p.moveTo(X + rx * k, Yy); p.ellipse(X, Yy, rx * k, ry * k, 0, 0, Math.PI * 2); p.closePath(); break; }
+        case "Z": p.closePath(); cx0 = sx0; cy0 = sy0; break;
+      } } return p; };
+  const lin = (x0, y0, x1, y1, ...st) => { const g = x.createLinearGradient(x0 * k, (y0 - lift(y0)) * k, x1 * k, (y1 - lift(y1)) * k); st.forEach((c, i) => g.addColorStop(i / (st.length - 1), C(c))); return g; };
+  const rad = (x0, y0, r0, x1, y1, r1, ...st) => { const g = x.createRadialGradient(x0 * k, (y0 - lift(y0)) * k, r0 * k, x1 * k, (y1 - lift(y1)) * k, r1 * k); st.forEach((c, i) => g.addColorStop(i / (st.length - 1), C(c))); return g; };
+  const F = (d, fill, ol = 1) => { const p = typeof d === "string" ? P(d) : d; x.fillStyle = typeof fill === "string" ? C(fill) : fill; x.fill(p); if (ol) { x.strokeStyle = OUT; x.lineWidth = Math.max(.5, .42 * k) * ol; x.stroke(p); } return p; };
+  const S = (d, col, w) => { x.strokeStyle = C(col); x.lineWidth = w * k; x.stroke(typeof d === "string" ? P(d) : d); };
+  const Y = y => (y - lift(y)) * k;
+  const cloth = (base, a = .32, b = -.5) => lin(-8, -31, 8, -8, shade(base, a), base, shade(base, b));
+  const metal = M => lin(-8, -31, 8, -12, M.h, M.b, M.l, M.b);
+  const matFill = M => M.metal ? metal(M) : cloth(M.b, .3, -.55);
+  const cl = L.cloak, ac = L.accent, skin = L.skin;
+  const sw = fem ? 6.2 : 7.4, ww = fem ? 4.2 : 4.9, hw = fem ? 5.9 : 5.5; // épaules, taille, hanches
+  x.save(); x.translate(cx, cy); x.scale(face, 1); x.lineJoin = "round"; x.lineCap = "round";
+
+  /* ombre portée */
+  { const g = x.createRadialGradient(0, 0, 1, 0, 0, 13 * k); g.addColorStop(0, "rgba(0,0,0,.6)"); g.addColorStop(1, "rgba(0,0,0,0)"); x.fillStyle = g; x.beginPath(); x.ellipse(0, 0, 13 * k, 4.6 * k, 0, 0, 7); x.fill(); }
+
+  /* ── arrière-plan : cape, carquois, sac, bouclier ── */
+  if (OF.cape === "long" || OF.cape === "half") {
+    const half = OF.cape === "half", bot = half ? -10 : -1.2;
+    F(`M ${-sw + .6} -30.5 C ${-sw - 3} -22 ${-sw - 5.5 + sway * .3} -10 ${-sw - 4.5 + sway * .5} ${bot} Q -2 ${bot + 1.6} ${half ? 1 : 5.5 + sway * .3} ${bot - .4} C ${half ? 1 : 6} -14 ${half ? 0 : 4} -24 ${half ? 0 : sw - 1} -30.5 Z`, lin(-10, -30, 4, 0, shade(cl, .1), shade(cl, -.4), shade(cl, -.7)));
+    S(`M ${-sw - 4.5 + sway * .5} ${bot} Q -2 ${bot + 1.6} ${half ? 1 : 5.5 + sway * .3} ${bot - .4}`, GOLD, .55);
+    x.globalAlpha = .4; for (const f of [-3.5, -1]) S(`M ${-sw + 1 + f * .3} -28 Q ${-sw + f} -16 ${-sw + f * 1.3 + sway * .3} ${bot + .6}`, "#000", .45); x.globalAlpha = 1;
+  }
+  if (OF.quiver) { F("M -6.5 -33 L -3 -34.5 L 1 -17 L -2.4 -16 Z", lin(-6, -30, 0, -16, "#7a5232", "#3a2412")); S("M -5.6 -31 L -2.2 -32.4 M -3.4 -21 L -.2 -22.2", GOLD, .5);
+    for (const [ax, c] of [[-5.6, "#d8d0c0"], [-4.4, "#b03a2a"], [-3.2, "#d8d0c0"]]) { S(`M ${ax} -33 L ${ax - .8} -37.5`, "#5a3a1a", .45); F(`M ${ax - .8} -37.5 L ${ax - 1.8} -39.4 L ${ax - .1} -38.6 Z`, c, .5); } }
+  if (OF.pack) { F("M -9.5 -29 Q -11 -20 -9 -15 L -4 -15 L -4 -29 Z", lin(-10, -29, -4, -15, "#7a5432", "#3a2414")); F("M -10.4 -31.5 Q -7 -33.5 -3.6 -31.5 L -3.6 -28.6 Q -7 -30.4 -10.4 -28.6 Z", lin(0, -33, 0, -28, "#a88a5a", "#5a4224")); S("M -9.4 -24 L -4.4 -24", GOLD, .5); }
+  if (L.shield) drawShield(x, -9.2 * k, Y(-20.5), k, L.shield, true, C);
+
+  /* ── bras arrière ── */
+  const sleeveCol = { apron: shade(cl, .05), coat: cl, jerkin: shade(cl, .1), labcoat: "#c8c0ae", plate: MT.b, robe: cl, duster: MT.b, doublet: ac, frock: cl, rags: shade(cl, .1) }[OF.top] || cl;
+  F(`M ${-sw + .4} -30 C ${-sw - 2.4} -27 ${-sw - 2.6} -21 ${-sw - 1.6} -16.6 L ${-sw + .8} -16.6 C ${-sw + .6} -21 ${-sw + 1.2} -25 ${-sw + 2.4} -28.4 Z`, lin(-sw - 2, -28, -sw + 2, -18, shade(sleeveCol, -.25), shade(sleeveCol, -.6)));
+  F(P(`M ${-sw - 1.9} -17.2 Q ${-sw - 2.3} -14.4 ${-sw - .5} -14 Q ${-sw + 1.1} -14.6 ${-sw + .9} -17.2 Z`), OF.sleeve === "plate" || OF.top === "apron" ? lin(0, -17, 0, -14, "#4a3424", "#1e140c") : shade(skin, -.2));
+
+  /* ── jambes et bottes ── */
+  const longSkirt = OF.top === "robe" || OF.top === "rags";
+  if (!longSkirt) {
+    const trou = OF.top === "plate" ? MT.b : OF.top === "doublet" ? shade(cl, -.35) : "#241b14";
+    for (const [lx, far] of [[-2.5, 1], [2.3, 0]]) { const d = far ? -.35 : 0;
+      F(`M ${lx - 2} -16.5 L ${lx + 2} -16.5 L ${lx + 1.45} -6 L ${lx - 1.35} -6 Z`, lin(lx - 2, -16, lx + 2, -6, shade(trou, d), shade(trou, -.5 + d)));
+      if (OF.boots === "plate") { F(`M ${lx - 1.8} -11 L ${lx + 1.8} -11 L ${lx + 1.7} -6 L ${lx - 1.6} -6 Z`, metal(MT)); F(P(`M ${lx - .9} -11.8 Q ${lx} -13 ${lx + 1.1} -11.8 Q ${lx} -10.6 ${lx - .9} -11.8 Z`), lin(0, -13, 0, -10.6, MT.h, MT.l), .6); }
+      const top = OF.boots === "tall" ? -11 : OF.boots === "heavy" ? -8.4 : OF.boots === "wrap" ? -9 : -7.6;
+      const bc = OF.boots === "plate" ? null : OF.boots === "wrap" ? "#6a5a40" : OF.boots === "soft" ? "#4a3626" : "#2a1c12";
+      if (bc) F(`M ${lx - 1.9} ${top} L ${lx + 1.8} ${top} L ${lx + 1.9} -1.8 Q ${lx + 4.4} -1.6 ${lx + 4.2} 0 L ${lx - 2.1} 0 Z`, lin(lx - 2, top, lx + 3, 0, shade(bc, .1 + d), shade(bc, -.45 + d)));
+      else F(`M ${lx - 1.9} -6 L ${lx + 1.8} -6 L ${lx + 2} -1.8 Q ${lx + 4.6} -1.6 ${lx + 4.4} 0 L ${lx - 2.1} 0 Z`, metal(MT));
+      if (OF.boots === "tall") { F(`M ${lx - 2.2} ${top - .8} L ${lx + 2.1} ${top - .8} L ${lx + 2} ${top + .7} L ${lx - 2.1} ${top + .7} Z`, shade(bc, .08 + d), .7); }
+      if (OF.boots === "wrap") { x.globalAlpha = .55; for (let r = 0; r < 4; r++) S(`M ${lx - 1.8} ${top + 1 + r * 1.7} L ${lx + 1.8} ${top + 1.8 + r * 1.7}`, "#2a2016", .35); x.globalAlpha = 1; }
+      if (OF.boots === "heavy") F(`M ${lx - .4} ${top + .4} L ${lx + .6} ${top + .4} L ${lx + .6} ${top + 1.4} L ${lx - .4} ${top + 1.4} Z`, GOLD, .5);
+    }
+  }
+
+  /* ── buste : silhouette de la tenue ── */
+  const torso = `M ${-sw} -30 C ${-sw - .4} -26 ${-ww - .6} -22 ${-ww} -19 L ${-hw} -15.6 L ${hw} -15.6 L ${ww} -19 C ${ww + .6} -22 ${sw + .4} -26 ${sw} -30 Q 0 -31.6 ${-sw} -30 Z`;
+  const skirt = (bot, wide, fill, slit) => { F(`M ${-hw + .2} -17 C ${-hw - .4} -12 ${-wide} ${bot + 3} ${-wide - .4 + sway * .2} ${bot} Q 0 ${bot + 1.3} ${wide + .4 + sway * .2} ${bot - .3} C ${wide} ${bot + 3} ${hw + .4} -12 ${hw - .2} -17 Z`, fill);
+    if (slit) S(`M ${slit} -16.5 L ${slit + .4} ${bot + .4}`, "rgba(0,0,0,.6)", .55); };
+  switch (OF.top) {
+    case "apron": // tunique aux manches retroussées, tablier de cuir épais
+      F(torso, cloth(shade(cl, .15)));
+      skirt(-8.5, 5.4, cloth("#3a2a1e", .2, -.5));
+      F("M -4.6 -28.6 L 4.6 -28.6 L 5.2 -19 L 6.2 -8 Q 0 -6.8 -5.4 -8 L -4.4 -19 Z", matFill(MT));
+      S("M -4.4 -28.4 L -6.4 -31 M 4.4 -28.4 L 6.2 -31", "#24170c", .7); S("M -3.6 -27.6 L 3.8 -27.6", GOLD, .4);
+      F("M -1.6 -24.6 L 1.8 -24.6 L 1.8 -21.6 L -1.6 -21.6 Z", "rgba(0,0,0,.25)", .6); S("M 0 -24 L 0 -22.2 M -.9 -23.2 L .9 -23.2", GOLD_HI, .35);
+      break;
+    case "coat":
+      F(torso, cloth(cl)); skirt(-5.6, 6.6, cloth(shade(cl, -.08)), 1.2);
+      F("M -2.4 -29.4 L 2.6 -29.4 L 3 -16 L -2.2 -16 Z", lin(0, -29, 0, -16, shade(ac, .1), shade(ac, -.45)));
+      for (let i = 0; i < 4; i++) F(P(`M 2.4 ${-27.4 + i * 2.6} m 0 0 L 3 ${-27.4 + i * 2.6} L 3 ${-26.8 + i * 2.6} L 2.4 ${-26.8 + i * 2.6} Z`), GOLD, .3);
+      S(`M ${-hw + .4} -16.4 Q 0 -15.6 1.2 -16`, GOLD, .45);
+      break;
+    case "jerkin":
+      F(torso, matFill(MT)); skirt(-10.4, 5.6, matFill(MT), 2.4);
+      x.globalAlpha = .35; for (let i = 0; i < 4; i++) S(`M ${-ww + .6} ${-27 + i * 2.6} Q 0 ${-26.2 + i * 2.6} ${ww - .4} ${-27 + i * 2.6}`, "#000", .35); x.globalAlpha = 1;
+      S("M -5.6 -29.6 L 5.2 -16.8", "#2a1a0e", 1.4); S("M -5.6 -29.6 L 5.2 -16.8", "#6a4a2a", .8); F(P("M -.6 -23.6 L .8 -23.6 L .8 -22.2 L -.6 -22.2 Z"), GOLD, .4);
+      break;
+    case "labcoat":
+      F(torso, cloth("#bdb4a0", .2, -.55)); skirt(-4.8, 6.4, cloth("#aaa08a", .2, -.55), 1.4);
+      F("M -2 -29.4 L 2.2 -29.4 L 2.4 -16.4 L -1.8 -16.4 Z", lin(0, -29, 0, -16, shade(MT.b, .2), MT.l));
+      S("M 2.4 -29 L 2.6 -5.4", "rgba(0,0,0,.45)", .5); for (let i = 0; i < 3; i++) F(P(`M 3.2 ${-26 + i * 3.2} L 3.9 ${-26 + i * 3.2} L 3.9 ${-25.3 + i * 3.2} L 3.2 ${-25.3 + i * 3.2} Z`), GOLD, .3);
+      break;
+    case "plate":
+      F(torso, metal(MT)); skirt(-10.6, 6, metal(MT));
+      for (let i = 0; i < 3; i++) S(`M ${-hw - .3 - i * .3} ${-14.4 + i * 1.6} Q 0 ${-13.4 + i * 1.6} ${hw + .3 + i * .3} ${-14.4 + i * 1.6}`, "rgba(0,0,0,.55)", .45);
+      S(`M ${-sw + 1.6} -28 Q 0 -22.4 ${sw - 1.4} -28`, MT.h, .5); S("M 0 -29.8 L 0 -20", "rgba(0,0,0,.35)", .5);
+      break;
+    case "robe":
+      F(torso, cloth(cl, .25)); skirt(-.6, 7.6, cloth(shade(cl, -.05), .2, -.6));
+      F("M -1.8 -29.6 L 2 -29.6 L 3 -1 Q .4 -.4 -1.6 -1 Z", lin(0, -29, 0, -1, shade(ac, -.05), shade(ac, -.6)));
+      S("M -1.8 -29.6 L -1.6 -1 M 2 -29.6 L 3 -1", GOLD, .45); for (let i = 0; i < 4; i++) S(`M .2 ${-24 + i * 5.5} l .5 -1.3 l .5 1.3 l -.5 1.3 z`, GOLD_HI, .35);
+      S(`M ${-7.8 + sway * .2} -.6 Q 0 .7 ${8 + sway * .2} -.9`, GOLD, .6);
+      break;
+    case "duster":
+      F(torso, matFill(MT)); skirt(-3.6, 7, matFill(MT), 1.8);
+      F("M -2.2 -29.4 L 2.2 -29.4 L 2.4 -16.4 L -2 -16.4 Z", lin(0, -29, 0, -16, "#5a4a3a", "#241a12"));
+      S(`M ${-hw - .6} -6 Q 0 -5 ${hw + 1} -6.4`, "rgba(0,0,0,.4)", .5);
+      break;
+    case "doublet":
+      F(torso, cloth(ac, .25, -.55)); skirt(-12.6, 5.8, cloth(ac, .1, -.6));
+      for (let i = -2; i <= 2; i++) S(`M ${i * 1.9} -28.8 L ${i * 2.1} -14`, "rgba(0,0,0,.35)", .45);
+      x.globalAlpha = .9; for (let i = -2; i <= 2; i++) S(`M ${i * 1.95 + .9} -26 L ${i * 2.05 + .9} -18`, shade(cl, .2), .5); x.globalAlpha = 1;
+      S(`M ${-sw + .4} -29.6 Q 0 -27.6 ${sw - .4} -29.6`, GOLD, .55);
+      break;
+    case "frock":
+      F(torso, cloth(cl, .3)); skirt(-6.4, 6.2, cloth(shade(cl, -.1), .2), 1.6);
+      F("M -2.6 -29.4 L 2.2 -29.4 L 1.2 -17 L -2 -17 Z", matFill(MT));
+      for (let i = 0; i < 4; i++) { F(P(`M -3.6 ${-27 + i * 2.6} L -2.8 ${-27 + i * 2.6} L -2.8 ${-26.3 + i * 2.6} L -3.6 ${-26.3 + i * 2.6} Z`), GOLD, .3); F(P(`M 2.6 ${-27 + i * 2.6} L 3.4 ${-27 + i * 2.6} L 3.4 ${-26.3 + i * 2.6} L 2.6 ${-26.3 + i * 2.6} Z`), GOLD, .3); }
+      break;
+    case "rags":
+      F(torso, cloth(cl, .2)); const hem = []; for (let i = 0; i <= 8; i++) hem.push(`${(-8 + i * 2).toFixed(1)} ${(i % 2 ? -2.4 : -.4) + (hash(i, 3) - .5)}`);
+      F(`M ${-hw + .2} -17 C ${-hw - .6} -11 -7.6 -5 -8 -.6 L ${hem.join(" L ")} C 7.6 -5 ${hw + .6} -11 ${hw - .2} -17 Z`, cloth(shade(cl, -.1), .15, -.6));
+      F(`M -6 -14 C -6.6 -9 -6 -6 -5 -4 L ${hem.slice(1, 7).join(" L ")} C 5.6 -6 5.4 -10 5.4 -14 Z`, cloth(shade(cl, .25), .15, -.5), .7);
+      break;
+  }
+  // effets de matériau sur la pièce d'armure principale
+  const armorZone = P(torso);
+  if (MT.fx) { x.save(); x.clip(armorZone);
+    if (MT.fx === "chain") { x.strokeStyle = C("rgba(20,24,30,.55)"); x.lineWidth = .4 * k; for (let r = 0; r < 6; r++) { x.beginPath(); for (let i = -4; i <= 4; i++) x.arc(i * 1.7 * k + (r % 2) * .85 * k, Y(-29 + r * 2.3), .85 * k, 0, Math.PI); x.stroke(); } }
+    if (MT.fx === "ember") { x.strokeStyle = `rgba(255,${110 + Math.sin(t * 3) * 40 | 0},40,.95)`; x.lineWidth = .55 * k; x.stroke(P("M -4.5 -28 L -2.4 -24 L -3.6 -20.5 M 4 -27 L 2.2 -23.4 L 3.4 -19.6 M -.5 -26 L .6 -22")); glow(x, 0, Y(-23), 9 * k, "#ff7a2a", .22); }
+    if (MT.fx === "frost") { x.strokeStyle = "rgba(230,250,255,.8)"; x.lineWidth = .35 * k; x.stroke(P("M -3 -27 L -1.6 -25.4 L -3 -23.8 M -1.6 -25.4 L 0 -25.4 M 3 -24 L 4 -22.4 M 2.4 -21 L 3.6 -20.4")); glow(x, 0, Y(-24), 9 * k, "#9fdcff", .18); }
+    if (MT.fx === "dawn") glow(x, 0, Y(-24), 10 * k, "#ffd27a", .28 + Math.sin(t * 2) * .06);
+    if (MT.fx === "blood") { x.strokeStyle = "rgba(255,80,60,.7)"; x.lineWidth = .45 * k; x.stroke(P("M -3.4 -27 Q -1 -24 -3 -21 M 3 -26 Q 1.2 -23.6 3.2 -20.6")); }
+    if (MT.fx === "rune") { x.strokeStyle = `rgba(200,160,255,${.6 + Math.sin(t * 2.4) * .25})`; x.lineWidth = .4 * k; x.stroke(P("M -4 -24 L -3 -26 L -2 -24 L -3 -22 Z M 3 -22 L 4 -24 L 5 -22")); }
+    x.restore(); }
+  if (OF.tabard) { F("M -2.6 -29 L 2.8 -29 L 3.4 -9.4 L .2 -7.4 L -3 -9.4 Z", lin(0, -29, 0, -8, shade(ac, .05), shade(ac, -.6))); S("M -2.6 -29 L -3 -9.4 L .2 -7.4 L 3.4 -9.4 L 2.8 -29", GOLD, .45);
+    S("M .2 -25.6 L .2 -19 M -1.6 -23.6 L 2 -21 M 2 -23.6 L -1.6 -21", GOLD_HI, .5); }
+  if (OF.bando === "vials") { S("M -5.6 -29.2 L 4.8 -17", "#3a2616", 1.3); const vc = ["#4fdf6a", "#ff7a4a", "#7ab8ff", "#d070ff"];
+    for (let i = 0; i < 4; i++) { const vx = -4.2 + i * 2.5, vy = -27.6 + i * 2.9; F(P(`M ${vx - .6} ${vy - 1.4} L ${vx + .6} ${vy - 1.4} L ${vx + .8} ${vy + 1.2} Q ${vx} ${vy + 1.9} ${vx - .8} ${vy + 1.2} Z`), vc[i], .5); glow(x, vx * k, Y(vy), 2.4 * k, vc[i], .5); } }
+  if (OF.bando === "belt") { S("M -5.8 -29.4 L 4.8 -16.6", "#2a1a0e", 1.5); for (let i = 0; i < 5; i++) F(P(`M ${-4.8 + i * 2.1} ${-28.6 + i * 2.4} l .9 -.2 l .2 1.1 l -.9 .2 z`), GOLD, .3); }
+
+  /* ── ceinture ── */
+  { const by = -17.6; F(`M ${-ww - .7} ${by - .6} L ${ww + .7} ${by - .6} L ${ww + .8} ${by + 1.6} L ${-ww - .8} ${by + 1.6} Z`, OF.belt === "sash" ? lin(0, by, 0, by + 2, shade(ac, .1), shade(ac, -.5)) : OF.belt === "rope" ? "#7a6440" : OF.belt === "plate" ? metal(MT) : "#24170c", .8);
+    if (OF.belt === "sash") F(P(`M ${ww - 1} ${by + 1} Q ${ww + .6} ${by + 4} ${ww + 1.6 + sway * .3} ${by + 7} L ${ww} ${by + 6.6} Q ${ww - .6} ${by + 3.6} ${ww - 2.2} ${by + 1.4} Z`), shade(ac, -.25), .6);
+    else if (OF.belt !== "rope") { F(P(`M -1.2 ${by - .9} L 1.4 ${by - .9} L 1.4 ${by + 1.9} L -1.2 ${by + 1.9} Z`), lin(0, by - 1, 0, by + 2, GOLD_HI, GOLD_LO), .6); F(P(`M -.4 ${by} L .6 ${by} L .6 ${by + 1} L -.4 ${by + 1} Z`), "#1a120a", 0); }
+    if (OF.belt === "tools") { S(`M 3.6 ${by + 1.4} L 4.6 ${by + 6}`, "#6a4a2a", .7); F(P(`M 3.8 ${by + 5.6} L 5.8 ${by + 5.2} L 6 ${by + 6.6} L 4 ${by + 7} Z`), "#7a828a", .6); F(P(`M -4.6 ${by + 1.4} L -2.4 ${by + 1.4} L -2.6 ${by + 4.6} L -4.4 ${by + 4.6} Z`), "#4a3220", .6); }
+    if (OF.belt === "pouch" || OF.belt === "vials") F(P(`M -4.8 ${by + 1.2} L -2.2 ${by + 1.2} Q -2 ${by + 4.4} -3.5 ${by + 4.6} Q -5 ${by + 4.4} -4.8 ${by + 1.2} Z`), lin(0, by, 0, by + 5, "#7a5232", "#2e1c0e"), .6);
+    if (OF.belt === "rope") { F(P(`M 2 ${by + 1.4} L 2.6 ${by + 5.6} L 1.6 ${by + 5.4} Z`), "#7a6440", .5); F(P(`O 2.1 ${by + 5.8} .9 .9`), GOLD, .4); } }
+
+  /* ── épaules : pauldrons, cols, mantelets ── */
+  const pauld = (sd, big) => { const px = sd * (sw - .6), r = big ? 4.4 : 3.6;
+    F(P(`M ${px - r} -28.4 C ${px - r} -33.6 ${px + r} -33.6 ${px + r} -28.4 Q ${px} -26.8 ${px - r} -28.4 Z`), rad(px - 1.4, -31.6, .2, px, -29.6, r + 1, MT.h, MT.b, MT.l));
+    S(`M ${px - r + .5} -28.6 Q ${px} -27.2 ${px + r - .5} -28.6`, GOLD, .5); S(`M ${px - r + 1.4} -30.6 Q ${px} -32.4 ${px + r - 1.4} -30.6`, "rgba(255,255,255,.35)", .35); };
+  if (OF.pauld === "both") { pauld(-1, 1); }
+  if (OF.cape === "short" || OF.mantle) { const fc = OF.mantle ? (L.armor === "bear" ? MT.b : "#6a5038") : cl;
+    F(`M ${-sw - 2} -27.4 C ${-sw - 1.6} -32.6 ${sw + 1.6} -32.6 ${sw + 2} -27.4 C ${sw + .8} -24 ${sw - 2} -24.6 0 -23.6 C ${-sw + 2} -24.6 ${-sw - .8} -24 ${-sw - 2} -27.4 Z`, cloth(fc, .25, -.5));
+    if (OF.mantle) { x.globalAlpha = .6; for (let i = -6; i <= 6; i += 1.5) S(`M ${i} -30.6 L ${i * 1.1 + .3} -25.6`, shade(fc, .35), .35); x.globalAlpha = 1; }
+    else S(`M ${-sw - 1.6} -27.2 C ${-sw + 1.4} -24.4 -1 -23.4 0 -23.6 C 1 -23.4 ${sw - 1.4} -24.4 ${sw + 1.6} -27.2`, GOLD, .45); }
+  if (OF.collar === "fur") F(`M ${-sw + .4} -30.6 Q 0 -27.2 ${sw - .2} -30.6 Q ${sw - 1} -33.4 0 -32.4 Q ${-sw + 1} -33.4 ${-sw + .4} -30.6 Z`, cloth("#8a7258", .3, -.4));
+  if (OF.collar === "high") F("M -3.4 -30.4 L -4.4 -35.4 Q -1 -33.8 1 -32.2 L 3 -35 L 3.4 -30.6 Q 0 -29.4 -3.4 -30.4 Z", cloth(OF.top === "robe" ? shade(cl, .15) : MT.metal ? MT.b : cl, .25));
+  if (OF.top === "robe" && L.armor !== "leather") F(`M ${-sw - .8} -28.4 C ${-sw} -32.4 ${sw} -32.4 ${sw + .8} -28.4 Q 0 -25.6 ${-sw - .8} -28.4 Z`, matFill(MT), .8);
+  if (OF.scarf) { F(`M -3.8 -31.6 Q 0 -29 3.6 -31.6 L 3.6 -29.4 Q 0 -27 -3.8 -29.4 Z`, cloth(ac, .2, -.4)); F(P(`M 2 -29.6 L 3.4 -24.4 L 1.6 -24.8 L 1 -29.2 Z`), shade(ac, -.25), .6); }
+  if (L.amulet) { S("O -2.2 -30.4 L 0 -26.6 L 2.2 -30.4", GOLD, .35); F(P("M 0 -26.6 1 1"), "#ff8a3d", .5); glow(x, 0, Y(-26.6), 4.5 * k, "#ff8a3d", .5); }
+
+  /* ── tête ── */
+  const hy = -37, H = (dx, dy) => `${dx} ${hy + dy}`;
+  const hood = !L.bare && (OF.head === "hood" || OF.head === "cowl");
+  const hairC = L.hair, hairD = shade(hairC, -.45), hairH = shade(hairC, .35);
+  // cou
+  F(`M -1.6 ${hy + 3} L 2.2 ${hy + 3} L 2.4 ${hy + 6.4} L -1.8 ${hy + 6.4} Z`, lin(0, hy + 3, 0, hy + 6.4, shade(skin, -.35), shade(skin, -.15)), .6);
+  // chevelure arrière (longue, tresses)
+  if (!hood && (L.hairStyle === 1 || L.hairStyle === 2)) { const ln = L.hairStyle === 1 ? 9.5 : 6;
+    F(`M ${H(-4.6, -2)} C ${H(-6.2, 3)} ${H(-5.4, ln - 1)} ${H(-3.6, ln)} L ${H(.4, ln - 2)} L ${H(1, 1)} Z`, lin(-5, hy, 0, hy + ln, hairC, hairD));
+    if (L.hairStyle === 2) { for (let i = 0; i < 5; i++) F(P(`O ${H(-4.6 - i * .1, 2.6 + i * 1.5)} .75 .7`), shade(hairC, i % 2 ? -.05 : -.25), .35); } }
+  if (hood) { const hc = OF.head === "cowl" ? cl : cl; F(`M ${H(-6, 6)} C ${H(-7.6, -1)} ${H(-5.4, -8)} ${H(OF.head === "cowl" ? -1.2 : .4, OF.head === "cowl" ? -9.6 : -7.4)} C ${H(4, -6.6)} ${H(6.4, -3)} ${H(6, 2)} L ${H(4, 6.4)} Z`, lin(-6, hy - 8, 6, hy + 6, shade(hc, .2), hc, shade(hc, -.55))); }
+  // oreille (côté visible) puis visage de trois quarts
+  if (L.ears && !hood) F(`M ${H(-1.4, -.2)} Q ${H(-4.6, -3.4)} ${H(-6.4, -6.2)} Q ${H(-3.6, -2.6)} ${H(-1, 2.2)} Z`, lin(-6, hy - 6, -1, hy + 2, shade(skin, .1), shade(skin, -.3)), .7);
+  const head = P(`M ${H(-4.4, -1.6)} C ${H(-4.6, -5.6)} ${H(-1, -6.2)} ${H(1.2, -6)} C ${H(4.2, -5.6)} ${H(4.9, -3.2)} ${H(4.7, -1.4)} L ${H(5.6, 1)} L ${H(4.7, 1.7)} C ${H(4.9, 2.6)} ${H(4.6, 3.4)} ${H(4.1, 3.6)} C ${H(3.6, fem ? 4.8 : 5.2)} ${H(2.6, fem ? 5.4 : 5.8)} ${H(1.6, fem ? 5.3 : 5.7)} C ${H(-1, fem ? 5 : 5.4)} ${H(-3.4, 3.6)} ${H(-4.4, -1.6)} Z`);
+  F(head, rad(1.6, hy - 2.4, .3, .6, hy, 6.4, shade(skin, .26), skin, shade(skin, -.42)), .9);
+  x.save(); x.clip(head);
+  x.fillStyle = C(rgba(shade(skin, -.6), .35)); x.fill(P(`M ${H(-4.6, -6)} L ${H(-.6, -6)} C ${H(-1.6, -2)} ${H(-1.4, 2)} ${H(-.2, 6)} L ${H(-4.6, 6)} Z`)); // joue à l'ombre
+  if (!fem) { x.fillStyle = C(rgba(shade(skin, -.5), .22)); x.fill(P(`M ${H(0, 3.2)} Q ${H(3, 4.6)} ${H(4.8, 3)} L ${H(4.8, 6)} L ${H(0, 6)} Z`)); }
+  x.fillStyle = "rgba(255,190,170,.16)"; x.beginPath(); x.ellipse(2.6 * k, Y(hy + 1.8), 1.4 * k, .9 * k, 0, 0, 7); x.fill();
+  x.restore();
+  if (L.ears || hood) { /* oreille pointue déjà posée, ou cachée */ } else F(P(`M ${H(-1.6, -.4)} Q ${H(-2.9, -.8)} ${H(-2.8, 1)} Q ${H(-2.6, 2.4)} ${H(-1.2, 2)} Z`), lin(0, hy, 0, hy + 2, shade(skin, -.05), shade(skin, -.35)), .6);
+  // yeux en amande, regard vers l'avant
+  const eyeC = L.glow || L.eyes, browC = stone ? C("#6a6050") : hairD;
+  const eye = (ex, w) => { F(P(`M ${H(ex - w, -.05)} Q ${H(ex, -.75)} ${H(ex + w, -.2)} Q ${H(ex, .45)} ${H(ex - w, -.05)} Z`), stone ? C("#9a9282") : "rgba(245,236,220,.9)", 0);
+    F(P(`O ${H(ex + w * .25, -.18)} ${(w * .5).toFixed(2)} .42`), C(shade(eyeC, -.2)), 0);
+    if (!stone) { x.fillStyle = "rgba(255,255,255,.9)"; x.fillRect((ex + w * .4) * k, Y(hy - .45), .22 * k, .22 * k); }
+    S(`M ${H(ex - w - .15, -.05)} Q ${H(ex, -.95)} ${H(ex + w + .05, -.3)}`, "#1a100a", fem ? .36 : .26); };
+  eye(1.8, .95); eye(3.95, .55);
+  S(`M ${H(.7, fem ? -2.2 : -1.9)} Q ${H(1.8, fem ? -2.8 : -2.4)} ${H(2.8, fem ? -2.4 : -2)} M ${H(3.5, -2.1)} Q ${H(4, -2.4)} ${H(4.5, -2.1)}`, browC, fem ? .26 : .38);
+  if (L.glow || eyeC === "#7fe0ff" || eyeC === "#ff7a3a") { glow(x, 2.6 * k, Y(hy), 5 * k, eyeC, .5); }
+  // nez, bouche
+  S(`M ${H(4.2, -.6)} Q ${H(5.3, 1)} ${H(4.5, 1.6)} Q ${H(4.1, 1.7)} ${H(3.8, 1.4)}`, shade(skin, -.5), .32);
+  S(`M ${H(3, 3.1)} Q ${H(3.7, 3.35)} ${H(4.3, 3)}`, fem ? "#8a3a3a" : shade(skin, -.55), fem ? .5 : .34);
+  // marques
+  if (L.mark === 1) S(`M ${H(1, -3.4)} L ${H(2.6, 2.6)}`, "rgba(150,50,40,.9)", .35);
+  if (L.mark === 2) { x.fillStyle = C("rgba(150,30,30,.75)"); x.fill(P(`M ${H(.2, .8)} L ${H(4.6, .9)} L ${H(4.4, 1.7)} L ${H(.4, 1.6)} Z`)); }
+  if (L.mark === 3) { x.strokeStyle = `rgba(127,224,255,${.7 + Math.sin(t * 2) * .2})`; x.lineWidth = .35 * k; x.stroke(P(`M ${H(-.4, 1)} L ${H(.4, 2.6)} L ${H(1.2, 1)} M ${H(1.8, -4.6)} L ${H(1.8, -3)}`)); glow(x, .5 * k, Y(hy + 1.6), 3 * k, "#7fe0ff", .3); }
+  if (L.tusks) { F(P(`M ${H(3.1, 3.3)} L ${H(3.5, 1.9)} L ${H(3.8, 3.3)} Z`), "#f2ead6", .4); F(P(`M ${H(4.1, 3.2)} L ${H(4.35, 2.2)} L ${H(4.55, 3.1)} Z`), "#e2d8c0", .4); }
+  if (L.beard) { const ln = [0, 1.6, 4.6, 5][L.beard];
+    F(`M ${H(-2.2, 1)} C ${H(-1.6, 4)} ${H(.4, 5.6 + ln * .6)} ${H(2.2, 5.6 + ln)} C ${H(3.8, 5.4 + ln * .5)} ${H(4.8, 4)} ${H(4.5, 2.4)} Q ${H(3.6, 2.4)} ${H(3, 2.8)} Q ${H(1.8, 3.6)} ${H(.4, 2.6)} Q ${H(-1, 1.4)} ${H(-2.2, 1)} Z`, lin(0, hy + 1, 2, hy + 6 + ln, hairC, hairD), .7);
+    S(`M ${H(2.8, 2.5)} Q ${H(3.6, 2.1)} ${H(4.6, 2.4)}`, hairD, .5);
+    if (L.beard === 3) { S(`M ${H(2.2, 5 + ln * .5)} L ${H(2.1, 6.4 + ln)}`, hairH, .8); F(P(`M ${H(1.5, 4.4 + ln)} L ${H(2.8, 4.4 + ln)} L ${H(2.8, 5.4 + ln)} L ${H(1.5, 5.4 + ln)} Z`), GOLD, .4); } }
+  // cheveux (calotte + mèches), sauf sous un capuchon ou un heaume
+  const hairCap = () => {
+    if (L.hairStyle === 3) { x.globalAlpha = .55; F(`M ${H(-4.5, -1.2)} C ${H(-4.6, -5.8)} ${H(-.6, -6.6)} ${H(1.4, -6.2)} C ${H(3.6, -5.8)} ${H(4.4, -4.4)} ${H(4.4, -3.4)} Q ${H(1, -4.6)} ${H(-1.6, -3.6)} Q ${H(-3, -1)} ${H(-4.5, -1.2)} Z`, hairC, 0); x.globalAlpha = 1; return; }
+    F(`M ${H(-4.8, 1.6)} C ${H(-5.6, -5.6)} ${H(-1, -7.4)} ${H(1.6, -6.8)} C ${H(4.6, -6.2)} ${H(5.4, -3.4)} ${H(4.8, -2.2)} C ${H(3.6, -3.6)} ${H(2, -3.8)} ${H(.6, -3.2)} C ${H(-.4, -2.6)} ${H(-1.2, -1.4)} ${H(-1.6, .4)} C ${H(-2.6, -.4)} ${H(-3.4, .8)} ${H(-4.8, 1.6)} Z`, lin(-4, hy - 7, 4, hy, hairH, hairC, hairD), .8);
+    S(`M ${H(-2.6, -5.2)} Q ${H(.6, -6.6)} ${H(3.2, -5.2)}`, hairH, .4);
+    if (L.hairStyle === 4) { F(P(`O ${H(-3.4, -6.8)} 2.2 2`), lin(-5, hy - 9, -1, hy - 5, hairH, hairD), .7); S(`M ${H(-4.8, -7.6)} L ${H(-1.6, -6)}`, GOLD, .4); }
+    if (L.hairStyle === 5) F(`M ${H(-3.4, -5.4)} Q ${H(-2, -11)} ${H(1.4, -10.4)} Q ${H(.4, -8.6)} ${H(2.6, -6.4)} Z`, lin(0, hy - 10, 0, hy - 5, hairH, hairD), .7);
+    if (L.hairStyle === 1 || L.hairStyle === 0 && fem) F(`M ${H(3.8, -3.6)} Q ${H(5, -1.4)} ${H(4.8, 1.2)} L ${H(4.2, -2.2)} Z`, hairC, .5);
+  };
+  const headgear = OF.head;
+  const hoodFrame = (hc, top, trim) => { const p = P(`M ${H(-6.2, 6.6)} C ${H(-7.8, -1)} ${H(-5.6, top + 1.4)} ${H(-1, top)} C ${H(3.6, top + .6)} ${H(6.6, -4)} ${H(6.4, 1.6)} L ${H(5, 6.8)} Z`);
+    p.addPath(P(`M ${H(5.4, .4)} C ${H(5.6, -4.4)} ${H(1.6, -6)} ${H(-.6, -4.6)} C ${H(-1.8, -2.6)} ${H(-1.6, 3)} ${H(.4, 5.2)} C ${H(2.4, 6.2)} ${H(4.8, 4.6)} ${H(5.4, .4)} Z`));
+    x.fillStyle = lin(-6, hy + top, 6, hy + 6, shade(hc, .22), hc, shade(hc, -.6)); x.fill(p, "evenodd"); x.strokeStyle = OUT; x.lineWidth = Math.max(.5, .42 * k); x.stroke(p);
+    S(`M ${H(-.8, -4.8)} C ${H(1.6, -6.2)} ${H(5.6, -4.4)} ${H(5.4, .4)}`, trim ? GOLD : shade(hc, .35), trim ? .5 : .35);
+    x.globalAlpha = .45; S(`M ${H(-3.4, top + 3)} Q ${H(-5.2, 0)} ${H(-4.6, 5.4)}`, "#000", .4); x.globalAlpha = 1; };
+  if (L.bare || !["helm"].includes(headgear) && !hood) hairCap();
+  if (L.leaf && (L.bare || !hood)) { for (let i = -1; i <= 1; i++) F(P(`M ${H(i * 2.4, -6.2)} q 1.4 -1.8 2.6 -.4 q -1.4 1.4 -2.6 .4 z`), "#5f9a3a", .5); }
+  if (L.horns && headgear !== "helm" && !hood) { F(`M ${H(-1.6, -5.2)} C ${H(-4.6, -8)} ${H(-6.8, -6.4)} ${H(-7.6, -9.6)} C ${H(-5.4, -9.4)} ${H(-3.4, -9)} ${H(-.4, -6)} Z`, lin(-7, hy - 9, 0, hy - 5, "#efe2c4", "#8a7a5c"), .6); F(`M ${H(1.4, -5.8)} C ${H(.4, -8.4)} ${H(-1.6, -8.6)} ${H(-2.2, -11)} C ${H(-.4, -10.6)} ${H(2, -9.6)} ${H(2.8, -6.2)} Z`, lin(-2, hy - 11, 3, hy - 6, "#efe2c4", "#8a7a5c"), .6); }
+  if (!L.bare) switch (headgear) {
+    case "goggles": S(`M ${H(-4.8, -3)} Q ${H(0, -5.2)} ${H(4.6, -3.6)}`, "#3a2416", 1); for (const gx2 of [.8, 3.4]) { F(P(`O ${H(gx2, -4.3)} 1.25 1.1`), lin(0, hy - 5.4, 0, hy - 3.2, GOLD_HI, GOLD_LO), .6); F(P(`O ${H(gx2, -4.3)} .7 .6`), "#ff9a3a", 0); } glow(x, 2 * k, Y(hy - 4.3), 3 * k, "#ff9a3a", .35); break;
+    case "lenses": S(`M ${H(-4.8, -2.8)} Q ${H(0, -5.4)} ${H(4.6, -3.8)}`, "#2a2a22", .9); for (const gx2 of [.6, 3.2]) { F(P(`O ${H(gx2, -4.5)} 1.2 1.1`), "#3a3a30", .6); F(P(`O ${H(gx2, -4.5)} .8 .7`), "#6fe08a", 0); } glow(x, 2 * k, Y(hy - 4.5), 3 * k, "#6fe08a", .4); break;
+    case "cap": F(`M ${H(-5, -1.6)} C ${H(-5.6, -6.6)} ${H(-1, -8.4)} ${H(2.4, -7.6)} C ${H(5.6, -6.8)} ${H(6.4, -4)} ${H(5, -2.6)} Q ${H(0, -4.4)} ${H(-5, -1.6)} Z`, lin(-4, hy - 8, 4, hy - 2, shade(ac, .2), shade(ac, -.55))); F(`M ${H(-5.2, -1.4)} Q ${H(0, -4.6)} ${H(5.2, -2.4)} L ${H(5.3, -3.4)} Q ${H(0, -5.6)} ${H(-5.3, -2.6)} Z`, lin(0, hy - 5, 0, hy - 2, GOLD_HI, GOLD_LO), .6); F(P(`O ${H(1.4, -4.6)} .7 .7`), "#b03a2a", .4); break;
+    case "hood": hoodFrame(cl, -7.6, 0); break;
+    case "cowl": x.save(); x.clip(head); x.fillStyle = "rgba(0,0,0,.4)"; x.fill(P(`M ${H(-5, -7)} L ${H(6, -7)} L ${H(6, -1.4)} Q ${H(2, -.4)} ${H(-5, -1)} Z`)); x.restore(); hoodFrame(cl, -10.4, 1); glow(x, 2.6 * k, Y(hy - .2), 3 * k, ac, .4); break;
+    case "helm": { F(`M ${H(-5, 1.2)} C ${H(-5.8, -6.4)} ${H(-1, -7.8)} ${H(1.6, -7.4)} C ${H(4.8, -7)} ${H(5.6, -3.6)} ${H(5.2, -1.8)} L ${H(4.6, -1.6)} Q ${H(2, -2.8)} ${H(.6, -2.2)} L ${H(-.8, 2.6)} L ${H(-3, 3.2)} Z`, metal(MT));
+      F(P(`M ${H(3, -2.6)} L ${H(3.9, -2.6)} L ${H(4.3, 1.2)} L ${H(3.5, 1.4)} Z`), metal(MT), .6); S(`M ${H(-4.4, -2.6)} Q ${H(0, -4.4)} ${H(5, -2.2)}`, GOLD, .55); S(`M ${H(-2, -6.4)} Q ${H(1, -7.4)} ${H(3.6, -6)}`, "rgba(255,255,255,.4)", .4);
+      F(`M ${H(-.4, -7.4)} C ${H(-3, -10.4)} ${H(-7 + sway * .3, -10)} ${H(-9 + sway * .5, -5.6)} C ${H(-6.4, -7.4)} ${H(-3.6, -7.4)} ${H(-1.4, -6.6)} Z`, lin(-8, hy - 10, 0, hy - 6, shade(ac, .3), shade(ac, -.4)), .6); break; }
+    case "hat": F(`M ${H(-2.8, -4.6)} C ${H(-3, -9.6)} ${H(3.6, -10)} ${H(3.4, -4.8)} Z`, lin(-3, hy - 10, 3, hy - 4, "#6a4e34", "#2a1c10")); S(`M ${H(-2.8, -5.2)} Q ${H(.4, -6.2)} ${H(3.4, -5.4)}`, shade(ac, -.1), .8);
+      F(`M ${H(-8, -3.2)} Q ${H(0, -6.6)} ${H(8.4, -4)} Q ${H(6, -2.8)} ${H(0, -3.2)} Q ${H(-5, -2.2)} ${H(-8, -3.2)} Z`, lin(0, hy - 6, 0, hy - 2, "#5a4028", "#1e140a")); break;
+    case "beret": F(`M ${H(-5.6, -3.6)} C ${H(-6.4, -8.4)} ${H(2.8, -9)} ${H(4.8, -4.4)} Q ${H(0, -3.6)} ${H(-5.6, -3.6)} Z`, lin(-5, hy - 9, 4, hy - 3, shade(ac, .2), shade(ac, -.55)));
+      F(`M ${H(-3.6, -6.6)} C ${H(-6, -11)} ${H(-10 + sway * .4, -11.6)} ${H(-12 + sway * .6, -9)} C ${H(-9, -9.6)} ${H(-6, -8.6)} ${H(-3.2, -5.8)} Z`, lin(-11, hy - 11, -3, hy - 6, "#f2ead6", shade(cl, .3)), .6); S(`M ${H(-3.6, -6.2)} C ${H(-6.4, -9.6)} ${H(-9, -10.4)} ${H(-11.6 + sway * .6, -9.2)}`, "rgba(0,0,0,.35)", .3); break;
+    case "mask": F(P(`M ${H(.2, -1.4)} Q ${H(2.6, -2.4)} ${H(5.1, -1.2)} L ${H(5, .7)} Q ${H(2.8, 1.2)} ${H(.4, .6)} Z`), "#141018", .6); for (const [ex, w] of [[1.7, .9], [3.9, .5]]) F(P(`M ${H(ex - w, -.2)} Q ${H(ex, -.9)} ${H(ex + w, -.3)} Q ${H(ex, .3)} ${H(ex - w, -.2)} Z`), C(eyeC), 0); S(`M ${H(.4, -.4)} L ${H(-2.6, .4 + sway * .3)} M ${H(.4, .2)} L ${H(-2.4, 1.6 + sway * .3)}`, "#141018", .45); break;
+    case "antler": for (const [ax, sd] of [[-2.2, -1], [1.6, 1]]) { S(`M ${H(ax, -5.6)} C ${H(ax + sd * .4, -8.6)} ${H(ax - 1.8, -9.6)} ${H(ax - 2.6, -12)}`, "#c8b48a", .75); S(`M ${H(ax - .4, -8.4)} L ${H(ax + 1.4, -10.6)} M ${H(ax - 1.6, -10.2)} L ${H(ax - 3.4, -11)}`, "#c8b48a", .55); }
+      for (let i = -2; i <= 2; i++) F(P(`M ${H(i * 2, -5.6 + Math.abs(i) * .5)} q 1.2 -1.5 2.2 -.3 q -1.2 1.2 -2.2 .3 z`), i % 2 ? "#6a9a3a" : "#4a7a2a", .45); break;
+  }
+
+  /* ── arme et bras armé ── */
+  drawWeapon(x, L.weapon, 9 * k, Y(-20), k, t, C);
+  const sc = OF.sleeve === "plate" ? null : sleeveCol;
+  const armP = OF.sleeve === "bell" ? `M ${sw - 1.6} -29.8 C ${sw + 2.6} -28 ${sw + 4} -23.6 ${sw + 5} -19.6 L ${sw + 1.4} -18.6 C ${sw + 1} -22.4 ${sw - .2} -25.4 ${sw - 2.4} -27.2 Z`
+    : OF.sleeve === "puff" ? `M ${sw - 1.8} -30 C ${sw + 3.6} -30.6 ${sw + 3.4} -25 ${sw + 1.6} -24 C ${sw + 2.4} -22.4 ${sw + 2.6} -21 ${sw + 2.2} -19.6 L ${sw + .4} -19.8 C ${sw} -22 ${sw - .8} -24.6 ${sw - 2.4} -27.4 Z`
+    : `M ${sw - 1.6} -29.8 C ${sw + 2} -28.4 ${sw + 2.6} -24 ${sw + 2.4} -20.6 L ${sw + .2} -20.2 C ${sw} -23 ${sw - .6} -25.6 ${sw - 2.4} -27.4 Z`;
+  F(armP, sc ? lin(sw - 2, -30, sw + 3, -20, shade(sc, .25), shade(sc, -.45)) : metal(MT));
+  if (OF.sleeve === "puff") { x.globalAlpha = .9; S(`M ${sw} -29 Q ${sw + 1.6} -27 ${sw + 1.2} -24.6`, shade(cl, .3), .6); x.globalAlpha = 1; }
+  if (OF.sleeve === "rolled") { F(`M ${sw + .6} -23.4 C ${sw + 2.6} -23 ${sw + 2.6} -21.4 ${sw + 2.6} -20.4 L ${sw + .4} -20 C ${sw + .2} -21.4 ${sw} -22.6 ${sw + .6} -23.4 Z`, lin(0, -24, 0, -20, shade(skin, .1), shade(skin, -.3)), .6); F(P(`M ${sw - .2} -24.8 Q ${sw + 1.6} -24.6 ${sw + 2.5} -23.2 L ${sw + .4} -22.6 Z`), shade(sleeveCol, -.2), .6); }
+  if (OF.sleeve === "bracer") F(P(`M ${sw + .2} -23 L ${sw + 2.5} -23 L ${sw + 2.4} -20.4 L ${sw + .2} -20.2 Z`), lin(0, -23, 0, -20, "#6a4a2a", "#2a1a0c"), .6);
+  if (OF.sleeve === "cuff") F(P(`M ${sw} -22 L ${sw + 2.6} -22.2 L ${sw + 2.5} -20.4 L ${sw + .2} -20.2 Z`), OF.top === "labcoat" ? "#e0d8c4" : shade(ac, -.2), .6);
+  if (OF.pauld === "both" || OF.pauld === "one") pauld(1, OF.pauld === "both");
+  // main (gantée pour les tenues lourdes)
+  const glove = OF.sleeve === "plate" ? metal(MT) : OF.top === "apron" || OF.top === "frock" ? lin(0, -21, 0, -18, "#4a3424", "#1a120a") : rad(8.6, -20.6, .2, 9, -20, 2, shade(skin, .15), shade(skin, -.3));
+  F(P("M 7.4 -21.2 C 7.6 -22.4 10.4 -22.4 10.6 -20.6 C 10.8 -18.8 8.2 -18.2 7.6 -19.4 Z"), glove, .7);
+
+  /* ── runes flottantes (arcaniste) ── */
+  if (OF.runes && !stone) for (let i = 0; i < 3; i++) { const a = t * 1.2 + i * 2.1, rx = Math.cos(a) * 10, ry = -24 + Math.sin(a) * 3 - i; if (Math.sin(a) < -.2) continue;
+    x.save(); x.globalAlpha = .55 + Math.sin(a) * .3; S(`M ${rx} ${ry - 1.2} L ${rx + .9} ${ry} L ${rx} ${ry + 1.2} L ${rx - .9} ${ry} Z M ${rx} ${ry - .6} L ${rx} ${ry + .6}`, "#d8c0ff", .3); glow(x, rx * k, Y(ry), 2.4 * k, ac, .6); x.restore(); }
+
+  /* ── lumière de forge en contre-jour ── */
+  if (!stone) { x.globalCompositeOperation = "lighter"; x.globalAlpha = .55; S(`M ${-sw - .2} -29.6 C ${-sw - .6} -26 ${-ww - .8} -22 ${-ww - .2} -19`, "rgba(255,150,70,.6)", .5); S(`M ${H(-4.5, -1.4)} C ${H(-4.6, -5)} ${H(-2, -6.4)} ${H(0, -6.4)}`, "rgba(255,160,80,.5)", .45); x.globalAlpha = 1; x.globalCompositeOperation = "source-over"; }
+  x.restore();
+}
+
+function drawShield(x, px, py, k, kind, back, C = c => c) {
+  x.save(); x.translate(px, py); x.lineJoin = "round";
+  const steel = kind === "steel"; const p = new Path2D(); p.moveTo(-3.4 * k, -7 * k); p.quadraticCurveTo(0, -8 * k, 3.4 * k, -7 * k); p.lineTo(3.6 * k, 0); p.quadraticCurveTo(3 * k, 5.4 * k, 0, 8.6 * k); p.quadraticCurveTo(-3 * k, 5.4 * k, -3.6 * k, 0); p.closePath();
+  const g = x.createLinearGradient(-4 * k, -7 * k, 4 * k, 8 * k); if (steel) { g.addColorStop(0, C("#e4e9ee")); g.addColorStop(.45, C("#8a939c")); g.addColorStop(1, C("#2e343a")); } else { g.addColorStop(0, C("#9a6a3a")); g.addColorStop(1, C("#3a2410")); }
+  x.fillStyle = g; x.fill(p); x.strokeStyle = "rgba(10,7,5,.9)"; x.lineWidth = Math.max(.6, .5 * k); x.stroke(p);
+  x.strokeStyle = C("#cda45e"); x.lineWidth = .7 * k; x.save(); x.scale(.82, .84); x.stroke(p); x.restore();
+  if (!steel) { x.strokeStyle = "rgba(0,0,0,.35)"; x.lineWidth = .4 * k; for (const sx of [-1.4, 1.4]) { x.beginPath(); x.moveTo(sx * k, -7.4 * k); x.lineTo(sx * k, 6.6 * k); x.stroke(); } }
+  const bg = x.createRadialGradient(-.4 * k, -1.4 * k, .2, 0, -1 * k, 1.8 * k); bg.addColorStop(0, C("#fff0c0")); bg.addColorStop(1, C("#8a6424")); x.fillStyle = bg; x.beginPath(); x.arc(0, -1 * k, 1.5 * k, 0, 7); x.fill(); x.strokeStyle = "rgba(10,7,5,.8)"; x.lineWidth = .4 * k; x.stroke();
+  x.restore();
+}
+
+function drawWeapon(x, w, hx, hy, k, t, C = c => c) {
+  if (w === "none") return;
+  x.save(); x.translate(hx, hy); x.lineCap = "round"; x.lineJoin = "round";
+  const OUT = "rgba(10,7,5,.9)", ol = Math.max(.6, .45 * k);
+  const shape = (pts, fill) => { x.beginPath(); pts.forEach(([a, b], i) => i ? x.lineTo(a * k, b * k) : x.moveTo(a * k, b * k)); x.closePath(); x.fillStyle = fill; x.fill(); x.strokeStyle = OUT; x.lineWidth = ol; x.stroke(); };
+  const lg = (a, b, c, d, ...st) => { const g = x.createLinearGradient(a * k, b * k, c * k, d * k); st.forEach((s, i) => g.addColorStop(i / (st.length - 1), C(s))); return g; };
+  const shaft = (a, b, c, d, wd, col = "#6a4224") => { x.strokeStyle = OUT; x.lineWidth = (wd + .9) * k; x.beginPath(); x.moveTo(a * k, b * k); x.lineTo(c * k, d * k); x.stroke(); x.strokeStyle = lg(a - 1, b, a + 1, b, shade(col, .3), shade(col, -.3)); x.lineWidth = wd * k; x.stroke(); };
+  const blade = (len, wd, col1 = "#f4f7fa", col2 = "#7d868e") => { shape([[-wd * .5, -1], [-wd * .5, -len + wd], [0, -len], [wd * .5, -len + wd], [wd * .5, -1]], lg(-wd, 0, wd, 0, col1, col2)); x.strokeStyle = "rgba(255,255,255,.55)"; x.lineWidth = .3 * k; x.beginPath(); x.moveTo(-.1 * k, -2 * k); x.lineTo(-.1 * k, (-len + wd + .4) * k); x.stroke(); };
+  const guard = (wd, col = "#cda45e") => { shape([[-wd, -.4], [wd, -.4], [wd, .8], [-wd, .8]], lg(0, -.4, 0, .8, "#fff0c0", col, "#6a4a1a")); };
+  switch (w) {
+    case "hammer": x.rotate(.12); shaft(0, 7, 0, -12, 1.5); shape([[-3, -16.4], [5.4, -16.4], [6, -15.6], [6, -11.6], [5.4, -10.8], [-3, -10.8], [-3.6, -11.6], [-3.6, -15.6]], lg(-3, -16, 4, -10, "#c8d0d6", "#6a737b", "#2e3338"));
+      x.strokeStyle = C("#cda45e"); x.lineWidth = .5 * k; x.strokeRect(-1.4 * k, -15.6 * k, 4.4 * k, 4 * k); glow(x, .8 * k, -13.6 * k, 6 * k, "#ff8a3d", .35 + Math.sin(t * 3) * .1); x.fillStyle = C("#ffb060"); x.fillRect(.4 * k, -14.2 * k, .8 * k, 1.2 * k); break;
+    case "staff": { x.rotate(.06); shaft(0, 10, 0, -22, 1.3, "#5a3a1e"); x.strokeStyle = C("#4a7a2a"); x.lineWidth = .5 * k; x.beginPath(); x.moveTo(-.6 * k, -14 * k); x.quadraticCurveTo(1.4 * k, -16 * k, -.6 * k, -18 * k); x.stroke();
+      x.strokeStyle = C("#cda45e"); x.lineWidth = .7 * k; x.beginPath(); x.moveTo(0, -22 * k); x.quadraticCurveTo(-3 * k, -24 * k, -1.6 * k, -27 * k); x.moveTo(0, -22 * k); x.quadraticCurveTo(3 * k, -24 * k, 1.6 * k, -27 * k); x.stroke();
+      shape([[0, -28.6], [1.6, -25.6], [0, -22.8], [-1.6, -25.6]], lg(-1.6, -28, 1.6, -23, "#f0e0ff", "#a070ff", "#4a2a8a")); glow(x, 0, -25.6 * k, 10 * k, "#a070ff", .5 + Math.sin(t * 3) * .15); break; }
+    case "bow": { x.rotate(-.05); x.strokeStyle = OUT; x.lineWidth = 2 * k; const arc = () => { x.beginPath(); x.moveTo(1 * k, -13 * k); x.quadraticCurveTo(-4 * k, -8 * k, -1 * k, -1 * k); x.quadraticCurveTo(-4 * k, 6 * k, 1 * k, 11 * k); }; arc(); x.stroke(); x.strokeStyle = lg(-3, 0, 1, 0, "#a06a34", "#4a2a10"); x.lineWidth = 1.2 * k; arc(); x.stroke();
+      x.strokeStyle = "rgba(240,235,220,.85)"; x.lineWidth = .3 * k; x.beginPath(); x.moveTo(1 * k, -13 * k); x.lineTo(1 * k, 11 * k); x.stroke(); x.fillStyle = C("#cda45e"); x.fillRect(-2.6 * k, -1.6 * k, 1.4 * k, 2.4 * k); break; }
+    case "dagger": x.rotate(.35); guard(1.8); blade(8, 1.6, "#eef0ff", "#6a6a9a"); shape([[-.5, .8], [.5, .8], [.5, 3], [-.5, 3]], "#3a2416"); glow(x, 0, -5 * k, 4 * k, "#9a6aff", .3); break;
+    case "rapier": x.rotate(.2); blade(19, .9); x.strokeStyle = C("#cda45e"); x.lineWidth = .6 * k; x.beginPath(); x.arc(0, .6 * k, 2.2 * k, Math.PI * .1, Math.PI * 1.2); x.stroke(); guard(2.2); shape([[-.5, .8], [.5, .8], [.5, 3.2], [-.5, 3.2]], "#2a1a10"); break;
+    case "mace": x.rotate(.15); shaft(0, 6, 0, -10, 1.4, "#4a3a2a"); for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; shape([[Math.cos(a) * 1, -13 + Math.sin(a) * 1], [Math.cos(a) * 3.6, -13 + Math.sin(a) * 3.2], [Math.cos(a + .5) * 1.4, -13 + Math.sin(a + .5) * 1.4]], lg(-3, -16, 3, -10, "#e0e6ea", "#5a6168")); }
+      x.fillStyle = C("#cda45e"); x.beginPath(); x.arc(0, -13 * k, 1.3 * k, 0, 7); x.fill(); break;
+    case "axe": x.rotate(.12); shaft(0, 7, 0, -15, 1.5); shape([[.6, -15.4], [5.6, -18], [7.4, -14], [6.4, -9.6], [.6, -11.6]], lg(1, -18, 7, -9, "#eef2f5", "#8a939b", "#3a4046")); x.strokeStyle = C("#cda45e"); x.lineWidth = .4 * k; x.beginPath(); x.moveTo(1.6 * k, -14.6 * k); x.lineTo(1.6 * k, -12.2 * k); x.stroke(); break;
+    case "spear": shaft(-.6, 10, 1.4, -24, 1.2); x.translate(1.4 * k, -24 * k); x.rotate(.06); shape([[0, -7], [1.6, -2.4], [.5, 0], [-.5, 0], [-1.6, -2.4]], lg(-1.6, -7, 1.6, 0, "#f4f8fb", "#7a838b")); glow(x, 0, -3 * k, 5 * k, "#7fd3ff", .35); break;
+    case "dawn": x.rotate(.1); blade(20, 2.4, "#fffbe8", "#d8b060"); guard(3.4); shape([[-.7, .8], [.7, .8], [.7, 3.6], [-.7, 3.6]], "#4a2a10"); glow(x, 0, -10 * k, 12 * k, "#ffd27a", .4 + Math.sin(t * 2) * .1); break;
+    case "flask": { const g = x.createRadialGradient(-.6 * k, -1 * k, .2, 0, 0, 3.2 * k); g.addColorStop(0, C("#c8ffd0")); g.addColorStop(.5, C("#3fbf5a")); g.addColorStop(1, C("#0e4a1a")); x.fillStyle = g; x.beginPath(); x.arc(0, 0, 3 * k, 0, 7); x.fill(); x.strokeStyle = OUT; x.lineWidth = ol; x.stroke();
+      shape([[-.8, -2.8], [.8, -2.8], [.8, -5], [-.8, -5]], "#d8e8e0"); x.fillStyle = C("#7a5232"); x.fillRect(-.9 * k, -6 * k, 1.8 * k, 1.1 * k); glow(x, 0, 0, 8 * k, "#4fdf6a", .45); break; }
+    case "lute": { x.rotate(-.5); x.fillStyle = lg(-4, -2, 4, 6, "#c07a3a", "#5a2e12"); x.beginPath(); x.ellipse(0, 2 * k, 3.6 * k, 4.6 * k, 0, 0, 7); x.fill(); x.strokeStyle = OUT; x.lineWidth = ol; x.stroke(); x.fillStyle = "#1a0e06"; x.beginPath(); x.arc(0, 1.4 * k, 1 * k, 0, 7); x.fill();
+      shaft(0, -2, 0, -12, 1.2, "#4a2a12"); x.strokeStyle = "rgba(240,230,210,.7)"; x.lineWidth = .2 * k; x.beginPath(); x.moveTo(-.3 * k, 5 * k); x.lineTo(-.3 * k, -11 * k); x.moveTo(.3 * k, 5 * k); x.lineTo(.3 * k, -11 * k); x.stroke(); break; }
+    default: x.rotate(.12); blade(17, 2); guard(3); shape([[-.6, .8], [.6, .8], [.6, 3.4], [-.6, 3.4]], "#3a2416"); x.fillStyle = C("#cda45e"); x.beginPath(); x.arc(0, 4 * k, .9 * k, 0, 7); x.fill();
+  }
+  x.restore();
+}
 /* ═══════════════════════ Le village de Sombreval (plateau isométrique) ═══════════════════════
    Le héros se déplace de case en case (clic sur le sol), son compagnon le suit.
    Cliquer un bâtiment y conduit le héros ; il entre en arrivant devant la porte. */
 const VN = 18;
+const MAGIC_COL = { guilde: "#8fb4ff", donjon: "#b48cff", quetes: "#f3d48e" };
+const SHORT_N = { quetes: "Quêtes", guilde: "Guilde", donjon: "Expéditions" };
 const VILLAGE = {
   // empreintes entières : (gx, gy, w, d) ; porte = case devant la façade ; au moins une case d'écart entre bâtiments
   blds: [
@@ -2702,19 +3059,25 @@ const VILLAGE = {
   click(px, py) { this.setup(); this.hover(px, py); if (this.hoverB) { this.walkTo(...this.hoverB.door, this.hoverB); return; } if (this.hovTile) this.walkTo(...this.hovTile); },
   draw(x, I) {
     this.setup(); const L = this.L, t = I.t, W = I.w, H = I.h, u = L.tw / 64;
-    // ciel, montagnes, château
-    const sky = x.createLinearGradient(0, 0, 0, H); sky.addColorStop(0, "#1b2530"); sky.addColorStop(.5, "#13161a"); sky.addColorStop(1, "#0b0a09"); x.fillStyle = sky; x.fillRect(0, 0, W, H);
-    x.fillStyle = "#1e2833"; x.beginPath(); x.moveTo(0, H * .3); for (let i = 0; i <= 12; i++) x.lineTo(W * i / 12, H * (.08 + hash(i, 3) * .16)); x.lineTo(W, H * .45); x.lineTo(0, H * .45); x.fill();
-    const kx = W * .8, ky = H * .12; x.fillStyle = "#28313c"; [[0, 0, 10, 34], [12, 8, 26, 26], [40, -6, 9, 40], [-12, 12, 10, 22]].forEach(([a, b, w, h]) => { x.fillRect(kx + a, ky + b - h + 34, w, h); x.beginPath(); x.moveTo(kx + a - 2, ky + b - h + 34); x.lineTo(kx + a + w / 2, ky + b - h + 20); x.lineTo(kx + a + w + 2, ky + b - h + 34); x.fill(); });
-    for (let i = 0; i < 5; i++) { x.fillStyle = `rgba(255,190,110,${.5 + Math.sin(t * 2 + i) * .2})`; x.fillRect(kx + 14 + i * 4, ky + 22 + (i % 2) * 6, 1.6, 2.4); }
+    // nuit de brume : ciel d'encre, lune voilée, crêtes lointaines, lueur de forge
+    const sky = x.createLinearGradient(0, 0, 0, H); sky.addColorStop(0, "#15121a"); sky.addColorStop(.45, "#100d0d"); sky.addColorStop(1, "#090706"); x.fillStyle = sky; x.fillRect(0, 0, W, H);
+    glow(x, W * .2, H * .1, Math.max(W, H) * .32, "#9fb0c8", .07); x.fillStyle = "rgba(220,228,240,.5)"; x.beginPath(); x.arc(W * .2, H * .1, 9, 0, 7); x.fill(); glow(x, W * .2, H * .1, 26, "#dfe8f5", .25);
+    for (const [col, base, amp, seed] of [["#1a1820", .1, .17, 3], ["#141217", .2, .12, 9]]) { x.fillStyle = col; x.beginPath(); x.moveTo(0, H * .5); for (let i = 0; i <= 16; i++) x.lineTo(W * i / 16, H * (base + hash(i, seed) * amp)); x.lineTo(W, H * .55); x.lineTo(0, H * .55); x.fill(); }
+    { const mg = x.createLinearGradient(0, H * .12, 0, H * .4); mg.addColorStop(0, "rgba(140,150,170,0)"); mg.addColorStop(1, "rgba(140,150,170,.09)"); x.fillStyle = mg; x.fillRect(0, H * .12, W, H * .3); }
+    const kx = W * .8, ky = H * .12; x.fillStyle = "#1d1b22"; [[0, 0, 10, 34], [12, 8, 26, 26], [40, -6, 9, 40], [-12, 12, 10, 22]].forEach(([a, b, w, h]) => { x.fillRect(kx + a, ky + b - h + 34, w, h); x.beginPath(); x.moveTo(kx + a - 2, ky + b - h + 34); x.lineTo(kx + a + w / 2, ky + b - h + 18); x.lineTo(kx + a + w + 2, ky + b - h + 34); x.fill(); });
+    for (let i = 0; i < 5; i++) { x.fillStyle = `rgba(255,190,110,${.45 + Math.sin(t * 2 + i) * .2})`; x.fillRect(kx + 14 + i * 4, ky + 22 + (i % 2) * 6, 1.4, 2.2); }
+    { const c0 = isoP(L, VN / 2, VN / 2); glow(x, c0[0], c0[1], Math.max(W, H) * .55, "#e87a30", .09); }
     // sol
     const g = this.ground;
     for (let gy = 0; gy < VN; gy++) for (let gx = 0; gx < VN; gx++) {
       const h = hash(gx * 3 + 1, gy * 5 + 2), k = g[gy][gx];
       const P = [isoP(L, gx, gy), isoP(L, gx + 1, gy), isoP(L, gx + 1, gy + 1), isoP(L, gx, gy + 1)];
-      if (k === 0) { poly(x, P, shade(h > .8 ? "#2e3c22" : "#26341e", (h - .5) * .2)); }
-      else { const base = k === 2 ? "#5a5248" : "#4e4234"; poly(x, P, shade(base, -.35)); const m = .05, Q = [isoP(L, gx + m, gy + m), isoP(L, gx + 1 - m, gy + m), isoP(L, gx + 1 - m, gy + 1 - m), isoP(L, gx + m, gy + 1 - m)]; poly(x, Q, shade(base, (h - .5) * .2));
-        x.strokeStyle = "rgba(0,0,0,.25)"; x.lineWidth = 1; const [cx, cy] = isoP(L, gx + .5, gy + .5); x.beginPath(); x.moveTo(cx - 10 * u, cy - 2 * u); x.lineTo(cx + 2 * u, cy + 4 * u); x.moveTo(cx - 2 * u, cy - 5 * u); x.lineTo(cx + 10 * u, cy + 1 * u); x.stroke(); }
+      if (k === 0) { poly(x, P, shade(h > .8 ? "#2a3020" : "#222a1a", (h - .5) * .22)); const [cx, cy] = isoP(L, gx + .5, gy + .5); x.strokeStyle = "rgba(10,14,6,.35)"; x.lineWidth = 1; x.beginPath();
+        for (let q = 0; q < 3; q++) { const ox = (hash(gx + q, gy * 2) - .5) * 22 * u, oy = (hash(gy + q, gx * 3) - .5) * 9 * u; x.moveTo(cx + ox, cy + oy); x.lineTo(cx + ox - 1.5 * u, cy + oy - 3.5 * u); x.moveTo(cx + ox + 1.5 * u, cy + oy); x.lineTo(cx + ox + 2.5 * u, cy + oy - 3 * u); } x.stroke(); }
+      else if (k === 2) { poly(x, P, "#2a2622"); for (let a = 0; a < 2; a++) for (let b2 = 0; b2 < 2; b2++) { const m = .04, Q = [isoP(L, gx + a / 2 + m, gy + b2 / 2 + m), isoP(L, gx + (a + 1) / 2 - m, gy + b2 / 2 + m), isoP(L, gx + (a + 1) / 2 - m, gy + (b2 + 1) / 2 - m), isoP(L, gx + a / 2 + m, gy + (b2 + 1) / 2 - m)]; poly(x, Q, shade("#5a544c", (hash(gx * 2 + a, gy * 2 + b2) - .5) * .3)); }
+        const Q0 = isoP(L, gx + .25, gy + .1), Q1 = isoP(L, gx + .45, gy + .1); x.strokeStyle = "rgba(255,240,210,.06)"; x.beginPath(); x.moveTo(...Q0); x.lineTo(...Q1); x.stroke(); }
+      else { poly(x, P, "#221d18"); // pavés de la grand-rue
+        for (let q = 0; q < 5; q++) { const [px, py] = isoP(L, gx + .2 + hash(gx * 7 + q, gy) * .6, gy + .2 + hash(gy * 5 + q, gx) * .6); x.fillStyle = shade("#4e463c", (hash(q, gx + gy) - .5) * .35); x.strokeStyle = "rgba(0,0,0,.45)"; x.lineWidth = .8; x.beginPath(); x.ellipse(px, py, 5.5 * u, 2.8 * u, 0, 0, 7); x.fill(); x.stroke(); x.fillStyle = "rgba(255,235,200,.07)"; x.beginPath(); x.ellipse(px - 1 * u, py - .8 * u, 3 * u, 1.2 * u, 0, 0, 7); x.fill(); } }
     }
     for (const [fx, fy, r] of this.flowers) { const [cx, cy] = isoP(L, fx + .3 + r * .4, fy + .5); x.fillStyle = r < .3 ? "#c9a050" : r < .6 ? "#a0506a" : "#6a8ac0"; for (let i = 0; i < 3; i++) x.fillRect(cx + (i - 1) * 4 * u, cy - (i % 2) * 2 * u, 2 * u, 2 * u); x.strokeStyle = "rgba(120,160,80,.6)"; x.beginPath(); x.moveTo(cx - 6 * u, cy + 2 * u); x.lineTo(cx - 4 * u, cy - 3 * u); x.moveTo(cx + 5 * u, cy + 2 * u); x.lineTo(cx + 6 * u, cy - 3 * u); x.stroke(); }
     // remparts (chantier) le long des bords arrière
@@ -2723,7 +3086,10 @@ const VILLAGE = {
     if (season && season.id === "givre") for (let gy = 0; gy < VN; gy++) for (let gx = 0; gx < VN; gx++) { const k = this.ground[gy][gx]; poly(x, [isoP(L, gx, gy), isoP(L, gx + 1, gy), isoP(L, gx + 1, gy + 1), isoP(L, gx, gy + 1)], `rgba(235,242,248,${k ? .25 : .62 + hash(gx, gy) * .2})`); }
     // bord du plateau
     const e1 = isoP(L, 0, VN), e2 = isoP(L, VN, VN), e3 = isoP(L, VN, 0), dh = 16 * u;
-    poly(x, [e1, e2, [e2[0], e2[1] + dh], [e1[0], e1[1] + dh]], "#1a140e"); poly(x, [e2, e3, [e3[0], e3[1] + dh], [e2[0], e2[1] + dh]], "#120e0a");
+    { const dh2 = 22 * u, gl = x.createLinearGradient(0, e1[1], 0, e1[1] + dh2); gl.addColorStop(0, "#2c251e"); gl.addColorStop(1, "#0e0b08"); poly(x, [e1, e2, [e2[0], e2[1] + dh2], [e1[0], e1[1] + dh2]], gl); const gr = x.createLinearGradient(0, e3[1], 0, e3[1] + dh2); gr.addColorStop(0, "#211b15"); gr.addColorStop(1, "#090705"); poly(x, [e2, e3, [e3[0], e3[1] + dh2], [e2[0], e2[1] + dh2]], gr);
+      const gold = x.createLinearGradient(e1[0], 0, e3[0], 0); gold.addColorStop(0, "#6e4f22"); gold.addColorStop(.3, "#dfb76c"); gold.addColorStop(.5, "#fbe7b0"); gold.addColorStop(.7, "#cda45e"); gold.addColorStop(1, "#6e4f22");
+      x.strokeStyle = gold; x.lineWidth = 1.6; x.beginPath(); x.moveTo(...e1); x.lineTo(...e2); x.lineTo(...e3); x.stroke(); x.globalAlpha = .4; x.lineWidth = 1; x.beginPath(); x.moveTo(e1[0], e1[1] + dh2 - 4 * u); x.lineTo(e2[0], e2[1] + dh2 - 4 * u); x.lineTo(e3[0], e3[1] + dh2 - 4 * u); x.stroke(); x.globalAlpha = 1;
+      for (const e of [e1, e2, e3]) { x.fillStyle = gold; x.beginPath(); x.moveTo(e[0], e[1] - 3); x.lineTo(e[0] + 3, e[1]); x.lineTo(e[0], e[1] + 3); x.lineTo(e[0] - 3, e[1]); x.fill(); } }
     // repères : case survolée, trajet, porte visée
     const h = this.hero; const goal = this.hoverB ? this.hoverB.door : this.hovTile;
     if (goal) { const P = [isoP(L, goal[0], goal[1]), isoP(L, goal[0] + 1, goal[1]), isoP(L, goal[0] + 1, goal[1] + 1), isoP(L, goal[0], goal[1] + 1)]; poly(x, P, "rgba(241,214,149,.12)", "rgba(241,214,149,.85)", 1.5);
@@ -2762,6 +3128,10 @@ const VILLAGE = {
     for (const q of this.smoke) { x.fillStyle = `rgba(60,58,56,${q.a})`; x.beginPath(); x.arc(q.x, q.y, q.r * u, 0, 7); x.fill(); }
     for (const q of this.embers) { x.fillStyle = `rgba(255,${150 + Math.random() * 80 | 0},60,${1 - q.l / 1.6})`; x.fillRect(q.x, q.y, 1.6, 1.6); }
     this.lighting(x, I, t, u);
+    // lueur dorée des lieux où l'on peut entrer, halo runique au survol
+    for (const b of this.blds) { if (!b.n || !b.door) continue; const [dx, dy] = isoP(L, b.door[0] + .5, b.door[1] + .5), hot = this.hoverB === b, col = MAGIC_COL[b.id] || "#ffcf7a";
+      glow(x, dx, dy - 6 * u, (hot ? 46 : 26) * u, col, hot ? .55 : .14 + Math.sin(t * 2 + b.gx) * .06);
+      if (hot) { x.save(); x.translate(dx, dy); x.scale(1, .5); x.rotate(t * .8); x.strokeStyle = rgba(col, .85); x.lineWidth = 1.4; x.shadowColor = col; x.shadowBlur = 8; x.beginPath(); x.arc(0, 0, 22 * u, 0, 7); x.stroke(); x.setLineDash([4, 6]); x.beginPath(); x.arc(0, 0, 28 * u, 0, 7); x.stroke(); x.restore(); } }
     if (season && season.id === "foire") { const pairs = [[[6, 9], [12, 9]], [[7, 12], [12, 12]], [[8, 7], [12, 7]]]; for (const [a, b] of pairs) { const A = isoP(L, a[0] + .5, a[1] + .5, 34 * u), B = isoP(L, b[0] + .5, b[1] + .5, 34 * u);
         x.strokeStyle = "rgba(60,40,20,.8)"; x.lineWidth = 1; x.beginPath(); x.moveTo(...A); x.quadraticCurveTo((A[0] + B[0]) / 2, (A[1] + B[1]) / 2 + 14 * u, ...B); x.stroke();
         for (let i = 1; i < 12; i++) { const k = i / 12, mx = (1 - k) * (1 - k) * A[0] + 2 * (1 - k) * k * (A[0] + B[0]) / 2 + k * k * B[0], my = (1 - k) * (1 - k) * A[1] + 2 * (1 - k) * k * ((A[1] + B[1]) / 2 + 14 * u) + k * k * B[1];
@@ -2778,16 +3148,17 @@ const VILLAGE = {
       if (a > .05) { glow(x, fx, fy, 7 * u, "#d8ff8a", a * .5); x.fillStyle = `rgba(235,255,170,${a})`; x.fillRect(fx - 1, fy - 1, 2, 2); } }
     x.restore();
     vignette(x, W, H, .55);
-    // étiquettes, toujours lisibles
-    this.labelRect = {};
-    for (const b of this.blds) { if (!b.n) continue; const on = this.hoverB === b; if (b.proj && !on) continue; // chantiers : étiquette au survol seulement
-      const [lx, ly] = isoP(L, b.gx + b.w / 2, b.gy + b.d / 2, (b.h + (b.rune ? 42 : b.board ? 26 : b.stalls ? 28 : 30)) * u);
-      x.font = `600 ${Math.max(11, Math.round(12.5 * Math.min(1.25, u * 1.25)))}px Cinzel, Georgia, serif`; const badge = b.id === "quetes" && S ? questsReady() : 0; const txt = b.n + (badge ? `  ${badge}` : "");
-      const tw = x.measureText(txt).width + 16, rx = lx - tw / 2, ry = ly - 10; this.labelRect[b.id] = [rx, ry, tw, 20];
-      x.fillStyle = on ? "rgba(90,60,25,.95)" : "rgba(14,10,8,.82)"; x.strokeStyle = badge ? "#f1d695" : on ? "#f1d695" : "#8f7046"; x.lineWidth = 1;
-      x.beginPath(); x.roundRect ? x.roundRect(rx, ry, tw, 20, 3) : x.rect(rx, ry, tw, 20); x.fill(); x.stroke();
-      x.fillStyle = on ? "#fff3cf" : "#ecd9ae"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(txt, lx, ry + 10.5); x.textBaseline = "alphabetic"; }
+    this.labelRect = {}; this.syncLabels(I, L, u);
     I.c.style.cursor = this.hoverB || this.hovTile ? "pointer" : "default";
+  },
+  syncLabels(I, L, u) {
+    const host = I.c && I.c.parentElement, box = host && host.querySelector && host.querySelector(".vlabels"); if (!box) return;
+    const list = this.blds.filter(b => b.n), mob = I.w < 700, nq = S ? questsReady() : 0, sig = list.map(b => b.id).join() + "|" + nq + "|" + mob;
+    if (box._sig !== sig) { box._sig = sig;
+      box.innerHTML = list.map(b => `<button class="runebtn ${b.proj ? "proj" : ""}" data-act="vgo" data-b="${b.id}" style="--mc:${MAGIC_COL[b.id] || "#f3d48e"}"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 .8 11.2 6 6 11.2.8 6z" fill="none" stroke="currentColor" stroke-width=".9"/><path d="M6 3.2v5.6M4 5l2-1.8L8 5" fill="none" stroke="currentColor" stroke-width=".8"/></svg><span>${mob && SHORT_N[b.id] ? SHORT_N[b.id] : b.n}</span>${b.id === "quetes" && nq ? `<em>${nq}</em>` : ""}</button>`).join("");
+      box.querySelectorAll(".runebtn").forEach(el => { el.onpointerenter = () => { this.hoverB = this.blds.find(b => b.id === el.dataset.b) || null; this.hovTile = null; }; el.onpointerleave = () => { this.hoverB = null; }; }); }
+    for (const el of box.children) { const b = list.find(q => q.id === el.dataset.b); if (!b) continue; const [lx, ly] = isoP(L, b.gx + b.w / 2, b.gy + b.d / 2, (b.h + (b.rune ? 42 : b.board ? 26 : b.stalls ? 28 : 30)) * u);
+      el.style.transform = `translate(${lx.toFixed(1)}px,${ly.toFixed(1)}px) translate(-50%,-50%)`; el.classList.toggle("hot", this.hoverB === b); }
   },
   lighting(x, I, t, u) {
     if (typeof document === "undefined" || !document.createElement) return;
@@ -2823,7 +3194,9 @@ const VILLAGE = {
     x.fillStyle = "rgba(0,0,0,.35)"; x.beginPath(); x.ellipse(px, py, 11 * u, 4.5 * u, 0, 0, 7); x.fill();
     x.fillStyle = "#2a1a0e"; x.fillRect(px - 1.8 * u, py - 11 * u, 3.6 * u, 11 * u);
     const se = SEASON(), tc = se && se.id === "eveil" && hash(tr.gx, tr.gy) < .55 ? "#c87aa0" : se && se.id === "lanternes" && hash(tr.gy, tr.gx) < .5 ? "#8a4a1e" : tr.c;
-    for (let i = 0; i < 3; i++) { const yy = py - 10 * u - i * 9 * u, ww = (13 - i * 3) * u; x.fillStyle = se && se.id === "givre" && i === 2 ? "#e8f0f4" : shade(tc, i * .08 - .05); x.beginPath(); x.moveTo(px - ww + sw * i * .3, yy); x.lineTo(px + sw * (i + 1) * .4, yy - 17 * u); x.lineTo(px + ww + sw * i * .3, yy); x.closePath(); x.fill(); }
+    for (let i = 0; i < 3; i++) { const yy = py - 10 * u - i * 9 * u, ww = (13 - i * 3) * u, tx = px + sw * (i + 1) * .4, ty = yy - 17 * u;
+      const g = x.createLinearGradient(px - ww, 0, px + ww, 0); g.addColorStop(0, shade(tc, .12 + i * .05)); g.addColorStop(.55, shade(tc, -.1)); g.addColorStop(1, shade(tc, -.55));
+      x.fillStyle = se && se.id === "givre" && i === 2 ? "#e8f0f4" : g; x.beginPath(); x.moveTo(px - ww + sw * i * .3, yy); x.quadraticCurveTo(px - ww * .3, yy - 6 * u, tx, ty); x.quadraticCurveTo(px + ww * .3, yy - 6 * u, px + ww + sw * i * .3, yy); x.quadraticCurveTo(px, yy + 3 * u, px - ww + sw * i * .3, yy); x.closePath(); x.fill(); x.strokeStyle = "rgba(0,0,0,.45)"; x.lineWidth = .8; x.stroke(); }
   },
   /* Cases d'herbe libres au bord des chemins, pour les décorations de saison */
   decoSpots() { if (this.deco && this.decoSig === this.sig) return this.deco; const out = [];
@@ -2932,180 +3305,6 @@ function openInn() {
     <button class="row" data-act="inneat"><div class="t"><b>Manger et boire</b><span>Utilise une ration et une gourde si besoin.</span></div></button>
    </div><div class="mfoot"><button class="btn ghost" data-act="close">Partir</button></div>`);
 }
-/* ═══════════════════════ Sombreval · carte d'exploration sur parchemin ═══════════════════════
-   Vue du dessus, encre et lavis sur un vieux parchemin aux bords brûlés. Elle partage tout l'état du plateau
-   isométrique (VILLAGE : bâtiments, routes, héros, chemins), seule la projection et le rendu changent.
-   Les bâtiments interactifs luisent d'une magie dorée ; leurs étiquettes sont des boutons runiques HTML. */
-const MAPV = {
-  mist: makeMist(8), sparks: [], embers: [], hoverB: null, sig: "", bg: null,
-  SHORT: { quetes: "Quêtes", guilde: "Guilde", donjon: "Expéditions", marche: "Marché" },
-  MAGIC: { guilde: "#8fb4ff", donjon: "#b48cff", quetes: "#f3d48e" },
-  V() { VILLAGE.setup(); if (!VILLAGE.L) VILLAGE.L = { tw: 64, th: 32, ox: 0, oy: 0 }; VILLAGE.zoom = 1; return VILLAGE; },
-  layout(I) {
-    this.I = I; const V = this.V(), W = I.w, H = I.h, mob = W < 700;
-    const m = mob ? 6 : 12; this.sheet = [m, m, W - 2 * m, H - 2 * m];
-    const G = Math.floor(Math.min(this.sheet[2] * (mob ? .97 : .62), this.sheet[3] * (mob ? .9 : .86)));
-    this.cell = G / VN; this.G = G; this.gx0 = Math.round(W / 2 - G / 2); this.gy0 = Math.round(H / 2 - G / 2 + (mob ? 4 : 6));
-    this.sig = ""; this.mob = mob; this.labels();
-  },
-  cx(gx) { return this.gx0 + gx * this.cell; }, cy(gy) { return this.gy0 + gy * this.cell; },
-  rectB(b) { const c = this.cell, i = c * .08; return [this.cx(b.gx) + i, this.cy(b.gy) + i, b.w * c - 2 * i, b.d * c - 2 * i]; },
-  bAt(px, py) { for (const b of VILLAGE.blds) { if (!b.n || !b.door) continue; const r = this.rectB(b), p = 4; if (px >= r[0] - p && px <= r[0] + r[2] + p && py >= r[1] - p && py <= r[1] + r[3] + p) return b; } return null; },
-  hover(px, py, I) { if (!this.I) return; this.hoverB = px < 0 ? null : this.bAt(px, py); I && (I.c.style.cursor = this.hoverB ? "pointer" : "crosshair"); this.markLabels(); },
-  click(px, py) { const V = this.V(), b = this.bAt(px, py); if (b) { V.walkTo(...b.door, b); return; }
-    const t = [Math.floor((px - this.gx0) / this.cell), Math.floor((py - this.gy0) / this.cell)]; if (V.walkable(t[0], t[1])) { V.walkTo(...t); this.mark = { x: t[0], y: t[1], t: 0 }; } },
-  update(dt, I) { const V = this.V(); V.update(dt);
-    if (this.mark) { this.mark.t += dt; if (this.mark.t > 1.2) this.mark = null; }
-    const f = V.blds[0], c = this.cell; if (Math.random() < .35) this.embers.push({ x: this.cx(f.gx + f.w * .8), y: this.cy(f.gy + .3), vx: rnd(-6, 6), vy: rnd(-26, -12), l: 0 });
-    for (const q of this.embers) { q.x += q.vx * dt; q.y += q.vy * dt; q.l += dt; } this.embers = this.embers.filter(q => q.l < 1.4);
-    if (Math.random() < .5) { const bs = V.blds.filter(b => b.n && b.door); const b = bs[Math.floor(Math.random() * bs.length)]; if (b) { const r = this.rectB(b); this.sparks.push({ x: r[0] + Math.random() * r[2], y: r[1] + r[3] * Math.random(), vy: -rnd(6, 16), l: 0, col: this.MAGIC[b.id] || "#f3d48e" }); } }
-    for (const q of this.sparks) { q.y += q.vy * dt; q.l += dt; } this.sparks = this.sparks.filter(q => q.l < 1.6);
-  },
-  /* ── Boutons runiques (HTML, par-dessus le canevas) ── */
-  labels() {
-    const host = this.I && this.I.c.parentElement; if (!host) return; let box = host.querySelector(".maplabels");
-    if (!box) { box = document.createElement("div"); box.className = "maplabels"; host.appendChild(box); }
-    const V = VILLAGE, c = this.cell; const list = V.blds.filter(b => b.n && b.door && (!b.proj || !this.mob));
-    const badge = b => b.id === "quetes" && typeof questsReady === "function" ? questsReady() : 0;
-    box.innerHTML = list.map(b => { const r = this.rectB(b), up = b.gy < 2; const n = badge(b);
-      return `<button class="runebtn ${b.proj ? "proj" : ""} ${up ? "below" : ""}" data-act="vgo" data-b="${b.id}" style="left:${(r[0] + r[2] / 2).toFixed(1)}px;top:${(up ? r[1] + r[3] + 3 : r[1] - 3).toFixed(1)}px;--mc:${this.MAGIC[b.id] || "#f3d48e"}">
-        <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 .8 11.2 6 6 11.2.8 6z" fill="none" stroke="currentColor" stroke-width=".9"/><path d="M6 3.2v5.6M4 5l2-1.8L8 5" fill="none" stroke="currentColor" stroke-width=".8"/></svg>
-        <span>${this.mob && this.SHORT[b.id] ? this.SHORT[b.id] : b.n}</span>${n ? `<em>${n}</em>` : ""}</button>`; }).join("");
-    box.querySelectorAll(".runebtn").forEach(el => { el.onpointerenter = () => { this.hoverB = V.blds.find(b => b.id === el.dataset.b); }; el.onpointerleave = () => { this.hoverB = null; }; });
-  },
-  markLabels() { const host = this.I && this.I.c.parentElement; if (!host) return; host.querySelectorAll(".runebtn").forEach(el => el.classList.toggle("hot", !!this.hoverB && el.dataset.b === this.hoverB.id)); },
-  /* ── Couche fixe : parchemin, terrain, bâtiments à l'encre ── */
-  bake() {
-    const I = this.I, V = VILLAGE, dpr = I.dpr, W = I.w, H = I.h, c = this.cell; const cv = document.createElement("canvas"); cv.width = W * dpr; cv.height = H * dpr;
-    const x = cv.getContext("2d"); x.scale(dpr, dpr); const [sx, sy, sw, sh] = this.sheet; const se = typeof SEASON === "function" ? SEASON() : null;
-    // table de cuir sombre
-    const tg = x.createRadialGradient(W * .3, H * .2, 0, W / 2, H / 2, Math.max(W, H) * .8); tg.addColorStop(0, "#2a1d14"); tg.addColorStop(1, "#0d0a08"); x.fillStyle = tg; x.fillRect(0, 0, W, H);
-    for (let i = 0; i < 900; i++) { x.fillStyle = `rgba(${hash(i, 3) < .5 ? "0,0,0" : "120,80,50"},${.05 + hash(i, 9) * .06})`; x.fillRect(hash(i, 1) * W, hash(i, 2) * H, 1 + hash(i, 4) * 2, 1); }
-    // contour déchiré et brûlé
-    const edge = []; const per = 2 * (sw + sh), N = Math.round(per / 7);
-    for (let i = 0; i < N; i++) { let d = i / N * per, px, py, nx, ny; if (d < sw) { px = sx + d; py = sy; nx = 0; ny = 1; } else if ((d -= sw) < sh) { px = sx + sw; py = sy + d; nx = -1; ny = 0; } else if ((d -= sh) < sw) { px = sx + sw - d; py = sy + sh; nx = 0; ny = -1; } else { d -= sw; px = sx; py = sy + sh - d; nx = 1; ny = 0; }
-      const j = (hash(i, 77) * 4 + Math.sin(i * .7) * 1.5 + (hash(i >> 3, 5) < .12 ? 5 : 0)); edge.push([px + nx * j, py + ny * j]); }
-    const path = () => { x.beginPath(); edge.forEach(([a, b], i) => i ? x.lineTo(a, b) : x.moveTo(a, b)); x.closePath(); };
-    x.save(); x.shadowColor = "rgba(0,0,0,.8)"; x.shadowBlur = 18; x.shadowOffsetY = 6; path(); x.fillStyle = "#c9ab72"; x.fill(); x.restore();
-    x.save(); path(); x.clip();
-    const pg = x.createRadialGradient(sx + sw * .45, sy + sh * .4, 0, sx + sw / 2, sy + sh / 2, Math.max(sw, sh) * .72); pg.addColorStop(0, "#efdfb8"); pg.addColorStop(.6, "#dcc394"); pg.addColorStop(1, "#b48e55"); x.fillStyle = pg; x.fillRect(sx - 10, sy - 10, sw + 20, sh + 20);
-    for (let i = 0; i < 14; i++) { const r = 20 + hash(i, 41) * 90, px = sx + hash(i, 42) * sw, py = sy + hash(i, 43) * sh, g = x.createRadialGradient(px, py, r * .2, px, py, r); g.addColorStop(0, "rgba(140,95,40,0)"); g.addColorStop(.8, `rgba(140,95,40,${.05 + hash(i, 44) * .07})`); g.addColorStop(1, "rgba(140,95,40,0)"); x.fillStyle = g; x.fillRect(px - r, py - r, r * 2, r * 2); }
-    for (let i = 0; i < 2600; i++) { x.fillStyle = `rgba(${hash(i, 11) < .7 ? "90,60,25" : "255,245,220"},${.04 + hash(i, 12) * .08})`; x.fillRect(sx + hash(i, 13) * sw, sy + hash(i, 14) * sh, 1 + hash(i, 15) * 1.5, 1); }
-    x.strokeStyle = "rgba(110,75,35,.08)"; x.lineWidth = .6; for (let i = 0; i < 160; i++) { const px = sx + hash(i, 21) * sw, py = sy + hash(i, 22) * sh, a = hash(i, 23) * 3; x.beginPath(); x.moveTo(px, py); x.lineTo(px + Math.cos(a) * 9, py + Math.sin(a) * 9); x.stroke(); }
-    // plis
-    for (const [a, b, cc, d] of [[sx + sw / 2, sy, sx + sw / 2, sy + sh], [sx, sy + sh / 2, sx + sw, sy + sh / 2]]) { x.strokeStyle = "rgba(90,60,25,.16)"; x.lineWidth = 1.2; x.beginPath(); x.moveTo(a, b); x.lineTo(cc, d); x.stroke(); x.strokeStyle = "rgba(255,248,225,.25)"; x.lineWidth = .8; x.beginPath(); x.moveTo(a + 1.2, b + 1.2); x.lineTo(cc + 1.2, d + 1.2); x.stroke(); }
-    // brûlure des bords
-    for (let k = 0; k < 7; k++) { path(); x.strokeStyle = `rgba(${60 - k * 4},${30 - k * 2},10,${.32 - k * .04})`; x.lineWidth = 3 + k * 5; x.stroke(); }
-    path(); x.strokeStyle = "rgba(20,10,4,.9)"; x.lineWidth = 2; x.stroke();
-    const ink = "#2b1b0d", ink2 = "rgba(43,27,13,.55)", wash = (hex, a) => rgba(hex, a);
-    // marges : montagnes (ouest), rivière (est), légendes
-    const lm = this.gx0 - sx, rm = sx + sw - (this.gx0 + this.G);
-    x.lineCap = "round"; x.lineJoin = "round";
-    if (lm > 60) { for (let i = 0; i < 9; i++) { const mx = sx + 18 + hash(i, 61) * (lm - 46), my = sy + 30 + i / 9 * (sh - 70) + hash(i, 62) * 20, mw = 14 + hash(i, 63) * 14, mh = mw * (.8 + hash(i, 64) * .4);
-        x.fillStyle = "rgba(120,90,50,.18)"; x.beginPath(); x.moveTo(mx - mw, my); x.lineTo(mx, my - mh); x.lineTo(mx + mw, my); x.fill(); x.strokeStyle = ink; x.lineWidth = 1.1; x.beginPath(); x.moveTo(mx - mw, my); x.lineTo(mx, my - mh); x.lineTo(mx + mw, my); x.stroke();
-        x.strokeStyle = ink2; x.lineWidth = .6; for (let k = 1; k < 5; k++) { x.beginPath(); x.moveTo(mx + k * mw / 6, my - mh + k * mh / 5.5); x.lineTo(mx + k * mw / 6 + 3, my); x.stroke(); } }
-      this.legend(x, "Monts Cendrés", sx + lm / 2, sy + sh - 42, 0); }
-    if (rm > 50) { const rx0 = this.gx0 + this.G + rm * .45; x.strokeStyle = "rgba(60,90,110,.35)"; x.lineWidth = 9; const rv = () => { x.beginPath(); for (let y = sy - 4; y <= sy + sh + 4; y += 6) { const xx = rx0 + Math.sin(y / 38) * 12 + Math.sin(y / 13) * 3; y === sy - 4 ? x.moveTo(xx, y) : x.lineTo(xx, y); } }; rv(); x.stroke();
-      x.strokeStyle = ink; x.lineWidth = 1; x.save(); x.translate(-5, 0); rv(); x.stroke(); x.translate(10, 0); rv(); x.stroke(); x.restore();
-      x.strokeStyle = "rgba(43,27,13,.35)"; x.lineWidth = .6; for (let y = sy + 10; y < sy + sh; y += 17) { const xx = rx0 + Math.sin(y / 38) * 12; x.beginPath(); x.moveTo(xx - 3, y); x.quadraticCurveTo(xx, y - 2, xx + 3, y); x.stroke(); }
-      x.save(); x.translate(rx0 + 22, sy + sh * .35); x.rotate(Math.PI / 2); this.legend(x, "La Noirerive", 0, 0, 0); x.restore(); }
-    // bois et terres (lavis vert sur l'herbe)
-    const G = V.ground;
-    for (let y = 0; y < VN; y++) for (let X = 0; X < VN; X++) if (!G[y][X]) { x.fillStyle = `rgba(${se && se.id === "givre" ? "200,210,220" : "95,110,50"},${.07 + hash(X, y) * .05})`; x.fillRect(this.cx(X), this.cy(y), c + .5, c + .5); }
-    // routes : sol battu bordé d'encre
-    for (let y = 0; y < VN; y++) for (let X = 0; X < VN; X++) { const v = G[y][X]; if (!v) continue; x.fillStyle = v === 2 ? "rgba(150,115,70,.42)" : "rgba(170,125,70,.36)"; x.fillRect(this.cx(X), this.cy(y), c + .5, c + .5);
-      if (v === 2) { x.strokeStyle = "rgba(60,40,20,.25)"; x.lineWidth = .5; for (let k = 0; k < 3; k++) { x.beginPath(); x.arc(this.cx(X) + c * (.25 + hash(X, y + k) * .5), this.cy(y) + c * (.25 + hash(y, X + k) * .5), c * .12, 0, 7); x.stroke(); } } }
-    x.strokeStyle = ink2; x.lineWidth = 1;
-    for (let y = 0; y < VN; y++) for (let X = 0; X < VN; X++) { if (!G[y][X]) continue; const px = this.cx(X), py = this.cy(y), on = (a, b) => a >= 0 && b >= 0 && a < VN && b < VN && G[b][a];
-      x.beginPath(); if (!on(X, y - 1)) { x.moveTo(px, py); x.lineTo(px + c, py); } if (!on(X, y + 1)) { x.moveTo(px, py + c); x.lineTo(px + c, py + c); } if (!on(X - 1, y)) { x.moveTo(px, py); x.lineTo(px, py + c); } if (!on(X + 1, y)) { x.moveTo(px + c, py); x.lineTo(px + c, py + c); } x.stroke(); }
-    // puits et lanternes
-    { const [wx, wy] = V.well, px = this.cx(wx + .5), py = this.cy(wy + .5); x.fillStyle = "rgba(60,90,110,.45)"; x.beginPath(); x.arc(px, py, c * .3, 0, 7); x.fill(); x.strokeStyle = ink; x.lineWidth = 1.2; x.beginPath(); x.arc(px, py, c * .34, 0, 7); x.stroke(); }
-    for (const [lx, ly] of V.lamps) { const px = this.cx(lx + .5), py = this.cy(ly + .5); x.strokeStyle = ink; x.lineWidth = .8; x.beginPath(); for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2; x.moveTo(px, py); x.lineTo(px + Math.cos(a) * c * .22, py + Math.sin(a) * c * .22); } x.stroke(); }
-    // arbres : couronnes à l'encre, ombrées de hachures
-    const tcol = se && se.id === "lanternes" ? "150,80,30" : se && se.id === "eveil" ? "190,110,140" : se && se.id === "givre" ? "150,165,170" : "70,95,45";
-    for (const tr of V.trees) { const px = this.cx(tr.gx + .5) + (hash(tr.gx, tr.gy) - .5) * c * .2, py = this.cy(tr.gy + .5) + (hash(tr.gy, tr.gx) - .5) * c * .2, r = c * .42 * tr.s;
-      x.fillStyle = "rgba(40,25,10,.18)"; x.beginPath(); x.ellipse(px + r * .3, py + r * .35, r, r * .8, 0, 0, 7); x.fill();
-      x.fillStyle = `rgba(${tcol},.42)`; x.beginPath(); for (let k = 0; k <= 9; k++) { const a = k / 9 * Math.PI * 2, rr = r * (.86 + hash(k, tr.gx * 7 + tr.gy) * .2); k ? x.lineTo(px + Math.cos(a) * rr, py + Math.sin(a) * rr) : x.moveTo(px + rr, py); } x.closePath(); x.fill(); x.strokeStyle = ink; x.lineWidth = .9; x.stroke();
-      x.strokeStyle = ink2; x.lineWidth = .5; for (let k = 0; k < 3; k++) { x.beginPath(); x.moveTo(px + r * (.1 + k * .2), py + r * .7); x.lineTo(px + r * (.5 + k * .15), py + r * .1); x.stroke(); } }
-    for (const [fx, fy, h] of V.flowers) { x.fillStyle = `rgba(${h < .5 ? "150,50,40" : "180,150,60"},.45)`; x.beginPath(); x.arc(this.cx(fx + h), this.cy(fy + hash(fy, fx)), .9, 0, 7); x.fill(); }
-    // remparts
-    const rp = S && S.rebuild && S.rebuild.remparts; if (rp) { const p = c * .3; x.strokeStyle = ink; x.lineWidth = 1.5 + rp; x.setLineDash([c * .7, c * .18]); x.strokeRect(this.gx0 - p, this.gy0 - p, this.G + 2 * p, this.G + 2 * p); x.setLineDash([]);
-      for (const [a, b] of [[0, 0], [1, 0], [0, 1], [1, 1]]) { x.fillStyle = "rgba(120,100,80,.6)"; x.beginPath(); x.arc(this.gx0 - p + a * (this.G + 2 * p), this.gy0 - p + b * (this.G + 2 * p), c * .35, 0, 7); x.fill(); x.stroke(); } }
-    // bâtiments
-    for (const b of V.blds) this.inkBuilding(x, b, ink, ink2);
-    // rose des vents
-    if (!this.mob) { const rr = Math.min(38, c * 2.1), rcx = this.mob ? sx + sw - rr - 8 : sx + sw - rr - 18, rcy = sy + sh - rr - (this.mob ? 8 : 16); this.compass(x, rcx, rcy, rr); }
-    // échelle
-    if (!this.mob) { const ex = sx + 22, ey = sy + sh - 18; x.strokeStyle = ink; x.lineWidth = 1; x.beginPath(); x.moveTo(ex, ey); x.lineTo(ex + c * 4, ey); x.stroke(); for (let k = 0; k <= 4; k++) { x.beginPath(); x.moveTo(ex + k * c, ey - (k % 2 ? 2 : 4)); x.lineTo(ex + k * c, ey); x.stroke(); }
-      if (lm <= 60) this.legend(x, "100 pas", ex + c * 2, ey - 8, 0); }
-    // cartouche
-    if (!this.mob && lm > 110) { const tx = sx + 20, ty = sy + 22; let fs = 22; x.font = `600 ${fs}px Cinzel, Georgia, serif`; while (fs > 12 && x.measureText("SOMBREVAL").width > lm - 44) { fs--; x.font = `600 ${fs}px Cinzel, Georgia, serif`; } const tw = Math.max(x.measureText("SOMBREVAL").width, 0); x.fillStyle = "rgba(240,225,190,.55)"; x.strokeStyle = ink; x.lineWidth = 1; x.beginPath(); x.rect(tx - 10, ty - 6, tw + 20, fs + 32); x.fill(); x.stroke(); x.strokeRect(tx - 7, ty - 3, tw + 14, fs + 26);
-      x.fillStyle = "#4a1e10"; x.textBaseline = "top"; x.fillText("SOMBREVAL", tx, ty); x.font = "italic 12px 'EB Garamond', Georgia, serif"; x.fillStyle = ink; x.fillText("Terres de la Brume", tx, ty + fs + 4); x.fillText("relevé du forgeron", tx, ty + fs + 16); x.textBaseline = "alphabetic"; }
-    x.restore();
-    this.bg = cv;
-  },
-  legend(x, s, px, py, rot) { x.save(); x.font = "italic 13px 'EB Garamond', Georgia, serif"; x.fillStyle = "rgba(43,27,13,.75)"; x.textAlign = "center"; x.fillText(s, px, py); x.restore(); },
-  compass(x, cx, cy, r) {
-    x.save(); x.translate(cx, cy); x.strokeStyle = "#2b1b0d"; x.lineWidth = .8; x.beginPath(); x.arc(0, 0, r, 0, 7); x.stroke(); x.beginPath(); x.arc(0, 0, r * .82, 0, 7); x.stroke();
-    for (let k = 0; k < 32; k++) { const a = k / 32 * Math.PI * 2; x.beginPath(); x.moveTo(Math.cos(a) * r * .82, Math.sin(a) * r * .82); x.lineTo(Math.cos(a) * r * (k % 4 ? .9 : 1), Math.sin(a) * r * (k % 4 ? .9 : 1)); x.stroke(); }
-    for (let k = 0; k < 8; k++) { const a = k / 8 * Math.PI * 2 - Math.PI / 2, L = k % 2 ? r * .55 : r * .95, w = k % 2 ? r * .1 : r * .14; const p = [Math.cos(a) * L, Math.sin(a) * L], l = [Math.cos(a - Math.PI / 2) * w, Math.sin(a - Math.PI / 2) * w];
-      x.fillStyle = k === 0 ? "#7a2414" : "#2b1b0d"; x.beginPath(); x.moveTo(0, 0); x.lineTo(l[0], l[1]); x.lineTo(p[0], p[1]); x.closePath(); x.fill(); x.fillStyle = "rgba(240,225,190,.9)"; x.beginPath(); x.moveTo(0, 0); x.lineTo(-l[0], -l[1]); x.lineTo(p[0], p[1]); x.closePath(); x.fill(); x.stroke(); }
-    x.fillStyle = "#cda45e"; x.beginPath(); x.arc(0, 0, r * .08, 0, 7); x.fill(); x.stroke();
-    x.font = `600 ${Math.round(r * .32)}px Cinzel, Georgia, serif`; x.textAlign = "center"; x.fillStyle = "#4a1e10"; x.fillText("N", 0, -r - 3); x.restore();
-  },
-  inkBuilding(x, b, ink, ink2) {
-    const [bx, by, bw, bh] = this.rectB(b), c = this.cell, base = b.roof || b.col || "#6a4a2a";
-    x.fillStyle = "rgba(40,25,10,.28)"; x.fillRect(bx + c * .14, by + c * .16, bw, bh);
-    if (b.stalls) { for (let k = 0; k < b.w; k++) { const sx = bx + k * bw / b.w + 1, sw = bw / b.w - 2; x.fillStyle = k % 2 ? "rgba(140,40,30,.5)" : "rgba(170,140,60,.5)"; x.fillRect(sx, by, sw, bh); x.strokeStyle = ink; x.lineWidth = 1; x.strokeRect(sx, by, sw, bh); x.strokeStyle = ink2; x.lineWidth = .6; for (let s = 1; s < 4; s++) { x.beginPath(); x.moveTo(sx + s * sw / 4, by); x.lineTo(sx + s * sw / 4, by + bh); x.stroke(); } } return; }
-    if (b.board) { x.fillStyle = "rgba(240,225,190,.9)"; x.fillRect(bx + bw * .1, by + bh * .2, bw * .8, bh * .6); x.strokeStyle = ink; x.lineWidth = 1.1; x.strokeRect(bx + bw * .1, by + bh * .2, bw * .8, bh * .6); x.lineWidth = .6; for (let k = 1; k < 4; k++) { x.beginPath(); x.moveTo(bx + bw * .22, by + bh * (.2 + k * .15)); x.lineTo(bx + bw * .78, by + bh * (.2 + k * .15)); x.stroke(); } return; }
-    if (b.proj === "statue") { const px = bx + bw / 2, py = by + bh / 2; x.fillStyle = "rgba(205,164,94,.8)"; x.beginPath(); for (let k = 0; k < 10; k++) { const a = k / 10 * Math.PI * 2 - Math.PI / 2, rr = k % 2 ? c * .18 : c * .42; x.lineTo(px + Math.cos(a) * rr, py + Math.sin(a) * rr); } x.closePath(); x.fill(); x.strokeStyle = ink; x.lineWidth = 1; x.stroke(); return; }
-    if (b.proj === "jardins") { for (let k = 0; k < 4; k++) { x.fillStyle = "rgba(70,110,50,.5)"; x.fillRect(bx + 2, by + k * bh / 4 + 2, bw - 4, bh / 4 - 4); } x.strokeStyle = ink; x.lineWidth = 1; x.strokeRect(bx, by, bw, bh); return; }
-    // toit vu de dessus : deux pans, faîtage, hachures sur le pan à l'ombre
-    x.fillStyle = wash(base); x.fillRect(bx, by, bw, bh);
-    const horiz = bw >= bh; x.fillStyle = "rgba(30,15,5,.22)"; if (horiz) x.fillRect(bx, by + bh / 2, bw, bh / 2); else x.fillRect(bx + bw / 2, by, bw / 2, bh);
-    x.strokeStyle = ink2; x.lineWidth = .55; const n = Math.max(3, Math.round((horiz ? bw : bh) / 4));
-    for (let k = 1; k < n; k++) { x.beginPath(); if (horiz) { x.moveTo(bx + k * bw / n, by + bh / 2); x.lineTo(bx + k * bw / n, by + bh); } else { x.moveTo(bx + bw / 2, by + k * bh / n); x.lineTo(bx + bw, by + k * bh / n); } x.stroke(); }
-    x.strokeStyle = ink; x.lineWidth = 1.3; x.strokeRect(bx, by, bw, bh); x.beginPath(); if (horiz) { x.moveTo(bx, by + bh / 2); x.lineTo(bx + bw, by + bh / 2); } else { x.moveTo(bx + bw / 2, by); x.lineTo(bx + bw / 2, by + bh); } x.stroke();
-    if (b.chimney) { x.fillStyle = "#3a2a20"; x.fillRect(bx + bw * .74, by + bh * .14, c * .34, c * .34); x.strokeRect(bx + bw * .74, by + bh * .14, c * .34, c * .34); }
-    if (b.rune || b.proj === "tour") { const px = b.proj ? bx + bw / 2 : bx + bw * .78, py = b.proj ? by + bh / 2 : by + bh * .25, r = c * (b.proj ? .7 : .5); x.fillStyle = b.proj ? "rgba(110,100,90,.75)" : "rgba(60,80,130,.75)"; x.beginPath(); x.arc(px, py, r, 0, 7); x.fill(); x.stroke();
-      for (let k = 0; k < 8; k++) { const a = k / 8 * Math.PI * 2; x.beginPath(); x.moveTo(px + Math.cos(a) * r * .55, py + Math.sin(a) * r * .55); x.lineTo(px + Math.cos(a) * r, py + Math.sin(a) * r); x.stroke(); } }
-    if (b.gate) { x.fillStyle = "rgba(20,15,25,.85)"; x.beginPath(); x.arc(bx + bw / 2, by + bh * .95, bh * .55, Math.PI, 0); x.fill(); x.stroke(); }
-    if (b.proj === "moulin") { const px = bx + bw / 2, py = by + bh / 2; x.lineWidth = 2; x.beginPath(); x.moveTo(px - c * .9, py - c * .9); x.lineTo(px + c * .9, py + c * .9); x.moveTo(px + c * .9, py - c * .9); x.lineTo(px - c * .9, py + c * .9); x.stroke(); }
-    if (b.proj === "temple") { const px = bx + bw / 2, py = by + bh / 2; x.fillStyle = "#e8c070"; x.beginPath(); x.arc(px, py, c * .32, 0, 7); x.fill(); x.lineWidth = 1; x.stroke(); }
-    if (b.proj === "caserne") { const px = bx + bw / 2, py = by + bh / 2, r = c * .5; x.lineWidth = 1.6; x.beginPath(); x.moveTo(px - r, py - r); x.lineTo(px + r, py + r); x.moveTo(px + r, py - r); x.lineTo(px - r, py + r); x.stroke(); }
-    function wash(h) { return rgba(h, .55); }
-  },
-  draw(x, I) {
-    if (!this.I) this.layout(I); const V = this.V(), t = I.t, W = I.w, H = I.h, c = this.cell;
-    const sig = W + "x" + H + JSON.stringify((S && S.rebuild) || {}) + (SEASON() ? SEASON().id : "") + V.blds.length; if (sig !== this.sig || !this.bg) { this.sig = sig; this.bake(); this.labels(); }
-    x.drawImage(this.bg, 0, 0, W, H);
-    // lueurs magiques des lieux interactifs
-    for (const b of V.blds) { if (!b.n || !b.door) continue; const [bx, by, bw, bh] = this.rectB(b), hot = this.hoverB === b, col = this.MAGIC[b.id] || "#ffcf7a", p = .5 + Math.sin(t * 2 + b.gx) * .5;
-      glow(x, bx + bw / 2, by + bh / 2, Math.max(bw, bh) * (hot ? 1.2 : .85), col, (hot ? .5 : .16 + p * .1));
-      x.save(); x.strokeStyle = rgba(col, hot ? .95 : .3 + p * .25); x.lineWidth = hot ? 1.6 : 1; x.shadowColor = col; x.shadowBlur = hot ? 12 : 6; x.setLineDash([3, 3]); x.lineDashOffset = -t * 8; x.strokeRect(bx - 3, by - 3, bw + 6, bh + 6); x.restore();
-      if (hot) { const r = Math.max(bw, bh) * .75; x.save(); x.translate(bx + bw / 2, by + bh / 2); x.rotate(t * .6); x.strokeStyle = rgba(col, .7); x.lineWidth = 1; x.beginPath(); x.arc(0, 0, r, 0, 7); x.stroke(); for (let k = 0; k < 6; k++) { x.rotate(Math.PI / 3); x.beginPath(); x.moveTo(r - 3, 0); x.lineTo(r + 4, 0); x.stroke(); } x.restore(); } }
-    if (S && questsReady()) { const b = V.blds.find(q => q.id === "quetes"); if (b) { const r = this.rectB(b); glow(x, r[0] + r[2] / 2, r[1] + r[3] / 2, c * 2, "#f3d48e", .35 + Math.sin(t * 4) * .15); } }
-    for (const q of this.sparks) { x.globalAlpha = Math.max(0, 1 - q.l / 1.6) * .9; x.fillStyle = q.col; x.fillRect(q.x, q.y, 1.6, 1.6); } x.globalAlpha = 1;
-    for (const q of this.embers) { x.globalAlpha = Math.max(0, 1 - q.l / 1.4); x.fillStyle = "#ff9a3a"; x.fillRect(q.x, q.y, 1.8, 1.8); } x.globalAlpha = 1;
-    // itinéraire à l'encre rouge
-    const h = V.hero; if (h.path.length) { x.save(); x.strokeStyle = "rgba(122,36,20,.85)"; x.lineWidth = 1.6; x.setLineDash([4, 4]); x.lineDashOffset = -t * 14; x.beginPath(); x.moveTo(this.cx(h.rx + .5), this.cy(h.ry + .5)); for (const [a, b] of h.path) x.lineTo(this.cx(a + .5), this.cy(b + .5)); x.stroke(); x.setLineDash([]);
-      const [ex, ey] = h.path[h.path.length - 1], px = this.cx(ex + .5), py = this.cy(ey + .5), r = c * .28; x.lineWidth = 2; x.beginPath(); x.moveTo(px - r, py - r); x.lineTo(px + r, py + r); x.moveTo(px + r, py - r); x.lineTo(px - r, py + r); x.stroke(); x.restore(); }
-    if (this.mark) { const px = this.cx(this.mark.x + .5), py = this.cy(this.mark.y + .5); x.strokeStyle = `rgba(122,36,20,${1 - this.mark.t / 1.2})`; x.lineWidth = 1.2; x.beginPath(); x.arc(px, py, c * (.2 + this.mark.t * .6), 0, 7); x.stroke(); }
-    // compagnon et héros : pions de cire sertis d'or
-    const p = V.pet; { const px = this.cx(p.rx + .5), py = this.cy(p.ry + .5); x.fillStyle = "rgba(30,15,5,.35)"; x.beginPath(); x.ellipse(px + 1.5, py + 2, c * .26, c * .2, 0, 0, 7); x.fill(); x.fillStyle = "#6a6a72"; x.beginPath(); x.arc(px, py, c * .24, 0, 7); x.fill(); x.strokeStyle = "#cda45e"; x.lineWidth = 1; x.stroke(); }
-    { const px = this.cx(h.rx + .5), py = this.cy(h.ry + .5), bob = h.moving ? Math.abs(Math.sin(t * 9)) * 2 : 0, r = Math.max(7, c * .42), col = CLS(S.cls).col;
-      glow(x, px, py, r * 3, "#ffcf7a", .35);
-      x.fillStyle = "rgba(30,15,5,.4)"; x.beginPath(); x.ellipse(px + 2, py + 3, r, r * .75, 0, 0, 7); x.fill();
-      const g = x.createRadialGradient(px - r * .3, py - r * .4 - bob, 0, px, py - bob, r); g.addColorStop(0, shade(col, .35)); g.addColorStop(1, shade(col, -.45)); x.fillStyle = g; x.beginPath(); x.arc(px, py - bob, r, 0, 7); x.fill();
-      x.strokeStyle = "#f3d48e"; x.lineWidth = 1.6; x.stroke(); x.strokeStyle = "rgba(20,10,4,.8)"; x.lineWidth = .8; x.beginPath(); x.arc(px, py - bob, r + 1.4, 0, 7); x.stroke();
-      if (r > 9) { x.save(); x.beginPath(); x.arc(px, py - bob, r - 1, 0, 7); x.clip(); drawChar(x, px, py - bob + 30 * r / 13, r / 13, heroLook(S.cls, S.ppl, S.look, S.equip), 0, h.face); x.restore(); }
-      else { x.fillStyle = "#f3d48e"; x.font = `600 ${Math.round(r)}px Cinzel, serif`; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText((S.name || "?")[0], px, py - bob + .5); x.textAlign = "left"; x.textBaseline = "alphabetic"; } }
-    // brume vivante et lumière de chandelle
-    x.save(); x.beginPath(); x.rect(0, 0, W, H); x.clip(); drawMist(x, W, H, this.mist, 1 / 60, "235,226,205"); drawMist(x, W, H, this.mist, 0, "235,226,205"); x.restore();
-    const cg = x.createRadialGradient(W * .22, H * .1, 0, W * .22, H * .1, Math.max(W, H) * .9); cg.addColorStop(0, "rgba(255,190,110,.10)"); cg.addColorStop(1, "rgba(0,0,0,0)"); x.save(); x.globalCompositeOperation = "lighter"; x.fillStyle = cg; x.fillRect(0, 0, W, H); x.restore();
-    vignette(x, W, H, .55);
-  },
-};
 /* ═══════════════════════ Expéditions & combat tactique ═══════════════════════ */
 const GN = 8;
 let SPEED = 1;
@@ -4103,7 +4302,6 @@ function openModal(html) { const m = $("#modal"); m.innerHTML = `<div class="pan
 function closeModal() { const m = $("#modal"); m.hidden = true; m.innerHTML = ""; if (forgeGame) { forgeGame.stop = true; forgeGame = null; } }
 function go(v) { VIEW = v; render(); viewEl.scrollTop = 0; if (viewEl.classList) { viewEl.classList.remove("enter"); void viewEl.offsetWidth; viewEl.classList.add("enter"); } }
 
-function MAPMODE() { return !!(S && S.opts && S.opts.vmap !== "iso"); }
 function mountCanvas(sel, scene) { const c = $(sel); if (!c) return; canvases.push(new IsoCanvas(c, scene)); }
 function render() {
   canvases.forEach(c => c.destroy()); canvases = [];
@@ -4174,7 +4372,7 @@ function vHome() {
   const preview = S.stash.slice(0, 8);
   viewEl.innerHTML = `<div class="grid home">
    <div class="home-main">
-    <div class="panel scene ${MAPMODE() ? "mapmode" : ""}"><canvas id="village" aria-label="Village de Sombreval"></canvas>${MAPMODE() ? "" : `<div class="tag">Sombreval</div><button class="xray ${XRAY ? "on" : ""}" style="left:auto;right:58px" data-act="vxray" title="Voir à travers les décors" aria-pressed="${XRAY}">${nico("eye")}</button>`}<button class="xray vmode" style="left:auto;right:10px" data-act="vmode" title="${MAPMODE() ? "Vue du village en relief" : "Carte de Sombreval"}">${nico(MAPMODE() ? "home" : "map")}</button><div class="hint">${MAPMODE() ? "Touchez un lieu runique pour vous y rendre" : "Touchez le sol pour marcher, un bâtiment pour y aller et entrer"}</div></div>
+    <div class="panel scene"><canvas id="village" aria-label="Village de Sombreval"></canvas><div class="vlabels"></div><div class="tag">Sombreval</div><button class="xray ${XRAY ? "on" : ""}" style="left:auto;right:10px" data-act="vxray" title="Voir à travers les décors" aria-pressed="${XRAY}">${nico("eye")}</button><div class="hint">Touchez le sol pour marcher, un lieu pour vous y rendre</div></div>
     <div class="cards4">
       <div class="panel"><div class="ph">Dernières créations</div><div class="list">${recent}</div></div>
       <div class="panel"><div class="ph">Inventaire <small class="num">${S.stash.length} / ${stashCap()}</small></div><div class="invgrid" style="grid-template-columns:repeat(4,44px);gap:6px">${preview.map(it => slotHTML(it, { size: "sm" })).join("")}</div><button class="btn ghost sm wide" style="margin-top:10px" data-act="go" data-v="inv">Tout voir</button></div>
@@ -4193,7 +4391,7 @@ function vHome() {
     <div class="panel"><div class="ph">Contrats de la Guilde <small>${contractsReady() ? `<b class="ok">${contractsReady()} à réclamer</b>` : "limités dans le temps"}</small></div><div class="list">${(S.contracts || []).map(c => contractRow(c, true)).join("") || '<p class="muted" style="margin:0">Aucun contrat pour l\'instant.</p>'}</div>${(S.bless || []).length ? `<div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap">${S.bless.map(blessChip).join("")}</div>` : ""}<button class="btn ghost sm wide" style="margin-top:8px" data-act="toqtab" data-t="contracts">Voir les contrats</button></div>
     <div class="parch"><div class="ph">Histoire · chapitre ${STORY.findIndex(c => c.id === q.id) + 1} / ${STORY.length}</div><div style="font-size:13px;color:#6a4a24">${q.ch}</div><b style="font-family:var(--f-display);font-size:16px">${q.n}</b><p style="margin:4px 0 8px">${q.d}</p>${qs.st === "locked" ? "" : `<div class="prog" style="background:#7a6040"><i style="width:${qs.cur / qs.max * 100}%;background:#3a2410"></i></div><div style="font-size:13px;margin-top:4px" class="num">${qs.cur} / ${qs.max}</div>`}${qs.st === "done" ? `<button class="btn sm" style="margin-top:8px" data-act="claim" data-q="${q.id}">Réclamer la récompense</button>` : ""}</div>
    </div></div>`;
-  mountCanvas("#village", MAPMODE() ? MAPV : VILLAGE);
+  mountCanvas("#village", VILLAGE);
   drawEventArt($("#evart"), ev.active.id);
   const wc = $("#wolfpic"); if (wc) { const x = wc.getContext("2d"); x.clearRect(0, 0, 200, 90); glow(x, 100, 70, 70, "#a3c4d8", .12); drawPet(x, petId(), 100, 82, 2.4, 0, 1); }
 }
@@ -4732,7 +4930,7 @@ function renderCreate() {
     ${saved ? `<button class="btn ghost wide" data-act="continue">Continuer la partie de ${esc(saved.name)}</button>` : ""}
     <p class="faint" style="margin:0;font-size:14px;text-align:center">Prototype jouable · sauvegarde dans ce navigateur</p></div></div>`;
   mountCanvas("#stage", STAGE);
-  document.querySelectorAll("canvas[data-face]").forEach(cv => { const x = cv.getContext("2d"); x.clearRect(0, 0, 92, 92); const g = x.createRadialGradient(46, 40, 4, 46, 46, 50); g.addColorStop(0, "#3a2a1c"); g.addColorStop(1, "#0b0807"); x.fillStyle = g; x.fillRect(0, 0, 92, 92); drawChar(x, 46, 40 + 37 * 2.2 * (PPL(cv.dataset.face).short ? .84 : 1), 2.2, { ...heroLook(CR.cls, cv.dataset.face, { ...defaultLook(cv.dataset.face, CR.look.body), hair: CR.look.hair, mark: CR.look.mark }), weapon: "none" }, 0, 1); });
+  document.querySelectorAll("canvas[data-face]").forEach(cv => { const x = cv.getContext("2d"); x.clearRect(0, 0, 92, 92); const g = x.createRadialGradient(46, 40, 4, 46, 46, 50); g.addColorStop(0, "#3a2a1c"); g.addColorStop(1, "#0b0807"); x.fillStyle = g; x.fillRect(0, 0, 92, 92); drawChar(x, 46, 40 + 37 * 2.2 * (PPL(cv.dataset.face).short ? .84 : 1), 2.2, { ...heroLook(CR.cls, cv.dataset.face, { ...defaultLook(cv.dataset.face, CR.look.body), hair: CR.look.hair, mark: CR.look.mark }), bare: 1, weapon: "none" }, 0, 1); });
   $("#pname").addEventListener("input", e => CR.name = e.target.value);
 }
 
@@ -4779,7 +4977,6 @@ const ACT = {
   petbuy: d => { const e = buyPet(d.id); toast(e || `${PETS[d.id].n} vous rejoint.`, e ? "bad" : "gold"); rerender(); },
   petpick: d => { const e = switchPet(d.id); toast(e || `${PETS[d.id].n} vous accompagnera.`, e ? "bad" : ""); rerender(); },
   xray: () => { XRAY = !XRAY; refreshDun(); },
-  vmode: () => { S.opts.vmap = MAPMODE() ? "iso" : "carte"; MAPV.I = null; save(); rerender(); },
   vgo: d => { const b = VILLAGE.blds.find(x => x.id === d.b); if (b && b.door) VILLAGE.walkTo(...b.door, b); },
   vxray: (d, el) => { XRAY = !XRAY; el.classList.toggle("on", XRAY); el.setAttribute("aria-pressed", XRAY); },
   innrest: () => { closeModal(); openRest(); },
