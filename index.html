@@ -524,7 +524,7 @@ h3{color:var(--gold-hi)}
 /* Emplacements d'objets : alvéoles serties, lueur de rareté */
 .slot{color:#d9c49a;border:1px solid transparent;background:radial-gradient(circle at 50% 38%,rgba(255,240,210,.06),transparent 65%) padding-box,linear-gradient(180deg,#110c08,#070504) padding-box,linear-gradient(135deg,#5a4426,#a3834a 40%,#3a2a16) border-box;
   box-shadow:inset 0 0 0 1px rgba(0,0,0,.85),inset 0 2px 8px rgba(0,0,0,.8),0 2px 6px rgba(0,0,0,.6)}
-.slot svg{width:70%;height:70%;filter:drop-shadow(0 0 3px rgba(0,0,0,.9))}
+.slot svg{width:84%;height:84%;filter:drop-shadow(0 1px 2px rgba(0,0,0,.9))}
 .slot.r0{color:#d8d2c4;box-shadow:inset 0 0 0 1px rgba(0,0,0,.85),inset 0 0 12px rgba(200,194,180,.16),0 0 8px rgba(184,178,166,.12),0 2px 6px rgba(0,0,0,.6)}
 .slot.r1{color:#a8ccff;background:radial-gradient(circle at 50% 50%,rgba(90,160,255,.22),transparent 70%) padding-box,linear-gradient(180deg,#0c111c,#05070c) padding-box,linear-gradient(135deg,#2a4a7a,#7ab0ff 45%,#1a2a4a) border-box;box-shadow:inset 0 0 14px rgba(90,160,255,.3),0 0 12px rgba(90,160,255,.35)}
 .slot.r2{color:#dcc4ff;background:radial-gradient(circle at 50% 50%,rgba(176,122,255,.25),transparent 70%) padding-box,linear-gradient(180deg,#140c1e,#08050c) padding-box,linear-gradient(135deg,#4a2a7a,#c9a0ff 45%,#2a1a4a) border-box;box-shadow:inset 0 0 14px rgba(176,122,255,.32),0 0 14px rgba(176,122,255,.4)}
@@ -647,6 +647,61 @@ h3{color:var(--gold-hi)}
 .petevo .btn{justify-self:start}
 .petevo.on{margin-top:6px}
 @media (max-width:820px){.skrow{order:-1;display:flex;gap:6px;overflow-x:auto;grid-column:1/-1;padding-bottom:2px;scrollbar-width:none}.skrow .btn{flex:0 0 auto;min-width:0!important;padding:9px 10px!important;font-size:12px!important}}
+.petpick{grid-template-columns:repeat(2,minmax(0,1fr))!important}.petpick canvas{width:100%;height:auto;aspect-ratio:120/92;display:block}
+
+/* ═══ v12 : interface vivante et plus sombre ═══ */
+#ambient{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:0}
+#app{position:relative;z-index:1}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(120% 90% at 50% 40%,rgba(0,0,0,0) 30%,rgba(0,0,0,.55) 100%),rgba(4,3,6,.42)}
+body::after{content:"";position:fixed;left:-30%;right:-30%;bottom:-10%;height:55%;pointer-events:none;z-index:0;opacity:.55;
+  background:radial-gradient(40% 60% at 25% 70%,rgba(120,130,150,.10),transparent 70%),radial-gradient(35% 55% at 70% 80%,rgba(110,90,130,.09),transparent 70%),radial-gradient(30% 50% at 50% 90%,rgba(150,110,80,.08),transparent 70%);
+  animation:fogdrift 38s ease-in-out infinite alternate}
+@keyframes fogdrift{from{transform:translateX(-6%)}to{transform:translateX(6%)}}
+/* reflet qui balaie les cadres dorés */
+.panel::after{display:block!important;content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;mix-blend-mode:screen;
+  background:linear-gradient(112deg,transparent 38%,rgba(255,215,150,.05) 46%,rgba(255,232,190,.1) 50%,rgba(255,215,150,.05) 54%,transparent 62%) 0 0/260% 100% no-repeat;animation:sheen 11s ease-in-out infinite}
+.panel:nth-child(2n)::after{animation-delay:-3.5s}.panel:nth-child(3n)::after{animation-delay:-7s}
+@keyframes sheen{0%,62%{background-position:140% 0}100%{background-position:-60% 0}}
+/* titres dorés qui miroitent */
+.ph,.brand b,.mtitle{background-size:100% 220%!important;animation:goldshift 7s ease-in-out infinite}
+@keyframes goldshift{50%{background-position:0 100%}}
+/* entrée des vues */
+#view.enter>*{animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+#view.enter>.grid>*{animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+#view.enter>.grid>*:nth-child(2){animation-delay:.05s}#view.enter>.grid>*:nth-child(3){animation-delay:.1s}#view.enter>.grid>*:nth-child(4){animation-delay:.15s}#view.enter>.grid>*:nth-child(n+5){animation-delay:.2s}
+@keyframes rise{from{opacity:0;transform:translateY(10px) scale(.99);filter:blur(2px)}to{opacity:1;transform:none;filter:none}}
+/* boutons forgés vivants */
+.btn{transition:transform .15s ease,box-shadow .25s ease,filter .2s ease}
+.btn:not(:disabled):hover{transform:translateY(-1px)}
+.btn:not(:disabled):active{transform:translateY(1px) scale(.97);filter:brightness(1.15)}
+.btn.ember{background-size:100% 100%,100% 100%,100% 100%;position:relative;overflow:hidden}
+.btn.ember::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(60% 120% at 50% 120%,rgba(255,190,90,.45),transparent 70%);animation:forgeglow 2.4s ease-in-out infinite}
+@keyframes forgeglow{50%{opacity:.35;transform:translateY(2px)}}
+/* jauges : reflet liquide */
+.bar .tr i::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent) 0 0/40% 100% no-repeat;animation:liquid 3.2s linear infinite}
+@keyframes liquid{from{background-position:-60% 0}to{background-position:160% 0}}
+/* emplacements, lignes, onglets */
+.slot{transition:transform .15s ease,box-shadow .25s ease}
+button.slot:hover,.slot[data-act]:hover{transform:translateY(-2px) scale(1.04)}
+.row{transition:box-shadow .25s ease,transform .15s ease}
+.row:hover{transform:translateX(2px)}
+.tab{transition:color .2s ease,box-shadow .25s ease}
+.tab:hover{box-shadow:0 0 12px rgba(243,212,142,.18)}
+/* navigation : icône active qui respire */
+.navb svg{transition:transform .2s ease,filter .3s ease}
+.navb:hover svg{transform:translateY(-1px) scale(1.08)}
+.navb.on svg{animation:breathe 2.6s ease-in-out infinite}
+@keyframes breathe{50%{filter:drop-shadow(0 0 3px rgba(243,212,142,.6)) drop-shadow(0 0 9px rgba(236,160,70,.35));transform:scale(1.06)}}
+.navb .dot,.runebtn em{animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 1px #2a0a06,0 0 14px rgba(255,90,60,.9);transform:scale(1.08)}}
+/* fenêtres et notifications */
+#modal>.panel{animation:mopen .32s cubic-bezier(.2,.9,.2,1.1) both}
+@keyframes mopen{from{opacity:0;transform:translateY(14px) scale(.95)}to{opacity:1;transform:none}}
+.toast{animation:tslide .35s cubic-bezier(.2,.9,.2,1) both!important}
+@keyframes tslide{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+/* scènes : légère respiration lumineuse */
+.scene,.panel.stage{box-shadow:inset 0 0 40px rgba(0,0,0,.7),0 14px 34px rgba(0,0,0,.65)}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head><body>
 <div id="app">
@@ -1022,7 +1077,7 @@ const DG = id => DUNGEONS.find(d => d.id === id);
 const INSTALL = [
   { id: "enclume", n: "Enclume runique", ic: "hammer", d: "+5 % de qualité de forge par niveau.", max: 3, cost: l => 180 * l * l },
   { id: "fourneau", n: "Grand fourneau", ic: "forge", d: "-12 % d'énergie par fabrication, par niveau.", max: 3, cost: l => 140 * l * l },
-  { id: "chenil", n: "Chenil du Loup Gris", ic: "paw", d: "+15 santé et +2 attaque pour le loup, par niveau.", max: 5, cost: l => 120 * l * l },
+  { id: "chenil", n: "Chenil des compagnons", ic: "paw", d: "+15 santé et +2 attaque pour votre compagnon, par niveau ; débloque de nouvelles espèces.", max: 5, cost: l => 120 * l * l },
   { id: "reserve", n: "Coffres de réserve", ic: "bag", d: "+20 places dans la réserve, par niveau.", max: 3, cost: l => 220 * l * l },
   { id: "autel", n: "Autel des brumes", ic: "star", d: "Un bonus de plus proposé en fin de salle, par niveau.", max: 2, cost: l => 600 * l * l },
   { id: "carto", n: "Cabinet du cartographe", ic: "map", d: "Chaque expédition commence avec un bonus offert, par niveau.", max: 2, cost: l => 750 * l * l },
@@ -2061,6 +2116,39 @@ function campfire() {
   addId(S.stash, "potion", 1, 0, stashCap()); save();
   if (EX.log) EX.log.unshift("Feu de camp : le groupe reprend des forces. Une défaite ne coûtera plus qu'un quart de la besace.");
 }
+/* ═══════════════════════ Contenu v12 : nouveaux compagnons et choix de départ ═══════════════════════ */
+Object.assign(PETS, {
+  panthere: { n: "Panthère d'ombre", hp: 60, atk: 9, def: 2, mv: 5, range: 1, hpL: 7, atkL: 1.05, col: "#2a2630", unlock: 1, cost: 260, d: "Féline et silencieuse : elle frappe vite et se fond dans la brume.", sk: ["Griffes d'ombre", "Fourrure de nuit", "Feulement", "Bond furtif"] },
+  chouette: { n: "Chouette spectrale", hp: 44, atk: 8, def: 1, mv: 5, range: 3, hpL: 5, atkL: 1, col: "#c8d4e0", unlock: 1, cost: 260, d: "Mi-oiseau, mi-fantôme : elle frappe à distance et voit à travers la brume.", sk: ["Serres spectrales", "Plumes d'âme", "Hululement", "Vol silencieux"] },
+  salamandre: { n: "Salamandre de braise", hp: 56, atk: 8, def: 3, mv: 3, range: 2, hpL: 7, atkL: .95, col: "#c04a1a", unlock: 1, cost: 260, d: "Née dans une forge : elle crache des braises à deux cases.", sk: ["Morsure brûlante", "Écailles chaudes", "Souffle ardent", "Peau de lave"] },
+  griffon: { n: "Griffonneau", hp: 82, atk: 10, def: 3, mv: 5, range: 1, hpL: 9, atkL: 1.1, col: "#b08a50", unlock: 4, cost: 700, d: "Aigle et lion à la fois : puissant, rapide, fier.", sk: ["Bec d'airain", "Plumage épais", "Cri du griffon", "Piqué royal"] },
+  drake: { n: "Drakonnet", hp: 92, atk: 11, def: 4, mv: 4, range: 2, hpL: 10, atkL: 1.15, col: "#4a2a3a", unlock: 5, cost: 950, d: "Un jeune dragon des cendres, loyal jusqu'à la mort.", sk: ["Crocs de cendre", "Écailles noires", "Rugissement", "Souffle du drake"] },
+});
+// compagnons proposés à la création du personnage
+const START_PETS = ["loup", "panthere", "chouette", "salamandre"];
+function applyStartPet(id) { if (!START_PETS.includes(id) || !S) return; S.pet.id = id; S.pet.owned = [id]; S.pet.lvl = { [id]: 1 }; S.pet.xp = { [id]: 0 }; S.wolf.hp = wolfMax(); }
+Object.assign(PET_EVOS, {
+  panthere: [
+    { id: "nuit", n: "Panthère de la nuit", d: "Elle devient l'ombre elle-même.", hp: 1.2, atk: 1.5, def: 2, aura: "#b48cff", fx: "ghost", size: 1.1, sk: { n: "Lacération nocturne", d: "Ennemis au contact (×1,3), saignent 3 tours.", around: 1, mult: 1.3, onHit: { k: "bleed", t: 3, d: 8 } } },
+    { id: "lune", n: "Panthère lunaire", d: "Sa fourrure argentée guide le groupe.", hp: 1.35, atk: 1.3, def: 3, aura: "#cfe0ff", fx: "crown", size: 1.12, sk: { n: "Clair de lune", d: "Le groupe : +25 % de dégâts pendant 3 tours.", buff: { k: "inspired", t: 3, r: 9 } } },
+  ],
+  chouette: [
+    { id: "ame", n: "Chouette des âmes", d: "Elle guide les esprits égarés et les retourne contre leurs maîtres.", hp: 1.2, atk: 1.5, def: 1, aura: "#9fe8ff", fx: "ghost", size: 1.15, sk: { n: "Cri des âmes", d: "Tous les ennemis (×0,7), effrayés.", around: 9, mult: .7, onHit: { k: "fear", t: 2 } } },
+    { id: "sage", n: "Grand-duc sage", d: "Un vieux hibou qui veille sur la santé du groupe.", hp: 1.4, atk: 1.2, def: 2, aura: "#ffe08a", fx: "crown", size: 1.2, sk: { n: "Plumes guérisseuses", d: "Le groupe : défense +50 % pendant 3 tours.", buff: { k: "guard", t: 3, r: 9 } } },
+  ],
+  salamandre: [
+    { id: "lave", n: "Salamandre de lave", d: "Sa peau coule comme du métal en fusion.", hp: 1.35, atk: 1.4, def: 3, aura: "#ff7a2a", fx: "flame", size: 1.15, sk: { n: "Geyser de lave", d: "Ennemis à 2 cases (×1,2), brûlés 3 tours.", around: 2, mult: 1.2, onHit: { k: "burn", t: 3, d: 9 } } },
+    { id: "cendre", n: "Basilic des cendres", d: "Son regard pétrifie les imprudents.", hp: 1.3, atk: 1.35, def: 4, aura: "#c8a070", fx: "armor", size: 1.1, sk: { n: "Regard pétrifiant", d: "Ennemis à 3 cases (×0,8), étourdis 1 tour.", around: 3, mult: .8, onHit: { k: "stun", t: 2 } } },
+  ],
+  griffon: [
+    { id: "royal", n: "Griffon royal", d: "La monture des anciens rois de Sombreval.", hp: 1.4, atk: 1.4, def: 3, aura: "#ffd27a", fx: "crown", size: 1.2, sk: { n: "Charge royale", d: "Ennemis à 3 cases (×1,3), étourdis.", around: 3, mult: 1.3, onHit: { k: "stun", t: 2 } } },
+    { id: "orage", n: "Griffon d'orage", d: "La foudre court dans ses plumes.", hp: 1.25, atk: 1.55, def: 2, aura: "#9ab8ff", fx: "storm", size: 1.15, sk: { n: "Tempête de plumes", d: "Tous les ennemis (×0,9), effrayés.", around: 9, mult: .9, onHit: { k: "fear", t: 2 } } },
+  ],
+  drake: [
+    { id: "ancien", n: "Drake ancien", d: "Il a grandi : ses ailes portent l'ombre de Vermithrax.", hp: 1.45, atk: 1.45, def: 4, aura: "#ff6a3a", fx: "flame", size: 1.25, sk: { n: "Souffle infernal", d: "Ennemis à 3 cases (×1,3), brûlés 3 tours.", around: 3, mult: 1.3, onHit: { k: "burn", t: 3, d: 10 } } },
+    { id: "ombre", n: "Drake d'ombre", d: "Un dragon de brume, qui ne fait aucun bruit.", hp: 1.3, atk: 1.5, def: 3, aura: "#b07aff", fx: "ghost", size: 1.2, sk: { n: "Brume étouffante", d: "Tous les ennemis (×0,8), effrayés et saignent.", around: 9, mult: .8, onHit: { k: "bleed", t: 3, d: 7 }, fear: 1 } },
+  ],
+});
 /* ═══════════════════════ Effets sonores synthétisés (WebAudio, aucun fichier) ═══════════════════════
    Chaque son est fabriqué à la volée : oscillateurs + bruit filtré + enveloppes.
    Le contexte audio n'est créé qu'au premier geste du joueur (règle des navigateurs). */
@@ -2869,14 +2957,14 @@ function drawPetBase(x, id, cx, cy, s, t, face, ev) {
 function drawPet(x, id, cx, cy, s, t, face = 1, evo) {
   const ev = evo || (typeof petEvo === "function" && typeof S !== "undefined" && S && S.pet ? petEvo(id) : null);
   if (!ev) return drawPetBase(x, id, cx, cy, s, t, face, null);
-  const k = s * ev.size, hx = cx + face * (id === "faucon" ? 6 : id === "ours" ? 13.4 : 11.8) * k, hy = cy - (id === "faucon" ? 30 : id === "ours" ? 20 : 21.6) * k;
+  const k = s * ev.size, HP = { faucon: [6, 30], ours: [13.4, 20], panthere: [13.6, 19.6], chouette: [0, 31], salamandre: [11, 8.6], griffon: [12.4, 25], drake: [13, 25] }[id] || [11.8, 21.6], hx = cx + face * HP[0] * k, hy = cy - HP[1] * k;
   glow(x, cx, cy - 8 * k, 22 * k, ev.aura, .3 + Math.sin(t * 2) * .08);
   x.save(); x.strokeStyle = rgba(ev.aura, .6); x.lineWidth = Math.max(.6, .5 * k); x.beginPath(); x.ellipse(cx, cy, 13 * k, 4.4 * k, 0, 0, 7); x.stroke(); x.restore();
   if (ev.fx === "fox") for (let i = 0; i < 5; i++) { const a = -2.4 + i * .35 + Math.sin(t * 2 + i) * .08; glow(x, cx - face * 10 * k + Math.cos(a) * 9 * k * face, cy - 12 * k + Math.sin(a) * 9 * k, 4 * k, ev.aura, .5); }
   if (ev.fx === "ghost") { x.save(); x.globalAlpha = .78; drawPetBase(x, id, cx, cy, k, t, face, ev); x.restore(); glow(x, cx, cy - 12 * k, 16 * k, "#bfe8ff", .3); }
   else drawPetBase(x, id, cx, cy, k, t, face, ev);
   if (ev.fx === "crown") { x.save(); x.translate(hx, hy - 4 * k); x.fillStyle = "#e8c060"; x.strokeStyle = "rgba(20,10,4,.8)"; x.lineWidth = .5; x.beginPath(); x.moveTo(-3 * k, 0); x.lineTo(-3.4 * k, -3 * k); x.lineTo(-1.4 * k, -1.4 * k); x.lineTo(0, -3.6 * k); x.lineTo(1.4 * k, -1.4 * k); x.lineTo(3.4 * k, -3 * k); x.lineTo(3 * k, 0); x.closePath(); x.fill(); x.stroke(); x.restore(); glow(x, hx, hy - 6 * k, 6 * k, "#ffe08a", .4); }
-  if (ev.fx === "armor") { x.save(); x.translate(cx, cy); x.scale(face, 1); lpFacet(x, [[-9, -18], [-2, -22.4], [2, -21.8], [1, -16.6], [-8, -15]].map(([a, b]) => [a * k, b * k]), "#3a3e48", { olw: .6 }); lpRune(x, -3.6 * k, -18.6 * k, 1.6 * k, "#c8a070", 3, .9); x.restore(); }
+  if (ev.fx === "armor" && (id === "ours" || id === "loup")) { x.save(); x.translate(cx, cy); x.scale(face, 1); lpFacet(x, [[-9, -18], [-2, -22.4], [2, -21.8], [1, -16.6], [-8, -15]].map(([a, b]) => [a * k, b * k]), "#3a3e48", { olw: .6 }); lpRune(x, -3.6 * k, -18.6 * k, 1.6 * k, "#c8a070", 3, .9); x.restore(); }
   if (ev.fx === "flame") for (let i = 0; i < 6; i++) { const ph = (t * 1.4 + i / 6) % 1; x.fillStyle = `rgba(255,${120 + i * 15},40,${1 - ph})`; x.fillRect(cx + (hash(i, 3) - .5) * 22 * k, cy - 10 * k - ph * 22 * k, 1.8 * k, 1.8 * k); }
   if (ev.fx === "storm") { if (Math.sin(t * 9) > .6) { x.save(); x.strokeStyle = "#eaf4ff"; x.lineWidth = .8; x.beginPath(); x.moveTo(cx - 8 * k, cy - 22 * k); x.lineTo(cx - 3 * k, cy - 15 * k); x.lineTo(cx - 6 * k, cy - 13 * k); x.lineTo(cx, cy - 6 * k); x.stroke(); x.restore(); } glow(x, cx, cy - 14 * k, 14 * k, "#9ab8ff", .3); }
 }
@@ -3554,12 +3642,22 @@ const LP_MAT = {
 };
 OUTFIT.forgeron.head = "hornhelm"; OUTFIT.forgeron.pauld = "both";
 OUTFIT.gardien.pauld = "both";
+for (const c of ["eclaireur", "chasseur", "duelliste", "barde", "marchand", "alchimiste"]) OUTFIT[c].pauld = "small";
+OUTFIT.arcaniste.mantle = 1;
 
 /* Polygone à facettes : chaque triangle (centre → arête) est éclairé selon l'orientation de son arête */
 function lpFacet(x, pts, col, o = {}) {
   const n = pts.length; if (n < 3) return; let cx = 0, cy = 0; for (const p of pts) { cx += p[0]; cy += p[1]; } cx /= n; cy /= n;
   if (o.c) { cx += o.c[0]; cy += o.c[1]; }
   const amp = o.amp ?? .34, bias = o.bias || 0;
+  if (o.bev) { // plaque biseautée : anneau de facettes autour d'une face centrale
+    const b = o.bev, inr = pts.map(p => [cx + (p[0] - cx) * (1 - b), cy + (p[1] - cy) * (1 - b)]);
+    for (let i = 0; i < n; i++) { const j = (i + 1) % n, a = pts[i], c = pts[j]; const ex = c[0] - a[0], ey = c[1] - a[1], L = Math.hypot(ex, ey) || 1, nx = ey / L, ny = -ex / L;
+      const f = (nx * LP_LIGHT[0] + ny * LP_LIGHT[1]) * amp * 1.25 + bias, cc = shade(col, Math.max(-.85, Math.min(.85, f)));
+      x.fillStyle = cc; x.strokeStyle = cc; x.lineWidth = .7; x.beginPath(); x.moveTo(a[0], a[1]); x.lineTo(c[0], c[1]); x.lineTo(inr[j][0], inr[j][1]); x.lineTo(inr[i][0], inr[i][1]); x.closePath(); x.fill(); x.stroke(); }
+    lpFacet(x, inr, col, { ...o, bev: 0, amp: amp * .3, bias: bias + .06, ol: 0, hi: 0 });
+    if (o.ol !== 0) { x.strokeStyle = o.olc || "rgba(6,5,6,.92)"; x.lineWidth = o.olw || 1; x.beginPath(); pts.forEach((p, i) => i ? x.lineTo(p[0], p[1]) : x.moveTo(p[0], p[1])); x.closePath(); x.stroke(); }
+    return; }
   for (let i = 0; i < n; i++) { const a = pts[i], b = pts[(i + 1) % n]; const mx = (a[0] + b[0]) / 2 - cx, my = (a[1] + b[1]) / 2 - cy, d = Math.hypot(mx, my) || 1;
     const f = (mx / d * LP_LIGHT[0] + my / d * LP_LIGHT[1]) * amp + bias, c = shade(col, Math.max(-.85, Math.min(.85, f)));
     x.fillStyle = c; x.strokeStyle = c; x.lineWidth = .7; x.beginPath(); x.moveTo(cx, cy); x.lineTo(a[0], a[1]); x.lineTo(b[0], b[1]); x.closePath(); x.fill(); x.stroke(); }
@@ -3590,7 +3688,7 @@ function drawChar(x, cx, cy, s, L, t = 0, face = 1) {
   const W = fem ? .92 : 1;
   const lift = y => y < -16 ? br * Math.min(1, (-y - 16) / 12) : 0;
   const T = pts => pts.map(([a, b]) => [a * k, (b - lift(b)) * k]);
-  const F = (pts, col, o = {}) => lpFacet(x, T(pts), C(col), { olw: Math.max(.6, .34 * k), ...o });
+  const F = (pts, col, o = {}) => lpFacet(x, T(pts), C(col), { olw: Math.max(.6, .34 * k), bev: (o.amp ?? .34) >= .3 && k > 1.3 ? .3 : 0, ...o });
   const R = (px, py, sz, kind, a) => { if (stone) return; lpRune(x, px * k, (py - lift(py)) * k, sz * k, RUNE, kind, a); };
   const Y = y => (y - lift(y)) * k;
   const cl = lpHex(L.cloak), ac = lpHex(L.accent), skin = lpHex(L.skin), hairC = lpHex(L.hair);
@@ -3613,18 +3711,26 @@ function drawChar(x, cx, cy, s, L, t = 0, face = 1) {
   const sleeve = { apron: "#3a3230", coat: cl, jerkin: LP.leather, labcoat: "#bdb39a", plate: PL, robe: cl, duster: LP.leather, doublet: ac, frock: cl, rags: cl }[OF.top] || PL;
   F([[-8.8, -29.4], [-6, -29.6], [-6.4, -22.4], [-9.4, -22.2]], sleeve, { bias: -.25 });
   F([[-9.8, -22.8], [-6.2, -22.8], [-6.4, -17.6], [-9.8, -17.4]], PL, { bias: -.2 }); R(-8.1, -20.2, 1.6, 2, .8);
+  for (const by of [-22.4, -18.2]) F([[-10, by], [-6, by], [-6, by + .9], [-10, by + .9]], LP.strap, { amp: .1, hi: 0, bias: -.1 });
   F([[-10, -17.8], [-6.4, -17.8], [-6.6, -15.4], [-8.2, -14.2], [-10.2, -15.4]], LP.obs2, { bias: -.15 });
+  if (L.cls === "forgeron" && !L.shield) { F([[-9, -16], [-8.2, -16], [-8.8, -5], [-9.8, -2.4], [-10.2, -5]], LP.obs, { amp: .35 }); F([[-7.6, -16], [-6.8, -16], [-6.6, -5], [-7, -2.4], [-7.8, -5]], LP.obs, { amp: .35 }); R(-8.9, -10, .9, 3, .9); R(-7.2, -10, .9, 4, .9); }
 
   /* ── jambes : jambières d'obsidienne, genouillères d'os, bottes anguleuses ── */
   const longSkirt = OF.top === "robe" || OF.top === "rags";
   for (const [lx, far] of [[-2.7, 1], [2.6, 0]]) { const d = far ? -.22 : 0;
     if (!longSkirt) F([[lx - 2.3, -16.4], [lx + 2.3, -16.4], [lx + 2, -10], [lx - 2, -10]], OF.top === "doublet" ? cl : "#2a2420", { bias: d - .05, amp: .2 });
     if (!longSkirt) { F([[lx - 2.1, -10.4], [lx + 2.1, -10.4], [lx + 2.4, -5.2], [lx, -4.2], [lx - 2.3, -5.2]], PL, { bias: d }); R(lx + .1, -7.6, 1.5, 1, .85);
-      F([[lx - 1.7, -9.6], [lx, -12.2], [lx + 1.9, -9.6], [lx, -8.6]], BONE, { bias: d }); }
+      F([[lx - 2.4, -10.2], [lx, -13.4], [lx + 2.5, -10.2], [lx, -7.4]], BONE, { bias: d, amp: .35 }); F([[lx - 1.4, -10.2], [lx, -12.2], [lx + 1.5, -10.2], [lx, -8.4]], PL, { bias: d, amp: .3, bev: 0, olw: .3 * k }); R(lx, -10.3, 1.1, 0, .95); }
     F([[lx - 2.5, -5.4], [lx + 2.4, -5.4], [lx + 2.7, -2.4], [lx + 4.4, -1.6], [lx + 4.2, 0], [lx - 2.6, 0], [lx - 2.8, -2.4]], LP.obs2, { bias: d });
     F([[lx - 2.6, -2.6], [lx + 2.8, -2.6], [lx + 2.9, -1.6], [lx - 2.7, -1.6]], LP.strap, { bias: d, amp: .1, hi: 0 });
+    F([[lx + 2.6, -2.2], [lx + 4.4, -1.6], [lx + 4.3, 0], [lx + 2.4, 0]], BONE, { bias: d, amp: .3, olw: .3 * k });
+    F([[lx - 2.2, -5], [lx + 2.2, -4], [lx + 2.2, -3.4], [lx - 2.2, -4.4]], LP.strap, { bias: d, amp: .1, hi: 0, ol: 0 });
   }
 
+  /* chevelure longue : elle tombe derrière le dos, sous les épaulières et le col */
+  { const HG0 = L.bare ? "none" : (MS && MS.head) || OF.head, hy0 = -37; const hidden = ["hood", "cowl", "eaglehood", "runehood", "shadowhood", "hornhelm", "helm", "greathelm", "towerhelm", "wingedhelm", "wolfpelt", "bearpelt"].includes(HG0);
+    if (!hidden && (L.hairStyle === 1 || L.hairStyle === 2)) { F([[-4.8, hy0 - 2], [-6, hy0 + 3.4], [-5.6, hy0 + (L.hairStyle === 1 ? 9.8 : 7)], [-2.4, hy0 + (L.hairStyle === 1 ? 10 : 7.4)], [.2, hy0 + 2]], hairC, { amp: .3, bev: 0 });
+      if (L.hairStyle === 2) for (let i = 0; i < 3; i++) F([[-5.6, hy0 + 2.4 + i * 1.6], [-4.4, hy0 + 2.2 + i * 1.6], [-4.6, hy0 + 3.6 + i * 1.6], [-5.6, hy0 + 3.8 + i * 1.6]], shade(hairC, i % 2 ? -.1 : .1), { amp: .2, olw: .3 * k }); } }
   /* ── buste d'obsidienne, puis vêtement de classe ── */
   const sw = 7.2 * W, ww = 5.4 * W;
   F([[-ww, -18], [ww, -18], [sw + .8, -28.6], [4.4, -31.6], [-4.4, -31.6], [-sw - .8, -28.6]], PL, { amp: .3 });
@@ -3672,11 +3778,14 @@ function drawChar(x, cx, cy, s, L, t = 0, face = 1) {
   if (L.amulet) { F([[-.9, -30.4], [.9, -30.4], [1.1, -28], [0, -26.8], [-1.1, -28]], BONE, { amp: .3, olw: .3 * k }); R(0, -28.6, .9, 3, .9); }
 
   /* ── épaules ── */
-  const pauld = (sd, big) => { const px = sd * (sw - .4), r = big ? 1 : .8; const pts = [[px - 4.8 * r, -27.2], [px - 5.4 * r, -30.8], [px - 2 * r, -34.6], [px + 3 * r, -34], [px + 4.8 * r, -30.4], [px + 3.8 * r, -26.8]];
+  const pauld = (sd, big, r0) => { const px = sd * (sw - .4), r = r0 || (big ? 1 : .8); const pts = [[px - 4.8 * r, -27.2], [px - 5.4 * r, -30.8], [px - 2 * r, -34.6], [px + 3 * r, -34], [px + 4.8 * r, -30.4], [px + 3.8 * r, -26.8]];
     F(pts, PL, { amp: .38 }); R(px, -30.6, 1.4 * r, sd > 0 ? 1 : 2, .9);
     F([[px - 3.6 * r, -33.4], [px - 1.4 * r, -36.8], [px - .6 * r, -33.6]], BONE, { amp: .3, olw: .35 * k }); F([[px + .2 * r, -34.2], [px + 2.4 * r, -37.6], [px + 2.6 * r, -33.8]], BONE, { amp: .3, olw: .35 * k });
-    F([[px - 4.4 * r, -27.6], [px - 2 * r, -29], [px + .4 * r, -27.4], [px - 2 * r, -26.2]], BONE, { amp: .25, olw: .35 * k }); };
-  if (OF.pauld === "both") pauld(-1, OF.top === "plate" || !!MS);
+    F([[px - 4.4 * r, -27.6], [px - 2 * r, -29], [px + .4 * r, -27.4], [px - 2 * r, -26.2]], BONE, { amp: .25, olw: .35 * k });
+    if ((big || OF.top === "apron") && !r0) { const sx = px + sd * .4, sy = -30.4; F([[sx - 2.8, sy - 1.6], [sx - 1, sy - 3.4], [sx + 1.4, sy - 3.2], [sx + 3, sy - 1.2], [sx + 2, sy + 1.6], [sx, sy + 2.6], [sx - 2.2, sy + 1.4]], BONE, { amp: .38, olw: .35 * k });
+      for (const ex of [-1.1, 1.2]) F([[sx + ex - .7, sy - 1], [sx + ex + .7, sy - 1], [sx + ex, sy + .4]], "#1a120c", { amp: 0, ol: 0, hi: 0, bev: 0 });
+      F([[sx - .9, sy + 1.4], [sx + 1, sy + 1.4], [sx + .1, sy + 2.2]], "#1a120c", { amp: 0, ol: 0, hi: 0, bev: 0 }); } };
+  if (OF.pauld === "both") pauld(-1, OF.top === "plate" || !!MS); else if (OF.pauld === "small") pauld(-1, false, .62);
   if (OF.cape === "short" || OF.mantle) { const fc = OF.mantle ? "#6a5038" : cl;
     F([[-sw - 2, -27.4], [-sw - 1, -32.4], [0, -33.4], [sw + 1, -32.4], [sw + 2, -27.4], [3, -25.4], [0, -24], [-3, -25.4]], fc, { amp: .3 });
     if (OF.mantle) for (let i = 0; i < 4; i++) F([[-5 + i * 3.2, -32], [-3.6 + i * 3.2, -35], [-2.6 + i * 3.2, -31.6]], BONE, { amp: .3, olw: .3 * k }); }
@@ -3690,7 +3799,6 @@ function drawChar(x, cx, cy, s, L, t = 0, face = 1) {
   const hood = HOODS.includes(HG), closed = CLOSED.includes(HG);
   F([H(-1.8, 2.6), H(2.4, 2.6), H(2.6, 6.6), H(-2, 6.6)], closed ? PL : shade(skin, -.3), { amp: .2 }); // cou / gorgerin
   if (hood) F([H(-6.6, 6.8), H(-7.6, -1), H(-4.8, -8), H(0, HG === "cowl" || HG === "runehood" ? -10.6 : -9), H(4.6, -7.2), H(6.6, -2), H(6.2, 3), H(4.2, 7)], HG === "shadowhood" ? shade(cl, -.45) : cl, { amp: .3, bias: -.12 });
-  if (!hood && !closed && (L.hairStyle === 1 || L.hairStyle === 2)) F([H(-4.8, -2), H(-5.8, 3.4), H(-4.6, L.hairStyle === 1 ? 9.6 : 6), H(-1.6, L.hairStyle === 1 ? 8.6 : 5), H(.4, 1)], hairC, { amp: .3 });
   if (closed) drawLPHelm(HG); else {
     // visage à facettes
     if (L.ears && !hood && !PELTS.includes(HG)) F([H(-1.4, -.4), H(-6.6, -6), H(-3.2, -1), H(-1, 2.2)], skin, { amp: .3 });
@@ -3704,27 +3812,28 @@ function drawChar(x, cx, cy, s, L, t = 0, face = 1) {
     if (L.mark === 2) F([H(.2, .8), H(4.6, .9), H(4.4, 1.7), H(.4, 1.6)], "#962020", { amp: 0, ol: 0, hi: 0 });
     if (L.mark === 3) R(.4, 1.6, 1.2, 0, .9);
     if (L.tusks) { F([H(3, 3.4), H(3.5, 1.8), H(3.9, 3.4)], BONE, { amp: .2, olw: .3 * k }); F([H(4.1, 3.2), H(4.4, 2.1), H(4.6, 3.1)], BONE, { amp: .2, olw: .3 * k }); }
-    if (L.beard) { const ln = [0, 1.6, 4.4, 5][L.beard]; F([H(-2.4, 1), H(0, 2.8), H(3, 2.6), H(4.7, 2.2), H(4.5, 4), H(2.6, 5.8 + ln), H(.4, 5 + ln * .6), H(-2, 3)], hairC, { amp: .3 });
+    if (L.beard) { const ln = [0, 1.6, 4.4, 5][L.beard] * (OF.collar === "high" || OF.scarf ? .45 : OF.collar === "fur" || OF.pauld === "both" ? .8 : 1); F([H(-2.4, 1), H(0, 2.8), H(3, 2.6), H(4.7, 2.2), H(4.5, 4), H(2.6, 5.8 + ln), H(.4, 5 + ln * .6), H(-2, 3)], hairC, { amp: .3 });
       if (L.beard === 3) F([H(1.6, 4.6 + ln), H(3.2, 4.6 + ln), H(3, 5.6 + ln), H(1.8, 5.6 + ln)], LP.brass, { amp: .3, olw: .3 * k }); }
     // chevelure
     if (!hood && !PELTS.includes(HG) && L.hairStyle !== 3) {
       F([H(-4.9, 1.6), H(-5.4, -3.6), H(-2, -6.9), H(2.4, -6.6), H(5.1, -3.4), H(4.6, -2.2), H(1.6, -3.9), H(-.8, -2.6), H(-1.8, .2), H(-3.2, -.2)], hairC, { amp: .35 });
       if (L.hairStyle === 4) F([H(-5.6, -6.6), H(-3.4, -9.4), H(-1.2, -7.6), H(-2.6, -5.4)], hairC, { amp: .35 });
       if (L.hairStyle === 5) F([H(-3.6, -5.6), H(-1.6, -11), H(1.4, -10.4), H(2.6, -6.4)], hairC, { amp: .35 });
-      if (L.hairStyle === 2) for (let i = 0; i < 4; i++) F([H(-5.2, 2.4 + i * 1.6), H(-4, 2.2 + i * 1.6), H(-4.2, 3.6 + i * 1.6), H(-5.2, 3.8 + i * 1.6)], shade(hairC, i % 2 ? -.1 : .1), { amp: .2, olw: .3 * k });
     }
     if (L.leaf && !hood) for (let i = -1; i <= 1; i++) F([H(i * 2.4 - .8, -6.2), H(i * 2.4 + .6, -8), H(i * 2.4 + 1.8, -6.4)], "#5f9a3a", { amp: .3, olw: .3 * k });
     if (L.horns && !hood && !PELTS.includes(HG)) lpHorns(.85);
     drawLPHeadgear(HG);
   }
-  function lpHorns(sc) { for (const sd of [-1, 1]) { const b = sd < 0 ? -2.6 : 1.8;
-      F([H(b, -5), H(b + sd * 2.4 * sc, -7.2), H(b + sd * 5.4 * sc, -8.6), H(b + sd * 7.4 * sc, -11.6), H(b + sd * 6.2 * sc, -13.4), H(b + sd * 5 * sc, -10.4), H(b + sd * 2.4 * sc, -9.4), H(b - sd * .6, -6.6)], BONE, { amp: .35 });
-      R(b + sd * 4.6 * sc, -9.4, 1 * sc, 1, .8); } }
+  function lpHorns(sc) { for (const sd of [-1, 1]) { const b = sd < 0 ? -3.2 : 2.6;
+      F([H(b, -3.6), H(b + sd * 3 * sc, -4.8), H(b + sd * 6.2 * sc, -7.6), H(b + sd * 8 * sc, -12), H(b + sd * 7.2 * sc, -16.6), H(b + sd * 5.4 * sc, -18.4), H(b + sd * 5.8 * sc, -14.4), H(b + sd * 4.6 * sc, -10.6), H(b + sd * 2.2 * sc, -8.6), H(b - sd * .8, -7)], BONE, { amp: .36 });
+      F([H(b + sd * 5.4 * sc, -18.4), H(b + sd * 4.8 * sc, -20.6), H(b + sd * 5.8 * sc, -16.4)], LP.boneD, { amp: .3, olw: .3 * k });
+      R(b + sd * 5.4 * sc, -11.2, 1.1 * sc, 1, .9); R(b + sd * 6.4 * sc, -14.6, .8 * sc, 4, .8); } }
   function drawLPHelm(kind) {
     F([H(-5.2, 3.8), H(-5.8, -2), H(-4, -6.8), H(0, -8.4), H(4, -6.8), H(5.8, -2), H(5.4, 2), H(3, 5.2), H(-2, 5.2)], PL, { amp: .38 });
-    F([H(.2, -1.4), H(5.4, -2.2), H(5.4, -.8), H(.6, -.2)], "#0a0a0e", { amp: 0, ol: 0, hi: 0 }); // fente du visage
-    if (!stone) { glow(x, 3 * k, Y(hy - 1.2), 4 * k, RUNE, .8); F([H(1, -1.3), H(2.6, -1.6), H(2.4, -.7), H(1.2, -.5)], RUNE, { amp: 0, ol: 0, hi: 0 }); F([H(3.4, -1.6), H(4.8, -1.9), H(4.6, -1), H(3.4, -.8)], RUNE, { amp: 0, ol: 0, hi: 0 }); }
-    R(2.6, -4.6, 1.5, 0, .9); F([H(-1, -8.2), H(0, -11.6), H(1, -8.2)], PL, { amp: .4 });
+    F([H(.2, -1.6), H(5.4, -2.4), H(5.4, -.6), H(3.4, -.4), H(3.2, 3), H(2.2, 3), H(2, -.2), H(.6, 0)], "#08080c", { amp: 0, ol: 0, hi: 0, bev: 0 }); // visière en T
+    if (!stone) { glow(x, 3 * k, Y(hy - .4), 5 * k, RUNE, .85); F([H(.9, -1.2), H(2.4, -1.5), H(2.2, -.5), H(1.1, -.4)], RUNE, { amp: 0, ol: 0, hi: 0, bev: 0 }); F([H(3.6, -1.7), H(5, -2), H(4.9, -1), H(3.6, -.8)], RUNE, { amp: 0, ol: 0, hi: 0, bev: 0 }); F([H(2.5, -.2), H(2.9, -.2), H(2.8, 2.4), H(2.5, 2.4)], RUNE, { amp: 0, ol: 0, hi: 0, bev: 0 }); }
+    F([H(-5.2, 3.8), H(-5.6, -.4), H(-2.4, .4), H(-1.6, 5.4)], PL, { amp: .3 }); F([H(4.4, .4), H(5.6, 0), H(5.2, 2.6), H(3.6, 4.8)], PL, { amp: .3 });
+    R(2.6, -5, 1.6, 3, .95); F([H(-1.2, -8), H(0, -12.4), H(1.2, -8)], PL, { amp: .4 });
     if (kind === "hornhelm" || kind === "greathelm") lpHorns(kind === "greathelm" ? 1.15 : 1);
     if (kind === "helm" || kind === "towerhelm") F([H(-.6, -8.2), H(-3.6, -11.4), H(-8.4 + sway * .4, -10.4), H(-9.6 + sway * .5, -6.4), H(-4.8, -7.4)], ac, { amp: .3 });
     if (kind === "towerhelm") F([H(-5.6, 4.2), H(-5.9, 1), H(5.6, 1), H(5.5, 4.2)], PL, { amp: .3 });
@@ -3774,8 +3883,9 @@ function drawChar(x, cx, cy, s, L, t = 0, face = 1) {
   if (OF.sleeve === "bell") F([[sw - 1.8, -29.8], [sw + 2.4, -28.6], [sw + 5.2, -19.6], [sw + 1.2, -18.6], [sw - 2.4, -27]], sc, { amp: .3 });
   else if (OF.sleeve === "puff") { F([[sw - 2, -30], [sw + 3.4, -30.4], [sw + 3.4, -25], [sw + .8, -23.8], [sw - 2.4, -27]], sc, { amp: .35 }); F([[sw + .4, -24.4], [sw + 2.8, -24.6], [sw + 2.6, -20.2], [sw + .4, -20.2]], cl, { amp: .3 }); }
   else F([[sw - 1.6, -29.8], [sw + 2.2, -28.8], [sw + 2.6, -23.4], [sw + .2, -23], [sw - 2.4, -27.2]], sc, { amp: .3 });
-  if (OF.sleeve !== "bell") { F([[sw - .2, -23.6], [sw + 2.8, -23.6], [sw + 2.8, -20.2], [sw + .2, -20]], OF.sleeve === "rolled" ? skin : PL, { amp: .3 }); if (OF.sleeve !== "rolled") R(sw + 1.3, -21.8, 1.1, 4, .85); }
-  if (OF.pauld === "both" || OF.pauld === "one") pauld(1, OF.top === "plate" || !!MS);
+  if (OF.sleeve !== "bell") { F([[sw - .2, -23.6], [sw + 2.8, -23.6], [sw + 2.8, -20.2], [sw + .2, -20]], OF.sleeve === "rolled" ? skin : PL, { amp: .3 }); if (OF.sleeve !== "rolled") R(sw + 1.3, -21.8, 1.1, 4, .85);
+    for (const by of [-23.8, -21]) F([[sw - .4, by], [sw + 3, by], [sw + 3, by + .8], [sw - .4, by + .8]], LP.strap, { amp: .1, hi: 0 }); }
+  if (OF.pauld === "both" || OF.pauld === "one") pauld(1, OF.top === "plate" || !!MS); else if (OF.pauld === "small") pauld(1, false, .62);
   F([[7.2, -21.4], [10.4, -21.8], [10.8, -19.4], [9.4, -18.2], [7.4, -18.8]], OF.sleeve === "rolled" || OF.top === "robe" || OF.top === "rags" ? skin : LP.obs2, { amp: .35 });
 
   /* ── emblème de la classe maître, runes flottantes ── */
@@ -3796,12 +3906,12 @@ function drawShield(x, px, py, k, kind, back, C = c => c, RUNE = LP.rune) {
   x.restore();
 }
 
-function drawWeapon(x, w, hx, hy, k, t, C = c => c, RUNE = LP.rune) {
+function drawWeaponLP(x, w, hx, hy, k, t, C = c => c, RUNE = LP.rune) {
   if (w === "none") return;
   x.save(); x.translate(hx, hy);
   const ol = Math.max(.6, .32 * k), lit = C(LP.bone) === LP.bone;
   const F = (pts, col, o = {}) => lpFacet(x, pts.map(([a, b]) => [a * k, b * k]), C(col), { olw: ol, ...o });
-  const R = (px, py, sz, kind, a = 1) => { if (lit) lpRune(x, px * k, py * k, sz * k, RUNE, kind, a); };
+  const R = (px, py, sz, kind, a = 1) => { if (lit && RUNE) lpRune(x, px * k, py * k, sz * k, RUNE, kind, a); };
   const haft = (x0, y0, x1, y1, wd, col = LP.leatherD, wraps = 3) => { const dx = x1 - x0, dy = y1 - y0, L = Math.hypot(dx, dy), nx = -dy / L * wd / 2, ny = dx / L * wd / 2;
     F([[x0 + nx, y0 + ny], [x1 + nx, y1 + ny], [x1 - nx, y1 - ny], [x0 - nx, y0 - ny]], col, { amp: .25 });
     for (let i = 1; i <= wraps; i++) { const q = i / (wraps + 1), mx = x0 + dx * q, my = y0 + dy * q; F([[mx + nx * 1.2 - dx / L * .4, my + ny * 1.2 - dy / L * .4], [mx + nx * 1.2 + dx / L * .4, my + ny * 1.2 + dy / L * .4], [mx - nx * 1.2 + dx / L * .4, my - ny * 1.2 + dy / L * .4], [mx - nx * 1.2 - dx / L * .4, my - ny * 1.2 - dy / L * .4]], LP.strap, { amp: .1, olw: .25 * k }); } };
@@ -3915,6 +4025,717 @@ function drawFalcon(x, cx, cy, s, t, face = 1) {
   glow(x, 6 * k, (hy - 5.4) * k, 2.4 * k, LP.rune, .85); F([[5.4, hy - 6], [6.8, hy - 6.2], [6.6, hy - 5.2], [5.6, hy - 5]], LP.rune, { amp: 0, ol: 0, hi: 0 });
   wing(1.6, "#5a524c", -1); lpRune(x, -2.6 * k, (hy - 3) * k, 1.2 * k, LP.rune, 1, .8);
   for (const fx of [-.6, 1.8]) { F([[fx, hy + 5.2], [fx + .5, hy + 8], [fx + 1.1, hy + 5.2]], "#a89068", { amp: .2, olw: .25 * k }); F([[fx - .2, hy + 7.6], [fx + 1.4, hy + 7.6], [fx + .6, hy + 9]], LP.bone, { amp: .2, ol: 0 }); }
+  x.restore();
+}
+
+/* ═══════════════════════ Icônes d'objets low-poly (SVG) ═══════════════════════
+   Mêmes matières que les personnages : obsidienne, os, cuir, métal, bois, verre teinté et runes. */
+const LPI_MAT = { o: "#33363f", d: "#1d1f26", b: "#d8cba8", l: "#7a5236", m: "#8a929c", g: "#d8b468", w: "#6e4628", r: "#5a5450", f: "#c8a070", h: "#4a8a3a", s: "#e8e2d2" };
+function svgFacet(pts, col, amp = .36) {
+  const n = pts.length; let cx = 0, cy = 0; for (const p of pts) { cx += p[0]; cy += p[1]; } cx /= n; cy /= n; let o = "";
+  for (let i = 0; i < n; i++) { const a = pts[i], b = pts[(i + 1) % n]; const mx = (a[0] + b[0]) / 2 - cx, my = (a[1] + b[1]) / 2 - cy, d = Math.hypot(mx, my) || 1;
+    const c = shade(col, Math.max(-.8, Math.min(.8, (mx / d * LP_LIGHT[0] + my / d * LP_LIGHT[1]) * amp)));
+    o += `<polygon points="${cx.toFixed(2)},${cy.toFixed(2)} ${a[0]},${a[1]} ${b[0]},${b[1]}" fill="${c}" stroke="${c}" stroke-width=".25"/>`; }
+  return o + `<polygon points="${pts.map(p => p.join(",")).join(" ")}" fill="none" stroke="#07060a" stroke-width=".55" stroke-linejoin="round"/>`;
+}
+function svgRune(cx, cy, sz, col, kind = 0) {
+  const g = LP_GLYPHS[kind % LP_GLYPHS.length], d = g.map(([a, b, c, e]) => `M${(cx + a * sz * .55).toFixed(2)} ${(cy + b * sz * .55).toFixed(2)}L${(cx + c * sz * .55).toFixed(2)} ${(cy + e * sz * .55).toFixed(2)}`).join("");
+  return `<path d="${d}" stroke="${col}" stroke-opacity=".35" stroke-width="${(sz * .7).toFixed(2)}" fill="none" stroke-linecap="round"/><path d="${d}" stroke="${col}" stroke-width="${(sz * .28).toFixed(2)}" fill="none" stroke-linecap="round"/><path d="${d}" stroke="#ffffff" stroke-opacity=".7" stroke-width="${(sz * .1).toFixed(2)}" fill="none" stroke-linecap="round"/>`;
+}
+const LP_ICONS = {
+  sword: { a: "#3ff0ff", p: [[[[17.6, 3.2], [20.8, 3.2], [20.8, 6.4], [10.4, 16], [8, 13.6]], "o"], [[[5.6, 12.2], [7.2, 10.6], [13.4, 16.8], [11.8, 18.4]], "b"], [[[6.6, 15.6], [8.4, 17.4], [5, 20.8], [3.2, 19]], "l"], [[[2, 20.6], [3.4, 19.2], [4.8, 20.6], [3.4, 22]], "b"]], r: [[15, 8.8, 3, 0]] },
+  dawnsword: { a: "#ffd27a", p: [[[[17.6, 3.2], [20.8, 3.2], [20.8, 6.4], [10.4, 16], [8, 13.6]], "g"], [[[5.6, 12.2], [7.2, 10.6], [13.4, 16.8], [11.8, 18.4]], "b"], [[[6.6, 15.6], [8.4, 17.4], [5, 20.8], [3.2, 19]], "l"], [[[2, 20.6], [3.4, 19.2], [4.8, 20.6], [3.4, 22]], "g"]], r: [[15, 8.8, 3, 3]], glow: [15, 9, 7] },
+  hammer: { a: "#3ff0ff", p: [[[[14, 10.2], [16, 10.2], [16, 19.6], [14, 19.6]], "l"], [[[9.6, 3.4], [20, 3.4], [21, 4.6], [21, 9], [20, 10.2], [9.6, 10.2], [8.6, 9], [8.6, 4.6]], "o"], [[[13.4, 19.6], [16.6, 19.6], [15, 22.4]], "b"]], r: [[14.8, 6.8, 3.6, 3]] },
+  dagger: { a: "#b48cff", p: [[[[15.8, 3.6], [18.8, 6.6], [11.6, 13.8], [9.6, 11.8]], "o"], [[[7.4, 10.4], [8.8, 9], [14.4, 14.6], [13, 16]], "b"], [[[8.4, 13.4], [10.6, 15.6], [7.2, 19], [5, 16.8]], "l"], [[[3.6, 18.4], [5, 17], [6.4, 18.4], [5, 19.8]], "b"]], r: [[14.2, 8.4, 2.4, 4]] },
+  axe: { a: "#3ff0ff", p: [[[[7.4, 3.4], [9.2, 2.8], [17.2, 19.6], [15.4, 20.4]], "w"], [[[10.4, 6], [17.6, 2.8], [21, 6.4], [19.2, 11.6], [13, 10.6]], "o"], [[[9.8, 6.6], [5.6, 7.6], [8.6, 9.6]], "b"]], r: [[17, 6.8, 2.8, 2]] },
+  staff: { a: "#b48cff", p: [[[[6.8, 20.6], [8.4, 21.4], [16, 8], [14.4, 7.2]], "w"], [[[12.6, 8.2], [12.8, 3.6], [15, 6], [17.8, 3], [18.4, 7.6], [16, 9.8]], "b"], [[[15.6, 1.8], [18, 4.8], [15.6, 8], [13.2, 4.8]], "a"]], glow: [15.6, 4.8, 6] },
+  spear: { a: "#7fd3ff", p: [[[[4.4, 18.4], [5.6, 19.6], [16, 9.2], [14.8, 8]], "w"], [[[14, 7.2], [20.8, 3.2], [16.8, 10]], "o"], [[[12.6, 8.6], [15.4, 11.4], [14.2, 12.6], [11.4, 9.8]], "b"]], r: [[17.4, 6.4, 2, 0]] },
+  bow: { a: "#3ff0ff", p: [[[[5, 2.6], [8.4, 3.4], [14.8, 7.6], [13.4, 9.4], [7.2, 5.6]], "b"], [[[13.4, 9.4], [14.8, 7.6], [16.6, 9.2], [15.2, 11]], "o"], [[[15.2, 11], [16.6, 9.2], [20.8, 15.6], [21.4, 19], [18.8, 16.4]], "b"]], line: [[5.2, 3.2, 20.8, 18.6]], r: [[15, 9.4, 1.8, 0]] },
+  armor: { a: "#3ff0ff", p: [[[[8.2, 3.6], [12, 5.4], [15.8, 3.6], [20.4, 6.8], [19, 11.2], [17.2, 10.6], [17.2, 20.4], [6.8, 20.4], [6.8, 10.6], [5, 11.2], [3.6, 6.8]], "o"], [[[6.8, 15.2], [17.2, 15.2], [17.2, 17], [6.8, 17]], "l"], [[[8.2, 3.6], [12, 5.4], [15.8, 3.6], [14.4, 7.8], [12, 8.6], [9.6, 7.8]], "b"], [[[3.6, 6.8], [6.4, 5.2], [7, 8.4], [5, 11.2]], "b"], [[[20.4, 6.8], [17.6, 5.2], [17, 8.4], [19, 11.2]], "b"]], r: [[12, 12, 3, 3]] },
+  shield: { a: "#3ff0ff", p: [[[[12, 2.6], [19.6, 5.4], [19.2, 12], [12, 21.6], [4.8, 12], [4.4, 5.4]], "o"], [[[12, 2.6], [14, 6.6], [12, 8], [10, 6.6]], "b"], [[[12, 15.2], [14, 17.6], [12, 21.6], [10, 17.6]], "b"]], r: [[12, 11.4, 3.6, 0]] },
+  ring: { a: "#7fd0ff", ring: 1, p: [[[[10, 6.4], [12, 3.2], [14, 6.4], [12, 8.8]], "a"]] },
+  amulet: { a: "#ff8a5a", line: [[5.8, 3.4, 12, 10], [18.2, 3.4, 12, 10]], p: [[[[12, 9.4], [16.6, 13.8], [12, 21.4], [7.4, 13.8]], "b"], [[[12, 12.2], [14.2, 14.8], [12, 18], [9.8, 14.8]], "a"]], glow: [12, 15, 5] },
+  potion: { a: "#e0503a", p: [[[[10.4, 4], [13.6, 4], [13.6, 8], [18.4, 12.2], [17.4, 18.8], [12, 21.6], [6.6, 18.8], [5.6, 12.2], [10.4, 8]], "d"], [[[6, 13.2], [18, 13.2], [17.2, 18.6], [12, 21.2], [6.8, 18.6]], "a"], [[[9.8, 2], [14.2, 2], [14.2, 4.2], [9.8, 4.2]], "w"]], glow: [12, 17, 6] },
+  potionbig: { a: "#e0503a", p: [[[[9.6, 4], [14.4, 4], [14.4, 7.6], [19.6, 11.6], [18.8, 19], [12, 22], [5.2, 19], [4.4, 11.6], [9.6, 7.6]], "d"], [[[4.8, 12.4], [19.2, 12.4], [18.4, 18.8], [12, 21.6], [5.6, 18.8]], "a"], [[[9, 1.8], [15, 1.8], [15, 4.2], [9, 4.2]], "b"], [[[3.6, 13.4], [5.6, 11], [6.4, 16], [4.4, 17]], "b"], [[[20.4, 13.4], [18.4, 11], [17.6, 16], [19.6, 17]], "b"]], glow: [12, 17, 7] },
+  elixir: { a: "#5aa8ff", p: [[[[10.6, 3.6], [13.4, 3.6], [13.4, 8.4], [16, 18.6], [14, 21.2], [10, 21.2], [8, 18.6], [10.6, 8.4]], "d"], [[[9, 13], [15, 13], [16, 18.6], [14, 21], [10, 21], [8, 18.6]], "a"], [[[10, 1.8], [14, 1.8], [14, 3.8], [10, 3.8]], "b"]], r: [[12, 17.4, 1.8, 3]], glow: [12, 17, 6] },
+  ration: { a: "#c89a5a", p: [[[[3.6, 15.4], [6, 10.2], [12, 8], [18, 10.2], [20.4, 15.4], [18.4, 18.4], [5.6, 18.4]], "f"], [[[10.8, 8.2], [13.2, 8.2], [13.2, 18.4], [10.8, 18.4]], "l"]] },
+  flask: { a: "#5fd07a", p: [[[[10.4, 3.4], [13.6, 3.4], [13.6, 8.6], [19.2, 18.4], [17.6, 21], [6.4, 21], [4.8, 18.4], [10.4, 8.6]], "d"], [[[7.4, 14.6], [16.6, 14.6], [19, 18.4], [17.6, 20.6], [6.4, 20.6], [5, 18.4]], "a"], [[[9.8, 1.8], [14.2, 1.8], [14.2, 3.6], [9.8, 3.6]], "w"]], glow: [12, 18, 6] },
+  ore: { a: "#e08a5a", p: [[[[4, 15.4], [7.6, 7.4], [13.6, 4.6], [20, 9], [19.2, 17], [12, 20], [4.8, 18.4]], "r"]], line: [[9.4, 10.2, 12, 12.4], [14.4, 9.6, 13.4, 13], [8.6, 15.6, 11.6, 16]], lineCol: "a" },
+  ingot: { a: "#cfd6dc", p: [[[[3.6, 16.4], [20.4, 16.4], [18.4, 10], [5.6, 10]], "m"], [[[5.6, 10], [18.4, 10], [16.6, 7.4], [7.4, 7.4]], "s"]] },
+  coal: { a: "#ff7a2a", p: [[[[4.2, 16.2], [6, 11.4], [10.6, 9.8], [14, 12.6], [13.2, 17.2], [7.6, 18.6]], "d"], [[[12.6, 10.2], [15, 6.6], [19.2, 7.4], [20, 11.8], [16.6, 14.4]], "d"]], glow: [12, 13, 5] },
+  leather: { a: "#c8a070", p: [[[[6.4, 4.4], [12, 5], [17.6, 4.4], [17.8, 9.4], [19.8, 12], [17.8, 14.6], [17.6, 19.6], [12, 19], [6.4, 19.6], [6.2, 14.6], [4.2, 12], [6.2, 9.4]], "l"]], line: [[8, 8, 16, 8], [8, 16, 16, 16]], lineCol: "b" },
+  wood: { a: "#c8a070", p: [[[[4.4, 9], [17.6, 8.2], [17.6, 15.8], [4.4, 15]], "w"], [[[15, 12], [16, 8.6], [19.6, 8.2], [20.8, 12], [19.6, 15.8], [16, 15.4]], "f"]], line: [[17.6, 10.6, 19, 13.4]], lineCol: "w" },
+  gem: { a: "#5aa8ff", p: [[[[7.4, 4], [16.6, 4], [20, 9], [12, 20.4], [4, 9]], "a"]], glow: [12, 10, 6] },
+  essence: { a: "#b48cff", p: [[[[12, 3], [16.4, 9.6], [17.4, 14], [15, 19.2], [12, 20.4], [9, 19.2], [6.6, 14], [7.6, 9.6]], "a"]], glow: [12, 13, 8], r: [[12, 14, 2.6, 3]] },
+  herb: { a: "#7ad06a", p: [[[[11.4, 21], [12.6, 21], [12.4, 8.6], [11.6, 8.6]], "h"], [[[12, 14.4], [7.6, 13.4], [4.8, 8], [9.2, 9.4]], "h"], [[[12, 11], [15.6, 9.8], [18.6, 4.6], [14, 6]], "h"]] },
+  water: { a: "#5ac0e8", p: [[[[12, 3.2], [16.6, 10.4], [18, 14.4], [16.2, 19], [12, 20.6], [7.8, 19], [6, 14.4], [7.4, 10.4]], "a"]], glow: [12, 14, 6] },
+  rune: { a: "#ff8a3d", p: [[[[7.2, 3.8], [16.8, 3.8], [19.2, 7.4], [19.2, 18.6], [16.8, 20.6], [7.2, 20.6], [4.8, 18.6], [4.8, 7.4]], "o"]], r: [[12, 12.2, 6, 1]] },
+  fragment: { a: "#e8d8a8", p: [[[[3.6, 16.6], [8, 9.6], [11.2, 17.2]], "b"], [[[12.6, 5], [18.4, 6.8], [15.6, 14]], "b"], [[[13.4, 17.8], [19.4, 13.6], [20.4, 20.2]], "b"]], line: [[6, 14, 8.6, 15.4], [15, 7.4, 16, 10.6]], lineCol: "w" },
+  bomb: { a: "#ffb347", p: [[[[7, 9.4], [11, 7.6], [15, 9.4], [16.8, 13.4], [15, 17.6], [11, 19.4], [7, 17.6], [5.2, 13.4]], "o"]], line: [[14.4, 9, 17.4, 5.6]], lineCol: "l", r: [[11, 13.6, 3, 3]], glow: [18, 4.8, 4] },
+};
+function ico(name, tint) {
+  const I = LP_ICONS[name] || LP_ICONS.gem; let acc = I.a;
+  if (typeof tint === "string" && tint[0] === "#") acc = lpHex(tint); else if (TINT_ACC[tint]) acc = TINT_ACC[tint];
+  let o = `<svg viewBox="0 0 24 24" aria-hidden="true" style="overflow:visible">`;
+  if (I.glow) o += `<circle cx="${I.glow[0]}" cy="${I.glow[1]}" r="${I.glow[2]}" fill="${acc}" opacity=".22"/>`;
+  if (I.ring) { const oc = [], ic2 = []; for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2 + Math.PI / 8; oc.push([+(12 + Math.cos(a) * 6.6).toFixed(2), +(14.4 + Math.sin(a) * 6.6).toFixed(2)]); ic2.push([+(12 + Math.cos(a) * 4.2).toFixed(2), +(14.4 + Math.sin(a) * 4.2).toFixed(2)]); }
+    for (let i = 0; i < 8; i++) o += svgFacet([oc[i], oc[(i + 1) % 8], ic2[(i + 1) % 8], ic2[i]], LPI_MAT.g, .5); }
+  for (const [pts, m] of I.p) o += svgFacet(pts, m === "a" ? acc : LPI_MAT[m], m === "a" ? .5 : .36);
+  for (const ln of I.line || []) { const col = I.lineCol === "a" ? acc : I.lineCol ? LPI_MAT[I.lineCol] : "#e8e0d0"; o += `<path d="M${ln[0]} ${ln[1]}L${ln[2]} ${ln[3]}" stroke="${col}" stroke-width=".7" stroke-linecap="round"/>`; }
+  for (const [rx, ry, sz, kd] of I.r || []) o += svgRune(rx, ry, sz, acc, kd);
+  return o + `</svg>`;
+}
+/* ═══════════════════════ Bestiaire · style « low-poly dark fantasy » ═══════════════════════
+   Mêmes règles que les héros : facettes, obsidienne, os anciens, runes et yeux luminescents. Les monstres
+   regardent vers la gauche (vers le groupe). La teinte (tint) d'un ennemi d'élite ou d'un gardien est respectée. */
+const MON_SZ = { goblin: 1.25, ghoul: 1.15, bat: 1.35, wisp: 1.4, spider: 1.15, shroom: 1.12, pumpkin: 1.12, skel: 1.05, shaman: 1.08, beetle: 1.1 };
+function drawEnemy(x, kind, cx, cy, s, t, big = 1, tint) {
+  const k = s * big * (MON_SZ[kind] || 1), br = Math.sin(t * 2.5) * .5, sw = Math.sin(t * 1.7);
+  if (kind === "wolfE") { drawWolf(x, cx, cy, s * 1.05, t, tint || "#4a3e3a", "#ff4a2a", -1); return; }
+  const TC = typeof tint === "string" && tint[0] === "#" ? lpHex(tint) : null;
+  x.save(); x.translate(cx, cy); x.scale(-1, 1); x.lineJoin = "round"; x.lineCap = "round";
+  const F = (pts, col, o = {}) => lpFacet(x, pts.map(([a, b]) => [a * k, b * k]), lpHex(col), { olw: Math.max(.6, .32 * k), bev: (o.amp ?? .34) >= .3 && k > 1.6 ? .28 : 0, ...o });
+  const R = (px, py, sz, col, kind2 = 0, a = 1) => lpRune(x, px * k, py * k, sz * k, col, kind2, a);
+  const G = (px, py, r, col, a = .6) => glow(x, px * k, py * k, r * k, col, a);
+  const eye = (px, py, col, w = 1) => { G(px, py, 2.4 * w, col, .85); F([[px - .8 * w, py - .4 * w], [px + .8 * w, py - .6 * w], [px + .7 * w, py + .3 * w], [px - .7 * w, py + .4 * w]], col, { amp: 0, ol: 0, hi: 0, bev: 0 }); };
+  const shadow = (w = 12) => { const g = x.createRadialGradient(0, 0, 1, 0, 0, w * k); g.addColorStop(0, "rgba(0,0,0,.6)"); g.addColorStop(1, "rgba(0,0,0,0)"); x.fillStyle = g; x.beginPath(); x.ellipse(0, 0, w * k, 4.4 * k, 0, 0, 7); x.fill(); };
+  const leg = (lx, col, thick = 1, d = 0) => { F([[lx - 1.8 * thick, -15], [lx + 1.8 * thick, -15], [lx + 1.6 * thick, -9], [lx - 1.5 * thick, -9]], shade(col, d)); F([[lx - 1.6 * thick, -9.4], [lx + 1.7 * thick, -9.4], [lx + 1.5 * thick, -2], [lx + 3.4 * thick, -1], [lx + 3.2 * thick, 0], [lx - 1.9 * thick, 0]], shade(col, d - .1)); };
+  const OBS = LP.obs, OBS2 = LP.obs2, BONE = LP.bone;
+  switch (kind) {
+    case "ghoul": { const sk = TC || "#6a7a5a", e = "#a8ff6a"; shadow();
+      leg(-3, sk, .9, -.25); leg(2.6, sk, .9);
+      F([[-6, -15], [5, -15.4], [8.6, -24 + br], [5, -29 + br], [-2, -28 + br], [-7, -22]], sk, { amp: .38 });
+      for (let i = 0; i < 4; i++) F([[-5 + i * 2.6, -26.6 + br + i * -.4], [-4 + i * 2.6, -30.6 + br - i * .6], [-2.6 + i * 2.6, -26.8 + br - i * .4]], BONE, { amp: .3, olw: .25 * k });
+      F([[-3, -18], [4, -18.4], [5.4, -15.4], [-4, -15.2]], "#3a2a20", { amp: .2 }); R(1, -22.4 + br, 1.4, e, 3, .9);
+      F([[4.6, -27 + br], [8, -25 + br], [9.6, -16 + br], [7.6, -15 + br], [6, -22 + br]], sk, { amp: .35 }); for (let i = 0; i < 3; i++) F([[7.4 + i * .8, -15.6 + br], [8.6 + i * .8, -12.6 + br], [8.8 + i * .8, -15.4 + br]], BONE, { amp: .2, olw: .25 * k });
+      const hx = 8, hy = -31 + br; F([[hx - 3.4, hy + 1.6], [hx - 3, hy - 2.6], [hx, hy - 4], [hx + 3.6, hy - 2], [hx + 4.4, hy + 1.4], [hx + 2.6, hy + 3.6], [hx - 1.4, hy + 3.4]], sk, { amp: .4 });
+      F([[hx + 1, hy + 1.4], [hx + 4.4, hy + 1.4], [hx + 3, hy + 3.4]], "#1a120c", { amp: 0, ol: 0, hi: 0, bev: 0 }); for (let i = 0; i < 3; i++) F([[hx + 1.4 + i, hy + 1.4], [hx + 1.9 + i, hy + 2.6], [hx + 2.4 + i, hy + 1.4]], BONE, { amp: 0, ol: 0, hi: 0, bev: 0 });
+      eye(hx + 2, hy - 1, e, .8); eye(hx + 3.6, hy - .8, e, .5); break; }
+    case "spirit": case "wraith": { const big2 = kind === "spirit" ? 1.35 : 1, col = TC || (kind === "spirit" ? "#7fd0ff" : "#9fb8c8"); x.scale(big2, big2);
+      G(0, -24, 26, col, .4); const fl = Math.sin(t * 3) * 1.4, hem = [];
+      for (let i = 0; i <= 8; i++) hem.push([8 - i * 2, -6 + (i % 2 ? -3 : 0) + Math.sin(t * 4 + i) * 1.2]);
+      x.globalAlpha *= .9; F([[-7, -30 + br], [-1, -38 + br], [6, -36 + br], [9, -26 + br], [8, -6], ...hem.slice(1, -1), [-8, -6], [-9, -20]], shade(col, -.55), { amp: .4 }); x.globalAlpha /= .9;
+      F([[-4, -30 + br], [2, -40 + br], [7.6, -36 + br], [9.6, -28 + br], [6, -24 + br], [-1, -25 + br]], shade(col, -.35), { amp: .4 });
+      F([[1, -33 + br], [6.4, -34 + br], [8, -29 + br], [4, -27 + br], [1.4, -29 + br]], "#06080c", { amp: 0, ol: 0, hi: 0, bev: 0 }); eye(3.4, -31 + br, col, .8); eye(6.2, -31 + br, col, .6);
+      F([[5, -24 + br + fl], [11, -18 + fl], [13, -12 + fl], [10.6, -11.6 + fl], [8, -17 + fl]], shade(col, -.45), { amp: .35 }); for (let i = 0; i < 3; i++) F([[11.6 + i * .6, -12 + fl], [13 + i * .6, -8.6 + fl], [13.2 + i * .6, -11.6 + fl]], BONE, { amp: .2, olw: .25 * k });
+      R(0, -20 + br, 2, col, 3, .9); if (kind === "spirit") for (let i = 0; i < 4; i++) { const a = t * 1.4 + i * 1.6; R(Math.cos(a) * 13, -22 + Math.sin(a) * 4, 1.2, col, i, .7); } break; }
+    case "skel": { const b = TC || BONE, e = "#7fd0ff"; shadow();
+      for (const [lx, d] of [[-2.6, -.25], [2.4, 0]]) { F([[lx - .7, -15], [lx + .7, -15], [lx + .6, -2], [lx - .6, -2]], shade(b, d), { amp: .2 }); F([[lx - 1.4, -2], [lx + 2.6, -1.4], [lx + 2.4, 0], [lx - 1.4, 0]], OBS2); F([[lx - 1.4, -10.6], [lx, -12], [lx + 1.4, -10.6], [lx, -9.2]], b); }
+      F([[-4.4, -14.6], [4.4, -14.6], [3.6, -17], [-3.6, -17]], b, { amp: .3 }); F([[-.6, -17], [.6, -17], [.6, -22], [-.6, -22]], b, { amp: .2 });
+      for (let i = 0; i < 4; i++) F([[-4.6 + i * .2, -22.4 + i * 1.4], [4.6 - i * .2, -22.4 + i * 1.4], [4.4 - i * .2, -21.6 + i * 1.4], [-4.4 + i * .2, -21.6 + i * 1.4]], b, { amp: .2, olw: .25 * k });
+      F([[-6.6, -28.4 + br], [6.6, -28.4 + br], [5.6, -23 + br], [-5.6, -23 + br]], OBS, { amp: .38 }); R(0, -25.6 + br, 1.4, e, 1, .9);
+      F([[-7.4, -27.6 + br], [-6, -26.6 + br], [-6.4, -16], [-7.8, -16]], b, { amp: .2 }); F([[5.6, -27.6 + br], [7.2, -27 + br], [9, -21 + br], [8, -20.4 + br]], b, { amp: .2 });
+      x.save(); x.translate(9 * k, -20 * k); x.rotate(-.2); F([[-.6, 1], [.6, 1], [.8, -9], [0, -10.6], [-.8, -9]], "#5a5c62", { amp: .45 }); F([[-2, 1], [2, 1], [2, 2], [-2, 2]], OBS, { amp: .2 }); x.restore();
+      const hy = -32.4 + br; F([[-3, hy + 2.8], [-3.6, hy - 1.4], [-1.4, hy - 4], [2.6, hy - 4], [4.2, hy - 1], [4, hy + 1.6], [2.6, hy + 4], [-.6, hy + 4]], b, { amp: .42 });
+      F([[-1, hy - .8], [1, hy - 1.2], [.8, hy + .6], [-.8, hy + .6]], "#0a0a0e", { amp: 0, ol: 0, hi: 0, bev: 0 }); F([[2, hy - 1.2], [3.6, hy - 1.4], [3.4, hy + .4], [2.2, hy + .4]], "#0a0a0e", { amp: 0, ol: 0, hi: 0, bev: 0 });
+      eye(0, hy - .2, e, .5); eye(2.8, hy - .4, e, .45); F([[-3.8, hy - 1], [-2.6, hy - 4.4], [3, hy - 4.6], [4.6, hy - 2], [1, hy - 2.8]], OBS, { amp: .4 }); break; }
+    case "spider": { const c = TC || "#2a2830", e = "#8aff6a"; shadow(14);
+      for (const [sd, d] of [[-1, -.25], [1, 0]]) for (let i = 0; i < 4; i++) { const a = -9 + i * 5.4, up = Math.sin(t * 6 + i * 1.6 + sd) * 1.2;
+        F([[a, -9], [a + sd * 2 + 1, -15 - up], [a + sd * 3.4 + 2, -14 - up], [a + 1.6, -8.4]], shade(BONE, d - .1), { amp: .3, olw: .25 * k }); F([[a + sd * 2 + 1, -15 - up], [a + sd * 3.4 + 2, -14 - up], [a + sd * 5 + 2.4, 0], [a + sd * 4.4 + 1.6, 0]], shade(c, d + .1), { amp: .3, olw: .25 * k }); }
+      F([[-12, -8], [-10, -15 + br], [-3, -17 + br], [1, -12], [-2, -6], [-9, -5]], c, { amp: .45 }); R(-5.6, -11.6 + br, 2.2, e, 5, .9);
+      F([[0, -11], [3, -14 + br], [8, -13 + br], [9, -9], [4, -6.6]], shade(c, .08), { amp: .42 });
+      for (const [ex, ey] of [[6.4, -11.6], [7.8, -11], [6.8, -10.2], [5.4, -10.6]]) eye(ex, ey + br, e, .35); F([[8.4, -8.4], [10.2, -6.4], [8.6, -6.6]], BONE, { amp: .2 }); break; }
+    case "shaman": { const sk = TC || "#5a6a4a", robe = "#3a2e3a", e = "#9affaa"; shadow();
+      F([[-7, -2], [-6, -20], [4, -22], [7, -14], [8, -2], ...[[6, -.2], [3, -2], [0, 0], [-3, -2], [-5, 0]]], robe, { amp: .3 });
+      F([[-5, -20], [3, -21 + br], [6, -26 + br], [2, -30 + br], [-4, -28 + br]], robe, { amp: .4 }); for (let i = 0; i < 3; i++) F([[-3 + i * 2.6, -26 + br], [-2.2 + i * 2.6, -30 + br - i * .4], [-1 + i * 2.6, -26 + br]], BONE, { amp: .3, olw: .25 * k });
+      F([[-1, -14], [2, -14], [2, -10], [-1, -10]], BONE, { amp: .3 }); R(.5, -17, 1.4, e, 4, .9);
+      x.save(); x.translate(9 * k, -16 * k); F([[-.6, 14], [.6, 14], [.7, -14], [-.7, -14]], "#5a3a22", { amp: .25 }); F([[-2, -14], [2, -14], [2.6, -17.6], [0, -19.6], [-2.6, -17.6]], BONE, { amp: .4 }); F([[-1.2, -17], [-.2, -17], [-.6, -16]], "#120c0a", { amp: 0, ol: 0, hi: 0, bev: 0 }); F([[.4, -17], [1.4, -17], [1, -16]], "#120c0a", { amp: 0, ol: 0, hi: 0, bev: 0 }); G(0, -17, 6, e, .6); x.restore();
+      F([[4, -24 + br], [8.4, -18], [9.6, -16], [7.6, -15], [5, -19]], sk, { amp: .3 });
+      const hx = 5, hy = -31 + br; F([[hx - 3.4, hy + 2], [hx - 3, hy - 2.4], [hx, hy - 3.6], [hx + 3.4, hy - 1.6], [hx + 4, hy + 1.6], [hx + 2, hy + 3.4], [hx - 1.6, hy + 3.2]], sk, { amp: .4 });
+      F([[hx - 4, hy - 1], [hx - 2, hy - 6], [hx + 1, hy - 4.4], [hx + 3.6, hy - 6.6], [hx + 4, hy - 1.4], [hx, hy - 2.8]], BONE, { amp: .35 }); eye(hx + 1.4, hy - .2, e, .6); eye(hx + 3, hy, e, .45); break; }
+    case "golem": { const c = TC || "#5a5650", core = TC ? shade(TC, .5) : "#ff9a3a"; shadow(14);
+      for (const [lx, d] of [[-4, -.25], [4, 0]]) { F([[lx - 3, -12], [lx + 3, -12], [lx + 3.6, -4], [lx + 4.4, 0], [lx - 3.4, 0], [lx - 3, -4]], shade(c, d), { amp: .42 }); R(lx, -6.4, 1.2, core, 2, .8); }
+      F([[-10, -10], [10, -10], [12.4, -24 + br], [7, -31 + br], [-7, -31 + br], [-12, -24 + br]], c, { amp: .42 });
+      F([[-3.6, -24 + br], [0, -27 + br], [3.6, -24 + br], [0, -19 + br]], shade(core, -.4), { amp: .3 }); G(0, -23.4 + br, 8, core, .7); R(0, -23.4 + br, 2.4, core, 3, 1);
+      for (const [sx, d] of [[-1, -.25], [1, 0]]) { const ax = sx * 12; F([[ax - 3.6 * sx, -29 + br], [ax + 3 * sx, -28 + br], [ax + 4 * sx, -12 + br], [ax + 1.4 * sx, -9 + br], [ax - 2.4 * sx, -12 + br]], shade(c, d), { amp: .42 }); F([[ax - 2.4 * sx, -30 + br], [ax + 2.6 * sx, -31 + br], [ax + 3.6 * sx, -27 + br], [ax - 3 * sx, -26 + br]], BONE, { amp: .35 }); }
+      const hy = -34 + br; F([[-4, hy + 3], [-4.6, hy - 2], [-1, hy - 4.4], [3.6, hy - 3.6], [5, hy + .4], [3.4, hy + 3.4]], shade(c, .08), { amp: .42 }); eye(1, hy - .4, core, .7); eye(3.2, hy - .2, core, .5); break; }
+    case "bat": { const c = TC || "#2e2630", e = "#ff4a4a", fl = Math.sin(t * 9) * 5, y0 = -24 + Math.sin(t * 3) * 1.4; shadow(7);
+      for (const [sd, d] of [[-1, -.2], [1, 0]]) F([[0, y0 - 1], [sd * 6, y0 - 6 - fl], [sd * 12, y0 - 8 - fl * 1.2], [sd * 11, y0 - 2 - fl * .6], [sd * 8.6, y0 - 3], [sd * 7, y0 + 1], [sd * 4, y0 + 1]], shade(c, d), { amp: .4 });
+      F([[-2.4, y0 + 3], [-2.6, y0 - 2], [0, y0 - 4], [2.6, y0 - 2], [2.4, y0 + 3], [0, y0 + 4.6]], c, { amp: .42 }); F([[-2, y0 - 3], [-1.4, y0 - 6.4], [-.4, y0 - 3.6]], c); F([[.4, y0 - 3.6], [1.4, y0 - 6.4], [2, y0 - 3]], c);
+      eye(-.8, y0 - 1.2, e, .5); eye(.9, y0 - 1.2, e, .5); F([[-.6, y0 + 1.4], [-.2, y0 + 2.8], [.1, y0 + 1.4]], BONE, { amp: 0, ol: 0, hi: 0, bev: 0 }); F([[.3, y0 + 1.4], [.7, y0 + 2.8], [1, y0 + 1.4]], BONE, { amp: 0, ol: 0, hi: 0, bev: 0 }); break; }
+    case "troll": { const sk = TC || "#5a6a4e", e = "#ffb03a"; shadow(14);
+      leg(-3.6, sk, 1.4, -.25); leg(3.6, sk, 1.4);
+      F([[-8, -14], [8, -14], [11, -26 + br], [6, -34 + br], [-5, -33 + br], [-10, -24]], sk, { amp: .4 }); F([[-7, -17], [7, -17], [7.6, -13], [-7.6, -13]], "#4a3424", { amp: .25 }); R(-2, -24 + br, 1.8, e, 0, .8);
+      F([[-6, -32 + br], [-3, -36 + br], [0, -33 + br], [3, -36.4 + br], [6, -33 + br]], "#3a4a2a", { amp: .3 }); // mousse
+      F([[-11, -30 + br], [-8, -31 + br], [-9.6, -14], [-12, -14]], sk, { amp: .35 });
+      F([[8, -30 + br], [12, -27 + br], [13, -18 + br], [10, -17 + br], [9, -24]], sk, { amp: .38 }); x.save(); x.translate(12 * k, -17 * k + br * k); x.rotate(.5); F([[-1.4, 2], [1.4, 2], [3, -14], [0, -16], [-3, -14]], "#5a3a22", { amp: .4 }); for (let i = 0; i < 3; i++) F([[-2.6 + i * 2.6, -12 + i], [-3.6 + i * 2.6, -15 + i], [-1.6 + i * 2.6, -13 + i]], BONE, { amp: .2, olw: .25 * k }); x.restore();
+      const hx = 5, hy = -34 + br; F([[hx - 3, hy + 3], [hx - 3.6, hy - 2], [hx, hy - 4], [hx + 4, hy - 2], [hx + 5.6, hy + 1.4], [hx + 3.6, hy + 4], [hx - 1, hy + 4.4]], sk, { amp: .42 });
+      F([[hx + 2, hy + 2.4], [hx + 2.6, hy - .2], [hx + 3.2, hy + 2.4]], BONE, { amp: .2, olw: .25 * k }); F([[hx + 3.6, hy + 2.2], [hx + 4.2, hy], [hx + 4.6, hy + 2.2]], BONE, { amp: .2, olw: .25 * k }); eye(hx + 1.4, hy - .8, e, .6); eye(hx + 3.4, hy - .6, e, .45); break; }
+    case "wisp": { const c = TC || "#9fe0ff", y0 = -20 + Math.sin(t * 2.4) * 2; G(0, y0, 18, c, .55);
+      F([[0, y0 - 6], [3.6, y0 - 1], [2.4, y0 + 5], [-2.4, y0 + 5], [-3.6, y0 - 1]], shade(c, -.1), { amp: .5 }); F([[0, y0 - 3], [1.6, y0], [0, y0 + 2.6], [-1.6, y0]], "#ffffff", { amp: .2, ol: 0 });
+      for (let i = 0; i < 4; i++) { const a = t * 2 + i * 1.57, px = Math.cos(a) * 7, py = y0 + Math.sin(a) * 2.6; F([[px, py - 1.6], [px + 1, py], [px, py + 1.6], [px - 1, py]], shade(c, -.25), { amp: .4, olw: .25 * k }); }
+      x.fillStyle = "rgba(0,0,0,.35)"; x.beginPath(); x.ellipse(0, 0, 6 * k, 2 * k, 0, 0, 7); x.fill(); break; }
+    case "drowned": { const sk = TC || "#7a9aa0", e = "#6affe0"; shadow();
+      leg(-2.6, "#3a4a4a", 1, -.25); leg(2.6, "#3a4a4a", 1);
+      F([[-6.4, -15], [6.4, -15], [8, -24 + br], [5, -30 + br], [-5, -30 + br], [-8, -24]], sk, { amp: .38 }); F([[-6, -18], [6, -18], [6.4, -12], [-6.4, -12]], "#2a3a3a", { amp: .25 });
+      for (let i = 0; i < 3; i++) F([[-5 + i * 4, -29 + br], [-4 + i * 4, -17], [-3.2 + i * 4, -29 + br]], "#3a6a4a", { amp: .2, olw: .25 * k }); R(0, -23 + br, 1.6, e, 1, .9);
+      F([[-8, -28 + br], [-6, -28 + br], [-7.6, -15], [-9.4, -15]], sk, { amp: .3 }); F([[6, -28 + br], [8.6, -27 + br], [10.4, -18 + br], [8.6, -17 + br]], sk, { amp: .3 });
+      x.save(); x.translate(10 * k, -18 * k + br * k); F([[-.6, 2], [.6, 2], [.6, -10], [-.6, -10]], "#4a4e54", { amp: .3 }); F([[-.6, -10], [4, -8.4], [4.4, -6], [2.4, -7.4], [-.6, -8]], "#6a6e74", { amp: .4 }); x.restore();
+      const hx = 3, hy = -33 + br; F([[hx - 3.6, hy + 2.6], [hx - 3.6, hy - 2], [hx - .4, hy - 4], [hx + 3.4, hy - 3], [hx + 4.6, hy + .6], [hx + 3, hy + 3.6], [hx - 1, hy + 3.8]], sk, { amp: .42 });
+      F([[hx - 3.8, hy - 1], [hx - 1, hy - 4.4], [hx - 2, hy + 4], [hx - 4.4, hy + 5]], "#2a4a3a", { amp: .3 }); eye(hx + 1, hy - .6, e, .6); eye(hx + 2.8, hy - .4, e, .45); break; }
+    case "knight": { const pl = TC || "#2e3038", e = "#ff4a3a"; shadow();
+      F([[-6.6, -30], [-1, -30], [-1.6, -6], [-10 + sw, -4], [-9, -18]], "#3a1a1a", { amp: .2, bias: -.15 });
+      leg(-2.6, pl, 1.1, -.25); leg(2.6, pl, 1.1); for (const lx of [-2.6, 2.6]) F([[lx - 1.6, -10], [lx, -12.4], [lx + 1.6, -10], [lx, -8.2]], BONE, { amp: .3, olw: .25 * k });
+      F([[-6, -16], [6, -16], [8, -28 + br], [4.4, -31 + br], [-4.4, -31 + br], [-8, -28]], pl, { amp: .4 }); F([[-6.4, -16.6], [6.4, -16.6], [7.4, -11.6], [-7.4, -11.6]], pl, { amp: .36 }); R(0, -23 + br, 2, e, 3, .95);
+      for (const sd of [-1, 1]) F([[sd * 7 - 4, -27 + br], [sd * 7 - 4.6, -31 + br], [sd * 7, -34 + br], [sd * 7 + 4.4, -30.4 + br], [sd * 7 + 3.6, -26.8 + br]], pl, { amp: .42 });
+      x.save(); x.translate(-9 * k, -20 * k); lpFacet(x, [[-4, -7], [4, -7.4], [4.4, -1], [0, 8.4], [-4.4, -1]].map(([a, b]) => [a * k, b * k]), shade(pl, .06), { olw: .32 * k, bev: k > 1.6 ? .28 : 0 }); lpRune(x, 0, -.6 * k, 2 * k, e, 0, .9); x.restore();
+      x.save(); x.translate(9 * k, -20 * k + br * k); x.rotate(.15); F([[-1, 1], [1, 1], [1.2, -15], [0, -17], [-1.2, -15]], "#5a5c64", { amp: .45 }); F([[-3, 1], [3, 1], [3.4, 2.4], [-3.4, 2.4]], BONE, { amp: .3 }); x.restore();
+      const hy = -36 + br; F([[-4, hy + 4], [-4.6, hy - 1.6], [-2.6, hy - 5.4], [2.6, hy - 5.4], [4.6, hy - 1.6], [4.2, hy + 3.6], [1, hy + 5]], pl, { amp: .42 });
+      F([[-2.4, hy - 1.4], [4.4, hy - 2], [4.4, hy - .6], [-2, -.2 + hy]], "#08080c", { amp: 0, ol: 0, hi: 0, bev: 0 }); G(1.2, hy - 1, 5, e, .8); F([[-1.6, hy - 1.4], [3.8, hy - 1.8], [3.8, hy - 1.1], [-1.4, hy - .8]], e, { amp: 0, ol: 0, hi: 0, bev: 0 });
+      F([[-1, hy - 5.2], [-4, hy - 10.6], [-.4, hy - 8], [1, hy - 11], [1.4, hy - 5.2]], "#7a1a1a", { amp: .3 }); break; }
+    case "frostqueen": { const c = TC || "#9fd8ff", e = shade(c, .5); shadow(); G(0, -24, 24, c, .3);
+      F([[-9, -.4], [-6, -22], [6, -22], [9.6, -.4], ...[[6, 1], [2, -1.4], [-2, 1], [-6, -1]]], shade(c, -.35), { amp: .38 });
+      F([[-5, -22], [5, -22], [6.4, -30 + br], [3, -32 + br], [-3, -32 + br], [-6.4, -30]], shade(c, -.2), { amp: .42 }); R(0, -14, 2.2, e, 3, .9); R(0, -6, 1.4, e, 1, .7);
+      x.save(); x.translate(9 * k, -18 * k); F([[-.5, 17], [.5, 17], [.6, -12], [-.6, -12]], "#c8e8ff", { amp: .3 }); F([[0, -18], [2.4, -13], [0, -10.6], [-2.4, -13]], c, { amp: .5 }); G(0, -14, 7, c, .7); x.restore();
+      const hy = -36 + br; F([[-3, hy + 3], [-3.4, hy - 1.6], [0, hy - 3.6], [3.2, hy - 2], [3.8, hy + 1.4], [1.8, hy + 3.8]], "#e8f4ff", { amp: .38 });
+      for (let i = -2; i <= 2; i++) F([[i * 1.8 - .8, hy - 3], [i * 1.8, hy - 8 - (2 - Math.abs(i)) * 1.6], [i * 1.8 + .8, hy - 3]], c, { amp: .4, olw: .25 * k });
+      eye(1, hy - .2, e, .5); eye(2.6, hy - .1, e, .4); break; }
+    case "hydra": { const c = TC || "#3a6a4a", e = "#ffe03a"; shadow(16);
+      F([[-12, -4], [-9, -14], [6, -16], [12, -8], [10, -2], [-8, -1]], c, { amp: .4 }); for (let i = 0; i < 4; i++) F([[-8 + i * 4, -14.6 - i * .2], [-7 + i * 4, -18 - i * .4], [-5.6 + i * 4, -14.8]], BONE, { amp: .3, olw: .25 * k }); R(-1, -9, 2, e, 5, .9);
+      for (let n = 0; n < 3; n++) { const nx = -4 + n * 6, ph = t * 1.6 + n * 2, hx = nx + 4 + Math.sin(ph) * 2, hy = -30 - n % 2 * 4 + Math.cos(ph) * 1.6;
+        F([[nx - 1.6, -13], [nx + 1.6, -13], [hx + 1.2, hy + 3], [hx - 1.4, hy + 2]], shade(c, n === 1 ? .08 : -.1), { amp: .35 });
+        F([[hx - 2.4, hy + 1.6], [hx - 2, hy - 2], [hx + 1, hy - 3], [hx + 4.4, hy - 1], [hx + 4.6, hy + 1], [hx + 1, hy + 2.6]], shade(c, .04), { amp: .42 }); F([[hx - 1, hy - 2.4], [hx - .2, hy - 5], [hx + .8, hy - 2.6]], BONE, { amp: .2, olw: .2 * k });
+        eye(hx + 1.4, hy - 1, e, .45); F([[hx + 2.6, hy + .6], [hx + 4.6, hy + .8], [hx + 3, hy + 1.8]], "#1a0c0c", { amp: 0, ol: 0, hi: 0, bev: 0 }); } break; }
+    case "lich": { const robe = TC ? shade(TC, -.55) : "#2a1e3a", e = "#c48cff"; shadow(); G(0, -24, 20, e, .3);
+      F([[-8, -.6], [-6, -26], [6, -26], [8.6, -.6], ...[[5.4, 1], [2, -1.6], [-2, 1], [-5.4, -1.4]]], robe, { amp: .36 });
+      F([[-2, -24], [2, -24], [2.6, -1], [-2.6, -1]], shade(robe, .15), { amp: .2 }); R(0, -18, 1.6, e, 3); R(0, -10, 1.4, e, 0, .8);
+      for (const sd of [-1, 1]) F([[sd * 6 - 4, -25], [sd * 6 - 3, -30 + br], [sd * 6 + 3.6, -31 + br], [sd * 6 + 4, -26]], OBS, { amp: .42 });
+      for (const sd of [-1, 1]) for (let i = 0; i < 2; i++) F([[sd * 6 - 2 + i * 3, -30 + br], [sd * 6 - 1.4 + i * 3, -33.6 + br], [sd * 6 - .2 + i * 3, -30 + br]], BONE, { amp: .3, olw: .25 * k });
+      x.save(); x.translate(9 * k, -18 * k); F([[-.6, 17], [.6, 17], [.7, -14], [-.7, -14]], "#2a2030", { amp: .25 }); F([[-2.4, -14], [2.4, -14], [3, -18], [0, -21], [-3, -18]], BONE, { amp: .4 }); F([[0, -19.4], [1.2, -17.4], [0, -15.6], [-1.2, -17.4]], e, { amp: .3 }); G(0, -17.4, 8, e, .75); x.restore();
+      const hy = -34 + br; F([[-3, hy + 3], [-3.4, hy - 1.6], [-1, hy - 3.8], [2.6, hy - 3.6], [3.8, hy - .6], [3.2, hy + 2.6], [1, hy + 3.8]], BONE, { amp: .4 });
+      F([[-.6, hy - 1], [1, hy - 1.2], [.8, hy + .4], [-.6, hy + .4]], "#0a0a0e", { amp: 0, ol: 0, hi: 0, bev: 0 }); F([[1.8, hy - 1.2], [3.2, hy - 1.4], [3, hy + .2], [1.8, hy + .2]], "#0a0a0e", { amp: 0, ol: 0, hi: 0, bev: 0 }); eye(.2, hy - .4, e, .45); eye(2.5, hy - .6, e, .4);
+      F([[-3.4, hy - 3], [-3.8, hy - 7], [-2, hy - 4.8], [0, hy - 8], [1.6, hy - 4.8], [3.4, hy - 7.4], [3.6, hy - 3]], "#cda45e", { amp: .42 }); break; }
+    case "pumpkin": { const c = "#d0601a", e = "#ffd06a"; shadow(10);
+      for (const lx of [-2.4, 2.4]) F([[lx - .8, -10], [lx + .8, -10], [lx + 1, 0], [lx - 1, 0]], "#3a5a1a", { amp: .2 });
+      F([[-3.4, -9], [3.4, -9], [4, -16], [-4, -16]], "#2a3a1a", { amp: .3 });
+      const hy = -23 + br; F([[-8, hy + 3], [-8.4, hy - 3], [-5, hy - 7], [0, hy - 7.6], [5, hy - 7], [8.4, hy - 3], [8, hy + 3], [4, hy + 6.4], [-4, hy + 6.4]], c, { amp: .42 });
+      F([[-.6, hy - 7.4], [.6, hy - 7.4], [1.4, hy - 11], [-.4, hy - 10]], "#3a5a1a", { amp: .2 }); G(0, hy, 10, "#ff8a2a", .5);
+      for (const ex of [-3.4, 3]) F([[ex - 1.6, hy - 1], [ex + 1.6, hy - 1], [ex, hy - 3.6]], e, { amp: 0, ol: 0, hi: 0, bev: 0 }); F([[-4.6, hy + 2], [4.6, hy + 2], [3, hy + 4], [1.4, hy + 3], [0, hy + 4.2], [-1.4, hy + 3], [-3, hy + 4]], e, { amp: 0, ol: 0, hi: 0, bev: 0 }); break; }
+    case "snowman": { const c = "#e8f0f6", e = "#7fd0ff"; shadow(10);
+      F([[-7, -1], [-8, -7], [-5, -12], [5, -12], [8, -7], [7, -1]], c, { amp: .38 }); F([[-5.4, -11.6], [-5.8, -17], [-3, -20], [3, -20], [5.8, -17], [5.4, -11.6]], c, { amp: .38 });
+      F([[-5, -16], [5, -16], [5.4, -14.4], [-5.4, -14.4]], "#8a2a22", { amp: .2 }); R(0, -6, 1.6, e, 3, .8);
+      const hy = -24 + br; F([[-4, hy + 4], [-4.4, hy - 1], [-2, hy - 4], [2.4, hy - 4], [4.4, hy - 1], [4, hy + 4]], c, { amp: .38 }); F([[-4.4, hy - 3], [4.4, hy - 3], [3.6, hy - 9], [-3.6, hy - 9]], OBS, { amp: .4 });
+      eye(-1.2, hy, e, .5); eye(1.6, hy, e, .5); F([[.4, hy + 1.2], [5, hy + 2], [.4, hy + 2.4]], "#e8701a", { amp: .2, olw: .25 * k }); break; }
+    case "shroom": { const c = TC || "#7a4a8a", spot = TC ? shade(TC, .5) : "#7affe0"; shadow(11);
+      for (const lx of [-2.4, 2.4]) F([[lx - 1.4, -12], [lx + 1.4, -12], [lx + 1.6, 0], [lx - 1.6, 0]], "#d8cbb0", { amp: .3 });
+      F([[-3.4, -12], [3.4, -12], [3, -22], [-3, -22]], "#e0d4b8", { amp: .3 }); eye(-1, -17 + br, spot, .5); eye(1.4, -17 + br, spot, .5);
+      F([[-11, -21 + br], [-8, -27 + br], [-2, -31 + br], [4, -30.6 + br], [9.6, -26 + br], [11.6, -21 + br], [0, -19.6 + br]], c, { amp: .45 });
+      for (const [px, py] of [[-5, -25], [1, -28], [6, -24.6], [-1, -23]]) { F([[px - 1.2, py + br], [px, py - 1.2 + br], [px + 1.2, py + br], [px, py + 1.2 + br]], spot, { amp: .2, ol: 0 }); G(px, py + br, 3, spot, .5); } break; }
+    case "beetle": { const c = TC || "#2a4a5a", e = "#ffb03a"; shadow(13);
+      for (const [sd, d] of [[-1, -.25], [1, 0]]) for (let i = 0; i < 3; i++) { const a = -6 + i * 5; F([[a, -6], [a + sd * 1.6 + 1.6, -6], [a + sd * 3 + 3, 0], [a + sd * 2.4 + 2, 0]], shade(OBS, d), { amp: .3, olw: .25 * k }); }
+      F([[-11, -6], [-9, -14 + br], [-1, -17 + br], [7, -14 + br], [9, -6], [0, -4.4]], c, { amp: .45 }); x.strokeStyle = "rgba(6,5,6,.8)"; x.lineWidth = .4 * k; x.beginPath(); x.moveTo(-1 * k, (-17 + br) * k); x.lineTo(0, -4.6 * k); x.stroke(); R(-4.6, -10 + br, 1.6, e, 5, .9); R(3.6, -10 + br, 1.6, e, 5, .9);
+      F([[7, -13 + br], [11, -12 + br], [12, -7], [8.4, -6]], OBS, { amp: .4 }); F([[10, -12 + br], [14.4, -18 + br], [12.4, -11 + br]], BONE, { amp: .3 }); eye(10.4, -9.6 + br, e, .5); break; }
+    case "automaton": { const c = TC || "#a8803e", e = "#ffc860"; shadow();
+      leg(-2.8, OBS, 1, -.25); leg(2.8, OBS, 1);
+      F([[-6.6, -15], [6.6, -15], [8, -28 + br], [4, -31 + br], [-4, -31 + br], [-8, -28]], c, { amp: .42 });
+      { x.save(); x.translate(0, (-22 + br) * k); x.rotate(t * 1.6); const pts = []; for (let i = 0; i < 16; i++) { const r = i % 2 ? 2.6 : 3.4, a = i / 16 * Math.PI * 2; pts.push([Math.cos(a) * r, Math.sin(a) * r]); } F(pts, OBS, { amp: .3 }); x.restore(); G(0, -22 + br, 6, e, .7); R(0, -22 + br, 1.2, e, 3, 1); }
+      for (const sd of [-1, 1]) F([[sd * 7 - 3.6, -27 + br], [sd * 7 - 4, -31 + br], [sd * 7, -33 + br], [sd * 7 + 4, -30 + br], [sd * 7 + 3, -26.6 + br]], shade(c, -.1), { amp: .42 });
+      F([[6, -28 + br], [9, -27 + br], [10.4, -18 + br], [8, -17 + br]], OBS, { amp: .35 }); x.save(); x.translate(9.6 * k, -17 * k + br * k); F([[-1.6, 0], [1.6, 0], [4, -4], [6, -1], [2, 3], [-2, 3]], c, { amp: .4 }); x.restore();
+      const hy = -35 + br; F([[-3.4, hy + 3.4], [-3.8, hy - 2], [0, hy - 4], [3.8, hy - 2], [3.4, hy + 3.4]], c, { amp: .42 }); F([[-2.4, hy - .8], [3, -1.2 + hy], [3, hy + .2], [-2.4, hy + .4]], "#0a0806", { amp: 0, ol: 0, hi: 0, bev: 0 }); eye(.4, hy - .3, e, .9); F([[-.4, hy - 4], [.4, hy - 4], [.6, hy - 7], [-.6, hy - 7]], OBS, { amp: .3 }); break; }
+    case "goblin": { const sk = TC || "#6a8a3a", e = "#ffe03a"; shadow(9);
+      for (const lx of [-1.8, 1.8]) { F([[lx - 1.2, -9], [lx + 1.2, -9], [lx + 1, -1.4], [lx + 2.4, -.8], [lx + 2.2, 0], [lx - 1.4, 0]], sk, { amp: .3 }); }
+      F([[-4.6, -9], [4.6, -9], [5.4, -17 + br], [3, -20 + br], [-3, -20 + br], [-5.4, -17]], "#4a3424", { amp: .38 }); F([[-6.6, -18 + br], [-3.4, -20 + br], [-2, -12], [-6, -10]], "#8a6a3a", { amp: .35 }); R(-4.2, -15 + br, 1.1, e, 2, .8);
+      F([[3.4, -18 + br], [6.4, -16 + br], [7.6, -11 + br], [6, -10.6 + br]], sk, { amp: .3 }); x.save(); x.translate(7 * k, -11 * k + br * k); x.rotate(-.4); F([[-.4, 1], [.4, 1], [.6, -5.4], [0, -6.4], [-.6, -5.4]], "#6a6c72", { amp: .4 }); x.restore();
+      const hx = 1.6, hy = -24 + br; F([[hx - 3, hy + 2.6], [hx - 3.2, hy - 1.8], [hx, hy - 3.6], [hx + 3.4, hy - 2], [hx + 5.4, hy + .6], [hx + 3, hy + 3.4]], sk, { amp: .42 });
+      F([[hx - 2.6, hy - 1.4], [hx - 8, hy - 4], [hx - 3, hy + .6]], sk, { amp: .35 }); F([[hx + 2.6, hy - 2.6], [hx + 6.6, hy - 6], [hx + 3.6, hy - .8]], sk, { amp: .35 }); F([[hx - 7.2, hy - 3.2], [hx - 6.4, hy - 2.2], [hx - 7.6, hy - 2]], LP.brass, { amp: .2, ol: 0 });
+      eye(hx + 1, hy - .6, e, .55); eye(hx + 2.8, hy - .4, e, .45); F([[hx + 1.4, hy + 1.6], [hx + 4, hy + 1.4], [hx + 3, hy + 2.6]], "#1a0c0c", { amp: 0, ol: 0, hi: 0, bev: 0 }); break; }
+    case "dragon": { const c = TC || "#7a2a22", e = "#ffd23a", fl = Math.sin(t * 5) * 4; shadow(20); G(0, -24, 34, "#ff6a2a", .22);
+      for (const [sd, d] of [[-1, -.3], [1, 0]]) { F([[sd * 3, -26 + br], [sd * 14, -42 - fl], [sd * 26, -46 - fl * 1.2], [sd * 30, -34 - fl], [sd * 24, -30 - fl * .6], [sd * 22, -22], [sd * 15, -24], [sd * 8, -18]], shade(c, d - .2), { amp: .4 });
+        F([[sd * 14, -42 - fl], [sd * 13, -46 - fl], [sd * 16, -42.4 - fl]], BONE, { amp: .2, olw: .25 * k }); }
+      F([[-9, -12], [-20, -6 + sw], [-30, -14 + sw * 2], [-24, -16], [-12, -16]], shade(c, -.15), { amp: .4 }); F([[-30, -14 + sw * 2], [-33, -18 + sw * 2], [-31, -11 + sw * 2]], BONE, { amp: .2 });
+      for (const [lx, d] of [[-6, -.25], [6, 0]]) F([[lx - 3, -10], [lx + 3, -10], [lx + 3.6, -2], [lx + 6, 0], [lx - 3.4, 0]], shade(c, d - .1), { amp: .4 });
+      F([[-12, -10], [-10, -22 + br], [0, -27 + br], [10, -24 + br], [13, -14], [8, -8], [-8, -7]], c, { amp: .45 }); F([[-2, -12], [8, -14], [9, -9], [-1, -8.6]], "#d8b070", { amp: .35 }); R(-2, -18 + br, 2.4, e, 3, .9);
+      for (let i = 0; i < 5; i++) F([[-8 + i * 3.6, -24 + br - i * .5], [-7 + i * 3.6, -28.6 + br - i * .6], [-5.6 + i * 3.6, -24.4 + br - i * .5]], BONE, { amp: .3, olw: .25 * k });
+      F([[8, -24 + br], [13, -36 + br], [17, -38 + br], [16, -30 + br], [13, -20]], c, { amp: .42 });
+      const hx = 17, hy = -41 + br; F([[hx - 4, hy + 2], [hx - 3.6, hy - 2.6], [hx + 1, hy - 4], [hx + 7.6, hy - 1.4], [hx + 8.4, hy + 1.4], [hx + 3, hy + 3.6], [hx - 2, hy + 3.8]], c, { amp: .45 });
+      F([[hx + 1, hy + 1.6], [hx + 8.4, hy + 1.4], [hx + 6, hy + 3.4], [hx + 1, hy + 3.4]], shade(c, -.3), { amp: .2 }); for (let i = 0; i < 3; i++) F([[hx + 2 + i * 1.8, hy + 1.6], [hx + 2.6 + i * 1.8, hy + 3], [hx + 3.2 + i * 1.8, hy + 1.6]], BONE, { amp: 0, ol: 0, hi: 0, bev: 0 });
+      F([[hx - 2.6, hy - 2.4], [hx - 7, hy - 9], [hx - 5.6, hy - 4], [hx - 1, hy - 3.4]], BONE, { amp: .35 }); F([[hx, hy - 3.6], [hx - 2, hy - 10], [hx + 1.4, hy - 4]], BONE, { amp: .35 });
+      eye(hx + 2.4, hy - 1.4, e, .7);
+      if (Math.sin(t * 1.3) > .6) for (let i = 0; i < 5; i++) G(hx + 10 + i * 4, hy + 1 + i, 3 + i, i < 2 ? "#ffe08a" : "#ff7a2a", .75 - i * .1);
+      break; }
+    default: { shadow(); F([[-5, -1], [-6, -20], [0, -28], [6, -20], [5, -1]], TC || OBS, { amp: .42 }); eye(1, -20, "#ff4a3a", .8); }
+  }
+  /* ── détails et atmosphère ── */
+  const motes = (col, n = 5, h = 30) => { for (let i = 0; i < n; i++) { const ph = (t * .45 + i / n) % 1; x.fillStyle = rgba(col, (1 - ph) * .8); x.fillRect((hash(i, 7) - .5) * 18 * k, (-4 - ph * h) * k, .9 * k, .9 * k); } };
+  switch (kind) {
+    case "ghoul": { const sk = TC || "#6a7a5a"; F([[-4.6, -15.6], [4.4, -15.8], [5, -11], [2.6, -12.6], [1, -9.4], [-1, -12.4], [-3, -9.8], [-4.8, -11.6]], "#3a2c22", { amp: .15 });
+      x.strokeStyle = rgba("#1a120c", .7); x.lineWidth = .35 * k; for (let i = 0; i < 3; i++) { x.beginPath(); x.moveTo(-3 * k, (-24 + i * 2 + br) * k); x.quadraticCurveTo(0, (-25 + i * 2 + br) * k, 3.6 * k, (-23.6 + i * 2 + br) * k); x.stroke(); }
+      F([[-6, -27 + br], [-8.4, -22 + br], [-9, -14 + br], [-7.4, -13.6 + br], [-6.6, -21 + br]], shade(sk, -.25), { amp: .3 }); motes("#a8ff6a", 4, 26); break; }
+    case "skel": F([[-6.4, -28 + br], [-4, -28 + br], [-4.6, -18], [-6, -15.6], [-7.4, -19]], "#3a2a2a", { amp: .2 }); F([[4, -28 + br], [6.4, -28 + br], [7.2, -19], [5.6, -16.4], [4.4, -20]], "#3a2a2a", { amp: .2 }); motes("#7fd0ff", 3, 24); break;
+    case "spider": F([[-7.2, -13.4 + br], [-5.4, -15 + br], [-3.8, -13.4 + br], [-5.6, -10.6 + br]], "#c02a2a", { amp: .3, olw: .25 * k }); for (const fx2 of [8.6, 9.6]) F([[fx2, -9], [fx2 + .5, -6.4], [fx2 + 1, -9]], LP.bone, { amp: .2, olw: .2 * k }); break;
+    case "shaman": for (let i = 0; i < 5; i++) F([[2.4 + i * 1.1, -28 + br + Math.abs(i - 2) * .5], [2.9 + i * 1.1, -26.4 + br + Math.abs(i - 2) * .5], [3.4 + i * 1.1, -28 + br + Math.abs(i - 2) * .5]], LP.bone, { amp: .2, olw: .2 * k }); motes("#9affaa", 4, 30); break;
+    case "golem": { const core = TC ? shade(TC, .5) : "#ff9a3a"; for (const [mx, my] of [[-11, -31], [10, -32], [-3, -30.6]]) F([[mx - 2, my + 1 + br], [mx, my - 1.4 + br], [mx + 2.4, my + .8 + br]], "#4a6a3a", { amp: .3, olw: .25 * k });
+      for (const [gx2, gy2] of [[-12.6, -33], [12, -34]]) F([[gx2 - .9, gy2 + br], [gx2, gy2 - 3 + br], [gx2 + .9, gy2 + br]], "#7ad0ff", { amp: .4, olw: .2 * k });
+      x.strokeStyle = rgba(core, .8); x.lineWidth = .4 * k; x.beginPath(); x.moveTo(-6 * k, (-28 + br) * k); x.lineTo(-4 * k, (-24 + br) * k); x.lineTo(-6 * k, (-18 + br) * k); x.moveTo(6 * k, (-27 + br) * k); x.lineTo(4.4 * k, (-21 + br) * k); x.stroke(); break; }
+    case "bat": { const y0 = -24 + Math.sin(t * 3) * 1.4, fl = Math.sin(t * 9) * 5; x.strokeStyle = rgba("#0a0608", .8); x.lineWidth = .3 * k; for (const sd of [-1, 1]) for (const q of [.4, .7]) { x.beginPath(); x.moveTo(0, y0 * k); x.lineTo(sd * 12 * q * k, (y0 - 8 * q - fl * q) * k); x.stroke(); } break; }
+    case "troll": F([[2, -34.6 + br], [4, -38.6 + br], [6, -35 + br]], "#2a3a1a", { amp: .3 }); for (let i = 0; i < 4; i++) F([[-3 + i * 1.6, -30 + br], [-2.4 + i * 1.6, -28 + br], [-1.8 + i * 1.6, -30 + br]], LP.bone, { amp: .2, olw: .2 * k }); break;
+    case "wisp": { const c = TC || "#9fe0ff", y0 = -20 + Math.sin(t * 2.4) * 2; for (let i = 0; i < 3; i++) F([[-1 - i * 2, y0 + 3 + i], [-3 - i * 2.4, y0 + 6 + i * 1.6 + Math.sin(t * 4 + i)], [-.6 - i * 2, y0 + 5 + i]], shade(c, -.2 - i * .1), { amp: .3, ol: 0 }); motes(c, 6, 20); break; }
+    case "drowned": { x.save(); x.translate(10 * k, -24 * k + br * k); F([[-1.4, 0], [1.4, 0], [1.8, 3.4], [0, 4.6], [-1.8, 3.4]], "#2a3a3a", { amp: .3 }); glow(x, 0, 2.2 * k, 6 * k, "#6affe0", .7 + Math.sin(t * 4) * .1); x.restore();
+      for (const [bx2, by2] of [[-4, -26], [3, -21], [-2, -19]]) F([[bx2 - .7, by2 + br], [bx2, by2 - .8 + br], [bx2 + .7, by2 + br], [bx2, by2 + .7 + br]], "#c8c0a8", { amp: .3, olw: .2 * k }); break; }
+    case "knight": { x.strokeStyle = rgba("#ff4a3a", .6 + Math.sin(t * 3) * .2); x.lineWidth = .35 * k; x.beginPath(); x.moveTo(-3 * k, (-28 + br) * k); x.lineTo(-1.6 * k, (-24 + br) * k); x.lineTo(-3 * k, (-20 + br) * k); x.moveTo(3.4 * k, (-27 + br) * k); x.lineTo(2 * k, (-23 + br) * k); x.stroke(); motes("#ff4a3a", 3, 30); break; }
+    case "frostqueen": { const c = TC || "#9fd8ff"; for (let i = 0; i < 4; i++) { const a = t * 1.2 + i * 1.57, px = Math.cos(a) * 11, py = -22 + Math.sin(a) * 3; F([[px, py - 2], [px + .9, py], [px, py + 2], [px - .9, py]], c, { amp: .45, olw: .2 * k }); } motes(c, 6, 34); break; }
+    case "lich": { const e = "#c48cff"; for (let i = 0; i < 3; i++) { const a = t * 1.6 + i * 2.1, px = Math.cos(a) * 10, py = -26 + Math.sin(a) * 3; G(px, py, 3, e, .7); F([[px, py - 1.2], [px + 1, py], [px, py + 1.2], [px - 1, py]], e, { amp: .3, ol: 0 }); } motes(e, 6, 34); break; }
+    case "spirit": case "wraith": motes(TC || "#9fd8ff", 6, 34); break;
+    case "dragon": motes("#ff8a3a", 6, 40); break;
+    case "hydra": motes("#a8e070", 4, 30); break;
+    case "shroom": motes(TC ? shade(TC, .5) : "#7affe0", 6, 30); break;
+  }
+  x.restore();
+}
+/* ═══════════════════════ Héros · tenues de classe qui évoluent avec l'équipement ═══════════════════════
+   Chaque classe a sa silhouette et ses matières. L'armure portée fixe un PALIER (0 à 5) :
+   0 vêtements de départ · 1 cuir et tissu renforcés · 2 premières pièces de métal · 3 armure de classe complète
+   · 4 pièce de maître ornée d'or et de runes · 5 mythique (aura, runes vivantes). L'arme suit le même principe. */
+
+/* Palier d'un objet : niveau requis et rareté ; légendaire = 4, mythique = 5 */
+function gearTierOf(it) {
+  if (!it) return 0; const d = IT[it.id]; if (!d) return 0;
+  if (it.r >= 4) return 5; if (d.leg && d.leg.d) return 4;
+  let t = d.lvl <= 2 ? 1 : d.lvl <= 5 ? 2 : d.lvl <= 10 ? 3 : 4; if (it.r >= 2) t++; if (it.r >= 3) t++;
+  return Math.max(1, Math.min(4, t));
+}
+const H3 = {
+  iron: "#5e626a", steel: "#7c848e", black: "#2c2e36", gold: "#d4ac62", goldHi: "#f4dc9a", brass: "#b08a4e", silver: "#c8ccd4",
+  leather: "#6a4630", leatherD: "#432c1c", strap: "#53361f", bone: "#d8cba8", cloth: "#3a3430",
+};
+// matière des pièces métalliques selon la teinte de l'armure portée
+const H3_TINT = { ash: { m: "#2a2624", r: "#ff7a2a" }, frost: { m: "#6a8aa0", r: "#bff0ff" }, blood: { m: "#4a1a1c", r: "#ff4a4a" }, dawn: { m: "#a88a4a", r: "#ffe08a" },
+  robe: { m: "#3a2e50", r: "#c48cff" }, bear: { m: "#4a3a2a", r: "#ffb060" }, mail: { m: "#7c848e", r: "#9fe8ff" }, steel: { m: "#7c848e", r: "#9fe8ff" } };
+// identité de chaque classe : catégorie d'armure, tissus, garniture, couvre-chefs par palier
+const KIT = {
+  forgeron:   { cat: "heavy",  cloth: "#5a4636", cloth2: "#2e2620", trim: "brass", heads: ["bandana", "bandana", "goggles", "smithcap", "sallet", "forgehelm"] },
+  gardien:    { cat: "heavy",  cloth: "#4a4660", cloth2: "#26243a", trim: "gold",  heads: ["none", "coif", "coif", "kettle", "greathelm", "ashhelm"] },
+  eclaireur:  { cat: "medium", cloth: "#44564a", cloth2: "#243026", trim: "silver", heads: ["none", "hood", "hood", "hoodmask", "rangerhood", "rangerhood"] },
+  chasseur:   { cat: "medium", cloth: "#5a4a3a", cloth2: "#2e241a", trim: "brass", heads: ["none", "hat", "hat", "hatscarf", "hatscarf", "hatscarf"] },
+  duelliste:  { cat: "light",  cloth: "#5a2228", cloth2: "#2a1014", trim: "silver", heads: ["none", "none", "mask", "tricorne", "tricorne", "tricorne"] },
+  barde:      { cat: "light",  cloth: "#6a2e4a", cloth2: "#341426", trim: "gold",  heads: ["none", "beret", "beret", "plumehat", "plumehat", "plumehat"] },
+  marchand:   { cat: "light",  cloth: "#5a4a24", cloth2: "#2e2410", trim: "gold",  heads: ["none", "cap", "cap", "furhat", "furhat", "furhat"] },
+  alchimiste: { cat: "light",  cloth: "#b8ae96", cloth2: "#4a4436", trim: "brass", heads: ["none", "lenses", "lenses", "lensescap", "plague", "plague"] },
+  arcaniste:  { cat: "robe",   cloth: "#2e2448", cloth2: "#16102a", trim: "silver", heads: ["none", "none", "cowl", "cowl", "archcowl", "archcowl"] },
+  druide:     { cat: "robe",   cloth: "#3a4a2a", cloth2: "#1e2814", trim: "bone",  heads: ["none", "leaves", "leaves", "antlers", "antlers", "antlers"] },
+};
+
+function heroLook(clsId, pplId, look, equip) {
+  const c = CLS(clsId), p = PPL(pplId), lk = Object.assign(defaultLook(pplId), look || {});
+  const skin = shade(p.skin, LOOK.skin[lk.skin] || 0);
+  const cloakBase = LOOK.cloak[lk.cloak] || shade(c.col, -.45);
+  const L = { cls: c.id, skin, hair: lk.hairCol, cloak: cloakBase, accent: c.col, weapon: c.weapon, ears: p.ears, beard: lk.beard, tusks: p.tusks, horns: p.horns, short: p.short, glow: p.glow,
+    leaf: p.leaf, body: lk.body, hairStyle: lk.hair, mark: lk.mark, eyes: LOOK.eyes[lk.eyes] || "#2a1a0e", armor: "leather", shield: null, amulet: false, tier: 0, wtier: 0 };
+  if (equip) {
+    const w = equip.arme && IT[equip.arme.id]; if (w) { L.weapon = WEAPON_STYLE[w.ic] || c.weapon; L.wtier = gearTierOf(equip.arme); }
+    const a = equip.armure && IT[equip.armure.id]; if (a) { L.armor = a.tint || "leather"; L.tier = gearTierOf(equip.armure); }
+    const s = equip.bouclier && IT[equip.bouclier.id]; if (s) { L.shield = s.tint === "steel" || s.tint === "tower" || s.tint === "frost" ? "steel" : "wood"; L.stier = gearTierOf(equip.bouclier); }
+    L.amulet = !!equip.amulette;
+    if (typeof S !== "undefined" && S && equip === S.equip && typeof masterOf === "function") { const mc = masterOf(); if (mc) { L.master = mc.look; if (mc.look.weapon) L.weapon = mc.look.weapon; if (mc.look.shield) L.shield = mc.look.shield; L.tier = Math.max(L.tier, 3); } }
+  }
+  return L;
+}
+function mercLook(type) {
+  const M = MERCS[type], lk = M.look, L = heroLook(lk.cls, lk.ppl, defaultLook(lk.ppl, lk.body || "m"));
+  L.cloak = lk.cloak; L.weapon = lk.weapon; if (type === "lige") L.shield = "steel"; L.tier = 2; L.wtier = 2; return L;
+}
+
+function drawChar(x, cx, cy, s, L, t = 0, face = 1) {
+  const KT = KIT[L.cls] || KIT.forgeron, fem = L.body === "f", k = s * (L.short ? .84 : 1), MS = L.master;
+  const T0 = Math.max(0, Math.min(5, L.tier || 0)), cat = KT.cat;
+  const stone = L.stone || (typeof L.armor === "string" && L.armor[0] === "#");
+  const C = col => { col = lpHex(col); if (!stone) return col; const n = parseInt(col.slice(1), 16), l = ((n >> 16) * .3 + ((n >> 8) & 255) * .59 + (n & 255) * .11) / 255, v = Math.round(78 + l * 140);
+    return "#" + [v + 14, v + 6, v - 12].map(q => Math.max(0, Math.min(255, q)).toString(16).padStart(2, "0")).join(""); };
+  const TN = H3_TINT[L.armor] || null;
+  const MET = TN && T0 >= 2 ? TN.m : T0 >= 4 ? H3.black : T0 >= 3 ? H3.steel : H3.iron;
+  const ACC = lpHex(L.accent), RUNE = stone ? "#d8c8a0" : (TN ? TN.r : T0 >= 5 && MS ? lpHex(MS.aura) : ACC);
+  const TRIM = T0 >= 4 ? H3.gold : { gold: H3.gold, brass: H3.brass, silver: H3.silver, bone: H3.bone }[KT.trim];
+  const CL = lpHex(KT.cloth), CL2 = lpHex(KT.cloth2), CAPE = lpHex(L.cloak), skin = lpHex(L.skin), hairC = lpHex(L.hair), LEA = H3.leather;
+  const br = Math.sin(t * 2.2) * .45, sway = Math.sin(t * 1.6) * .8, Wd = fem ? .92 : 1;
+  const lift = y => y < -16 ? br * Math.min(1, (-y - 16) / 12) : 0;
+  const TT = pts => pts.map(([a, b]) => [a * k, (b - lift(b)) * k]);
+  const F = (pts, col, o = {}) => lpFacet(x, TT(pts), C(col), { olw: Math.max(.6, .32 * k), amp: .16, ...o });   // tissu / cuir : facettes douces
+  const M = (pts, col = MET, o = {}) => lpFacet(x, TT(pts), C(col), { olw: Math.max(.6, .32 * k), amp: .4, bev: k > 1.3 ? .3 : 0, ...o }); // métal biseauté
+  const Y = y => (y - lift(y)) * k;
+  const R = (px, py, sz, kd = 0, a = 1) => { if (!stone) lpRune(x, px * k, (py - lift(py)) * k, sz * k, RUNE, kd, a); };
+  const trimLine = (pts, w = .45) => { x.strokeStyle = C(TRIM); x.lineWidth = w * k; x.beginPath(); TT(pts).forEach((p, i) => i ? x.lineTo(...p) : x.moveTo(...p)); x.stroke(); };
+  const gem = (px, py, r, col) => { lpFacet(x, TT([[px, py - r * 1.3], [px + r, py], [px, py + r * 1.3], [px - r, py]]), C(col), { amp: .5, olw: .3 * k }); if (!stone) glow(x, px * k, Y(py), r * 3.4 * k, col, .5); };
+  const sw = 6.8 * Wd + (cat === "heavy" ? .6 : 0) + (T0 >= 3 && cat !== "robe" ? .3 : 0), ww = 5 * Wd;
+  x.save(); x.translate(cx, cy); x.scale(face, 1); x.lineJoin = "round"; x.lineCap = "round";
+
+  /* ombre, aura (maître / mythique) */
+  { const g = x.createRadialGradient(0, 0, 1, 0, 0, 13 * k); g.addColorStop(0, "rgba(0,0,0,.6)"); g.addColorStop(1, "rgba(0,0,0,0)"); x.fillStyle = g; x.beginPath(); x.ellipse(0, 0, 13 * k, 4.6 * k, 0, 0, 7); x.fill(); }
+  const AUR = MS ? lpHex(MS.aura) : T0 >= 5 ? RUNE : null;
+  if (AUR && !stone) { glow(x, 0, -3 * k, 16 * k, AUR, .3 + Math.sin(t * 2) * .08); x.save(); x.scale(1, .36); x.strokeStyle = rgba(AUR, .75); x.lineWidth = .45 * k; x.setLineDash([2 * k, 2 * k]); x.lineDashOffset = -t * 6 * k; x.beginPath(); x.arc(0, 0, 12 * k, 0, 7); x.stroke(); x.restore(); }
+
+  /* cape (palier 3+ pour les classes en armure, toujours pour le gardien au palier 2) */
+  const hasCape = cat !== "robe" && (T0 >= 3 || (cat === "heavy" && T0 >= 2) || MS);
+  if (hasCape) { const half = cat === "light" && T0 < 4;
+    F([[-6.4, -30.4], [half ? -.4 : 5.8, -30.4], [half ? 0 : 8 + sway * .3, half ? -11 : -1.4], [half ? -3 : 2.6, half ? -12 : -.6], [-4 + sway * .2, half ? -11 : .2], [-9.6 + sway * .5, half ? -12 : -1]], CAPE, { amp: .2, bias: -.2 });
+    if (T0 >= 4) trimLine([[-9.6 + sway * .5, -1], [-4 + sway * .2, .2], [2.6, -.6], [8 + sway * .3, -1.4]], .55); }
+  if (KT.cat === "medium" && L.cls === "eclaireur") { M([[-6.8, -33], [-3.4, -34.4], [.8, -17.6], [-2.4, -16.4]], LEA, { amp: .2, bev: 0 }); for (const [ax, c2] of [[-5.6, H3.bone], [-4.4, "#a03a2a"], [-3.2, H3.bone]]) F([[ax - .9, -36.4], [ax - .2, -39.2], [ax + .4, -36.2]], c2, { amp: .2 }); }
+  if (L.cls === "marchand" && T0 >= 2) { F([[-10.2, -30], [-4, -31], [-3.8, -15.4], [-9.4, -15.4], [-10.8, -22]], H3.leatherD, { amp: .2 }); F([[-10.8, -32.4], [-3.6, -33], [-3.4, -29.4], [-10.8, -29]], "#8a7458", { amp: .25 }); }
+  if (L.shield) drawShield(x, -9.2 * k, Y(-21), k, L.shield, true, C, RUNE, L.stier || 1);
+
+  /* cheveux longs : derrière le dos */
+  const HEAD = L.bare ? "none" : (MS && MS.head) || KT.heads[T0];
+  const HOODED = ["hood", "hoodmask", "rangerhood", "cowl", "archcowl", "eaglehood", "runehood", "shadowhood"].includes(HEAD), CLOSED = ["kettle", "greathelm", "ashhelm", "forgehelm", "sallet", "helm", "towerhelm", "wingedhelm"].includes(HEAD);
+  const HELMLIKE = CLOSED || ["coif", "wolfpelt", "bearpelt"].includes(HEAD);
+  if (!HOODED && !HELMLIKE && (L.hairStyle === 1 || L.hairStyle === 2)) { F([[-4.8, -39], [-6, -33.6], [-5.6, L.hairStyle === 1 ? -27 : -30], [-2.4, L.hairStyle === 1 ? -27 : -29.6], [.2, -35]], hairC, { amp: .3 }); }
+
+  /* bras arrière */
+  const sleeveCol = cat === "robe" ? CL : L.cls === "alchimiste" ? CL : CL2;
+  F([[-8.4, -29.4], [-5.8, -29.6], [-6.2, -22.4], [-9, -22.2]], sleeveCol, { bias: -.2 });
+  if (T0 >= 1) { (cat === "heavy" && T0 >= 2 ? M : F)([[-9.4, -22.8], [-6, -22.8], [-6.2, -17.8], [-9.4, -17.6]], cat === "heavy" && T0 >= 2 ? MET : LEA, { bias: -.2 }); }
+  else F([[-9.2, -22.6], [-6.2, -22.6], [-6.4, -18], [-9.2, -17.8]], sleeveCol, { bias: -.25 });
+  F([[-9.6, -17.9], [-6.2, -17.9], [-6.4, -15.4], [-8, -14.4], [-9.8, -15.4]], cat === "heavy" && T0 >= 3 ? MET : T0 >= 1 ? H3.leatherD : skin, { bias: -.15, amp: .3 });
+  if (L.cls === "forgeron" && !L.shield) { M([[-8.8, -16], [-8, -16], [-8.6, -5.4], [-9.6, -3], [-10, -5.4]], H3.iron, { amp: .3 }); M([[-7.4, -16], [-6.6, -16], [-6.4, -5.4], [-6.8, -3], [-7.6, -5.4]], H3.iron, { amp: .3 }); }
+
+  /* jambes */
+  const robe = cat === "robe";
+  for (const [lx, far] of [[-2.6, 1], [2.5, 0]]) { const d = far ? -.2 : 0;
+    if (!robe) {
+      F([[lx - 2.2, -16.4], [lx + 2.2, -16.4], [lx + 1.9, -9.6], [lx - 1.9, -9.6]], L.cls === "barde" || L.cls === "duelliste" ? CL2 : "#2a2420", { bias: d });
+      F([[lx - 1.9, -9.8], [lx + 1.9, -9.8], [lx + 2, -4.8], [lx - 2, -4.8]], "#2a2420", { bias: d - .05 });
+      if (cat === "heavy" && T0 >= 2) { M([[lx - 2.1, -10.4], [lx + 2.1, -10.4], [lx + 2.4, -5], [lx, -4.2], [lx - 2.3, -5]], MET, { bias: d }); M([[lx - 2, -9.8], [lx, -12.6], [lx + 2.1, -9.8], [lx, -8.4]], T0 >= 4 ? TRIM : MET, { bias: d }); if (T0 >= 4) R(lx, -7, 1.1, 1, .85); }
+      else if (T0 >= 2) { F([[lx - 1.6, -9.6], [lx, -11.8], [lx + 1.7, -9.6], [lx, -8.4]], T0 >= 3 ? MET : LEA, { bias: d, amp: .35 }); }
+    }
+    const bootTop = T0 === 0 ? -3.6 : cat === "light" || T0 >= 2 ? -6.6 : -5;
+    (cat === "heavy" && T0 >= 3 ? M : F)([[lx - 2.3, bootTop], [lx + 2.2, bootTop], [lx + 2.5, -2.2], [lx + 4.2, -1.4], [lx + 4, 0], [lx - 2.4, 0], [lx - 2.6, -2.2]], cat === "heavy" && T0 >= 3 ? MET : T0 === 0 ? "#3a2c20" : H3.leatherD, { bias: d, amp: .25 });
+    if (T0 >= 1 && !(cat === "heavy" && T0 >= 3)) F([[lx - 2.5, bootTop - .2], [lx + 2.4, bootTop - .2], [lx + 2.4, bootTop + .9], [lx - 2.5, bootTop + .9]], T0 >= 3 ? TRIM : H3.strap, { bias: d, amp: .1, hi: 0 });
+  }
+
+  /* buste : chemise de base */
+  F([[-ww, -17.8], [ww, -17.8], [sw, -28.8], [3.6, -31.4], [-3.6, -31.4], [-sw, -28.8]], robe ? CL : L.cls === "alchimiste" ? "#d8d0bc" : "#6a5c4c", { amp: .14 });
+  F([[-ww - .4, -14.6], [ww + .4, -14.6], [ww + .8, -18.2], [-ww - .8, -18.2]], robe ? CL : "#2a2420", { amp: .12 });
+  const hem = (y0, wd, n) => { const o = []; for (let i = 0; i <= n; i++) o.push([wd - i * 2 * wd / n, y0 + (i % 2 ? -1.4 : 0) + (hash(i, 9) - .5) * .7]); return o; };
+  const coat = (len, col, open = 1.4, flare = 1.4) => { F([[-sw + .2, -29.6], [-open, -29.6], [-open, -17], [-open - .4, len], [-ww - flare - 1, len - .6], [-ww - .6, -18]], col, { amp: .18 }); F([[open, -29.6], [sw - .2, -29.6], [ww + .6, -18], [ww + flare + 1, len - .6], [open + .4, len], [open, -17]], col, { amp: .18 }); };
+  const studs = (y0, n, x0 = -3.6, dx = 2.4) => { for (let i = 0; i < n; i++) F([[x0 + i * dx - .35, y0 - .35], [x0 + i * dx + .35, y0 - .35], [x0 + i * dx + .35, y0 + .35], [x0 + i * dx - .35, y0 + .35]], T0 >= 4 ? H3.gold : H3.brass, { amp: .3, olw: .2 * k, ol: 0 }); };
+  const cuirass = (lv) => { M([[-ww - .4, -18], [ww + .4, -18], [sw + .4, -28.4], [3.8, -31.4], [-3.8, -31.4], [-sw - .4, -28.4]], MET, { amp: .42 });
+    x.strokeStyle = C(shade(MET, -.5)); x.lineWidth = .3 * k; x.beginPath(); x.moveTo(0, Y(-31)); x.lineTo(0, Y(-18.6)); x.stroke();
+    if (lv >= 3) for (let i = 0; i < 2; i++) M([[-ww - .8 - i * .4, -17.4 + i * 2.6], [ww + .8 + i * .4, -17.4 + i * 2.6], [ww + 1 + i * .4, -15.4 + i * 2.6], [-ww - 1 - i * .4, -15.4 + i * 2.6]], MET, { amp: .35 });
+    if (lv >= 3) M([[-3.4, -31.4], [3.4, -31.4], [2.8, -33.4], [-2.8, -33.4]], MET, { amp: .3 });
+    if (lv >= 4) { trimLine([[-sw - .4, -28.4], [-3.8, -31.4], [3.8, -31.4], [sw + .4, -28.4]], .55); trimLine([[-ww - .4, -18], [ww + .4, -18]], .5); gem(0, -25.6, 1.3, RUNE); R(-3, -22, 1, 3, .8); R(3, -22, 1, 4, .8); } };
+  const leatherVest = (lv) => { F([[-ww - .2, -17.6], [ww + .2, -17.6], [sw - .2, -28.6], [2, -31], [-2, -31], [-sw + .2, -28.6]], lv >= 3 ? H3.leatherD : LEA, { amp: .2 });
+    if (lv >= 2) studs(-26, 4); if (lv >= 2) studs(-21.4, 4); if (lv >= 3) M([[-4.6, -29.6], [4.6, -29.6], [4, -24.6], [0, -23.2], [-4, -24.6]], MET, { amp: .38 });
+    if (lv >= 4) { trimLine([[-4.6, -29.6], [4, -24.6 + .01]], .4); gem(0, -26.6, 1, RUNE); } };
+
+  switch (L.cls) {
+    case "forgeron":
+      if (T0 >= 1) (T0 >= 2 ? cuirass(T0) : F([[-ww - .2, -17.8], [ww + .2, -17.8], [sw, -28.8], [3.6, -31.4], [-3.6, -31.4], [-sw, -28.8]], "#5a5e64", { amp: .16 }));
+      F([[-4.2, -29.4], [4.2, -29.4], [4.8, -19], [-4.8, -19]], T0 >= 3 ? H3.leatherD : LEA, { amp: .14 });
+      F([[-5.6, -18.8], [5.6, -18.8], [6.4, T0 >= 2 ? -6.6 : -9.6], ...hem(T0 >= 2 ? -5.6 : -8.6, 6.2, 8).slice(1, -1), [-6.4, T0 >= 2 ? -6.6 : -9.6]], T0 >= 3 ? H3.leatherD : LEA, { amp: .12 });
+      F([[-4, -29.2], [-2.6, -29.2], [-5.8, -31.8], [-7, -31]], H3.strap, { amp: .1 }); F([[4, -29.2], [2.6, -29.2], [5.8, -31.8], [7, -31]], H3.strap, { amp: .1 });
+      if (T0 >= 2) { M([[-2.4, -26.4], [2.4, -26.4], [2.4, -22], [-2.4, -22]], MET, { amp: .35 }); x.strokeStyle = C(T0 >= 4 ? H3.gold : H3.brass); x.lineWidth = .5 * k; x.beginPath(); x.moveTo(-1.4 * k, Y(-25.4)); x.lineTo(1.4 * k, Y(-23)); x.moveTo(1.4 * k, Y(-25.4)); x.lineTo(-1.4 * k, Y(-23)); x.stroke(); } // marteaux croisés
+      if (T0 >= 4) { R(0, -12, 2, 3); trimLine([[-6.4, -6.6], [-5.6, -18.8]], .4); trimLine([[6.4, -6.6], [5.6, -18.8]], .4); }
+      if (T0 >= 5 && !stone) for (const [ex, ey] of [[-3, -10], [2.6, -14], [-1, -16]]) glow(x, ex * k, Y(ey), 2.6 * k, "#ff7a2a", .5 + Math.sin(t * 3 + ex) * .2);
+      break;
+    case "gardien":
+      if (T0 === 0) F([[-ww - .4, -17.6], [ww + .4, -17.6], [sw + .2, -28.8], [3.8, -31.4], [-3.8, -31.4], [-sw - .2, -28.8]], "#7a6a50", { amp: .16 }); // gambison
+      else if (T0 === 1) { F([[-ww - .4, -15], [ww + .4, -15], [sw + .2, -28.8], [3.8, -31.6], [-3.8, -31.6], [-sw - .2, -28.8]], H3.iron, { amp: .2 }); x.strokeStyle = C("#3a3e44"); x.lineWidth = .3 * k; for (let r2 = 0; r2 < 6; r2++) { x.beginPath(); for (let i = -3; i <= 3; i++) x.arc(i * 1.8 * k + (r2 % 2) * .9 * k, Y(-29 + r2 * 2.3), .9 * k, 0, Math.PI); x.stroke(); } }
+      else cuirass(T0);
+      F([[-2.6, -29], [2.6, -29], [3.2, -9.6], [0, -7.6], [-3.2, -9.6]], ACC, { amp: .14, bias: -.25 }); if (T0 >= 2) trimLine([[-2.6, -29], [-3.2, -9.6], [0, -7.6], [3.2, -9.6], [2.6, -29]], .4);
+      { x.strokeStyle = C(T0 >= 3 ? H3.gold : "#d8cba8"); x.lineWidth = .55 * k; x.beginPath(); x.moveTo(0, Y(-25)); x.lineTo(0, Y(-16)); x.moveTo(-2, Y(-22)); x.lineTo(2, Y(-22)); x.stroke(); }
+      if (T0 >= 4) gem(0, -27, 1, RUNE);
+      break;
+    case "eclaireur":
+      F([[-ww, -17.6], [ww, -17.6], [sw, -28.8], [3.6, -31.4], [-3.6, -31.4], [-sw, -28.8]], CL, { amp: .16 });
+      if (T0 >= 1) leatherVest(T0);
+      F([[-ww - .6, -18], [ww + .6, -18], [ww + 1, -10.6], [1.2, -11.4], [0, -15], [-1.2, -11.4], [-ww - 1, -10.6]], CL, { amp: .16 });
+      F([[-6, -30.4], [-4.4, -30.4], [6, -17.4], [4.4, -16.8]], H3.strap, { amp: .1, hi: 0 });
+      if (T0 >= 2) { F([[-sw - 1.6, -27.6], [-sw - 1, -32], [0, -33], [sw + 1, -32], [sw + 1.6, -27.6], [2.6, -25.8], [0, -24.6], [-2.6, -25.8]], CL2, { amp: .22 }); if (T0 >= 4) trimLine([[-sw - 1.6, -27.6], [-2.6, -25.8], [0, -24.6], [2.6, -25.8], [sw + 1.6, -27.6]], .45); }
+      break;
+    case "chasseur":
+      F([[-ww, -17.6], [ww, -17.6], [sw, -28.8], [3.6, -31.4], [-3.6, -31.4], [-sw, -28.8]], "#7a6a54", { amp: .16 });
+      if (T0 >= 2) leatherVest(T0 - 1);
+      coat(T0 >= 1 ? -3.4 : -13, T0 >= 3 ? H3.leatherD : LEA, 1.6);
+      if (T0 >= 2) { F([[-6, -30], [-4.4, -30.4], [5.4, -16.8], [3.8, -16.4]], H3.strap, { amp: .1, hi: 0 }); studs(-27.6, 4, -4.4, 2.6); }
+      if (T0 >= 2) F([[-3.8, -31.6], [3.6, -31.6], [3.2, -29], [1.8, -24.8], [.8, -25.2], [.8, -29], [-3.8, -29.2]], ACC, { amp: .2, bias: -.2 });
+      if (T0 >= 4) trimLine([[-1.6, -29.6], [-2, -3.4]], .45);
+      break;
+    case "duelliste":
+      F([[-ww, -17.6], [ww, -17.6], [sw, -28.8], [3.6, -31.4], [-3.6, -31.4], [-sw, -28.8]], "#d8d0c0", { amp: .14 });
+      if (T0 >= 1) coat(T0 >= 2 ? -6 : -12, CL, 1.2, 1); else F([[-ww, -17.6], [ww, -17.6], [sw - .4, -28.8], [1.2, -31], [-1.2, -31], [-sw + .4, -28.8]], CL, { amp: .16 });
+      if (T0 >= 2) { M([[-1.2, -29.6], [1.2, -29.6], [1.2, -17.4], [-1.2, -17.4]], MET, { amp: .3, bev: 0 }); F([[-3.4, -30.6], [-4.4, -35], [-1, -32.4], [1, -32.4], [3.6, -34.8], [3.4, -30.6]], CL, { amp: .26 }); }
+      if (T0 >= 3) for (let i = 0; i < 4; i++) { F([[-2.6, -27 + i * 2.4], [-1.6, -27 + i * 2.4], [-1.6, -26.3 + i * 2.4], [-2.6, -26.3 + i * 2.4]], TRIM, { amp: .2, ol: 0 }); F([[1.6, -27 + i * 2.4], [2.6, -27 + i * 2.4], [2.6, -26.3 + i * 2.4], [1.6, -26.3 + i * 2.4]], TRIM, { amp: .2, ol: 0 }); }
+      break;
+    case "barde":
+      F([[-ww, -17.6], [ww, -17.6], [sw, -28.8], [3.6, -31.4], [-3.6, -31.4], [-sw, -28.8]], "#d8d0c0", { amp: .14 });
+      if (T0 >= 1) { F([[-6.4, -29.8], [6.4, -29.8], [6.8, -18], [6.4, -12.4], [-6.4, -12.4], [-6.8, -18]], CL, { amp: .2 }); for (let i = -2; i <= 2; i++) F([[i * 2 - .3, -28.6], [i * 2 + .3, -28.6], [i * 2.1 + .3, -13], [i * 2.1 - .3, -13]], T0 >= 3 ? TRIM : CL2, { amp: .1, ol: 0, hi: 0 }); }
+      if (T0 >= 2) F([[-7.4, -31], [-2, -31], [-1.2, -10], [-9.6, -11]], CAPE, { amp: .2, bias: -.15 });
+      if (T0 >= 4) gem(0, -27.4, 1.1, RUNE);
+      break;
+    case "marchand":
+      F([[-ww, -17.6], [ww, -17.6], [sw, -28.8], [3.6, -31.4], [-3.6, -31.4], [-sw, -28.8]], "#8a6a3a", { amp: .14 });
+      coat(T0 >= 1 ? -5.4 : -12, CL, 1.4, 1.6);
+      F([[-1.4, -29.6], [1.4, -29.6], [1.6, -17], [-1.6, -17]], T0 >= 3 ? "#6a1e22" : "#7a5a2a", { amp: .2 }); for (let i = 0; i < 4; i++) F([[1.9, -27 + i * 2.6], [2.7, -27 + i * 2.6], [2.7, -26.2 + i * 2.6], [1.9, -26.2 + i * 2.6]], TRIM, { amp: .3, olw: .2 * k });
+      if (T0 >= 2) F([[-7.4, -29.4], [-4, -33.2], [0, -31.4], [4, -33.2], [7.4, -29.4], [4, -28.2], [0, -29.6], [-4, -28.2]], "#8a7458", { amp: .32 });
+      if (T0 >= 3) { trimLine([[-1.4, -17], [-1.8, -5.4]], .45); trimLine([[1.4, -17], [1.8, -5.4]], .45); }
+      if (T0 >= 4) { gem(-3.4, -24, .8, "#c03040"); gem(3.6, -21, .8, "#3a7ad0"); }
+      break;
+    case "alchimiste":
+      coat(T0 >= 1 ? -4.4 : -13, T0 >= 3 ? "#9a907a" : CL, 1, 1.2);
+      F([[-1, -29.6], [1, -29.6], [1.1, -17], [-1.1, -17]], "#2a2622", { amp: .2 });
+      if (T0 >= 2) { F([[-6, -29.6], [-4.4, -30], [5.6, -17], [4, -16.6]], H3.strap, { amp: .1, hi: 0 }); const vc = ["#4fdf6a", "#ff7a4a", "#7ab8ff", "#d070ff"];
+        for (let i = 0; i < (T0 >= 3 ? 4 : 2); i++) { const vx = -4 + i * 2.4, vy = -27.6 + i * 2.8; F([[vx - .7, vy - 1.4], [vx + .7, vy - 1.4], [vx + .9, vy + 1.2], [vx, vy + 1.9], [vx - .9, vy + 1.2]], vc[i], { amp: .3, olw: .3 * k }); if (!stone) glow(x, vx * k, Y(vy), 2.4 * k, vc[i], .5); } }
+      if (T0 >= 3) F([[-sw - 1.4, -27.6], [-sw - .8, -32], [0, -33], [sw + .8, -32], [sw + 1.4, -27.6], [2.6, -26], [0, -25], [-2.6, -26]], H3.leatherD, { amp: .22 });
+      if (T0 >= 4) trimLine([[-sw - 1.4, -27.6], [-2.6, -26], [0, -25], [2.6, -26], [sw + 1.4, -27.6]], .45);
+      break;
+    case "arcaniste": {
+      F([[-6.4, -30], [6.4, -30], [7.2, -18], [9, -.8], ...hem(-.4, 8.4, 10).slice(1, -1), [-9, -.8], [-7.2, -18]], CL, { amp: .16 });
+      if (T0 >= 1) F([[-1.8, -29.6], [1.8, -29.6], [2.6, -1], [0, -.4], [-2.6, -1]], T0 >= 3 ? ACC : CL2, { amp: .16, bias: T0 >= 3 ? -.25 : 0 });
+      if (T0 >= 1) F([[-ww - .6, -18.6], [ww + .6, -18.6], [ww + .7, -16.8], [-ww - .7, -16.8]], T0 >= 3 ? TRIM : CL2, { amp: .2 });
+      if (T0 >= 2) { F([[-sw - 1.2, -27.8], [-sw - .6, -32.2], [0, -33.2], [sw + .6, -32.2], [sw + 1.2, -27.8], [2.4, -25.6], [0, -24.4], [-2.4, -25.6]], CL2, { amp: .24 }); F([[-3.6, -30.6], [-4.6, -35.4], [-1, -32.8], [1, -32.8], [3.4, -35.2], [3.6, -30.6]], CL2, { amp: .26 }); }
+      if (T0 >= 3) { trimLine([[-1.8, -29.6], [-2.6, -1]], .4); trimLine([[1.8, -29.6], [2.6, -1]], .4); R(0, -22, 1.4, 3, .9); R(0, -12, 1.2, 0, .8); }
+      if (T0 >= 4) { trimLine([[-sw - 1.2, -27.8], [-2.4, -25.6], [0, -24.4], [2.4, -25.6], [sw + 1.2, -27.8]], .5); gem(0, -27.8, 1.1, RUNE); for (const sd of [-1, 1]) M([[sd * (sw - .2) - 2, -32], [sd * (sw + 1), -36.6], [sd * (sw + 1.6), -31.6]], H3.black, { amp: .35 }); }
+      break; }
+    case "druide": {
+      F([[-6.4, -30], [6.4, -30], [7.2, -18], [8.8, -1.4], ...hem(-.4, 8.6, 12).slice(1, -1), [-8.8, -1.4], [-7.2, -18]], CL, { amp: .15 });
+      if (T0 >= 1) F([[-ww - .6, -18.6], [ww + .6, -18.6], [ww + .7, -17], [-ww - .7, -17]], "#8a7448", { amp: .15 });
+      if (T0 >= 2) { F([[-sw - 2, -27.4], [-sw - 1, -32.4], [0, -33.4], [sw + 1, -32.4], [sw + 2, -27.4], [3, -25.4], [0, -24], [-3, -25.4]], "#6a5038", { amp: .3 }); }
+      if (T0 >= 3) for (const [bx, by] of [[-3.6, -26], [0, -22.6], [3.6, -26]]) M([[bx - 1.6, by - 1.4], [bx + 1.6, by - 1.4], [bx + 1.8, by + 1.6], [bx, by + 2.6], [bx - 1.8, by + 1.6]], "#5a4430", { amp: .35 });
+      if (T0 >= 4) { R(0, -14, 1.6, 0); R(-3, -8, 1.2, 1, .8); R(3, -8, 1.2, 4, .8); for (let i = 0; i < 4; i++) F([[-5 + i * 3.2, -32], [-3.6 + i * 3.2, -35], [-2.6 + i * 3.2, -31.6]], H3.bone, { amp: .25, olw: .25 * k }); }
+      break; }
+  }
+  // ceinture
+  F([[-ww - .9, -18.8], [ww + .9, -18.8], [ww + 1, -16.6], [-ww - 1, -16.6]], L.cls === "barde" || L.cls === "duelliste" ? ACC : L.cls === "druide" ? "#8a7448" : H3.strap, { amp: .12, bias: L.cls === "barde" || L.cls === "duelliste" ? -.25 : 0 });
+  if (!robe) M([[-1.2, -19.2], [1.4, -19.2], [1.4, -16.2], [-1.2, -16.2]], T0 >= 3 ? TRIM : H3.brass, { amp: .35, bev: 0, olw: .3 * k });
+  if (T0 >= 1 && !robe) F([[-5.6, -16.8], [-2.8, -16.8], [-3, -12.8], [-5.4, -12.8]], H3.leatherD, { amp: .2 });
+  if (L.amulet) { x.strokeStyle = C(H3.gold); x.lineWidth = .3 * k; x.beginPath(); x.moveTo(-2.2 * k, Y(-30.6)); x.lineTo(0, Y(-27.2)); x.lineTo(2.2 * k, Y(-30.6)); x.stroke(); gem(0, -26.8, .8, "#ff8a3d"); }
+
+  /* épaulières selon la catégorie et le palier */
+  const pauld = (sd, size, metal, orn) => { const px = sd * (sw - .3), r = size;
+    const pts = [[px - 4.4 * r, -27.4], [px - 4.6 * r, -30.6], [px - 1.6 * r, -33.6], [px + 2.6 * r, -33.2], [px + 4.4 * r, -30.2], [px + 3.6 * r, -27]];
+    (metal ? M : F)(pts, metal ? MET : H3.leatherD, { amp: metal ? .42 : .28 });
+    if (metal) M([[px - 4.4 * r, -27.4], [px + 3.6 * r, -27], [px + 3.2 * r, -25.6], [px - 4 * r, -26]], MET, { amp: .3 });
+    if (orn) { trimLine([[px - 4.6 * r, -30.6], [px - 1.6 * r, -33.6], [px + 2.6 * r, -33.2], [px + 4.4 * r, -30.2]], .5); gem(px, -30.4, .8 * r, RUNE); }
+    else if (metal && T0 >= 3) trimLine([[px - 4.6 * r, -30.6], [px - 1.6 * r, -33.6], [px + 2.6 * r, -33.2]], .35);
+    if (T0 >= 5 && !stone) R(px, -30.4, 1.2 * r, sd > 0 ? 1 : 2, .9); };
+  const PS = cat === "heavy" ? (T0 >= 3 ? [1, 1, T0 >= 4] : T0 >= 2 ? [.75, 1, 0] : null) : cat === "medium" ? (T0 >= 3 ? [.75, 1, T0 >= 4] : T0 >= 2 ? [.65, 0, 0] : null) : cat === "light" ? (T0 >= 3 ? [.6, T0 >= 4, T0 >= 4] : null) : null;
+  if (PS && (L.cls !== "forgeron" || T0 >= 3)) pauld(-1, PS[0], PS[1], PS[2]);
+
+  /* ── tête ── */
+  const hy = -37, H = (a, b) => [a, hy + b];
+  F([H(-1.8, 2.6), H(2.4, 2.6), H(2.6, 6.6), H(-2, 6.6)], CLOSED ? MET : shade(skin, -.3), { amp: .2 });
+  if (CLOSED) drawHelm3(HEAD); else {
+    if (HOODED) hoodBack(HEAD);
+    if (L.ears && !HOODED && !HELMLIKE) F([H(-1.4, -.4), H(-6.4, -5.8), H(-3.2, -1), H(-1, 2.2)], skin, { amp: .3 });
+    F([H(-4.4, -3.6), H(-1.2, -6), H(3.4, -5.4), H(4.8, -2.2), H(5.6, .9), H(4.6, 1.7), H(4.5, 3.4), H(2.2, 5.6), H(-1.6, 4.6), H(-4.5, 1)], skin, { amp: .26 });
+    if (!L.ears || HOODED || HELMLIKE) F([H(-1.6, -.6), H(-3, -.8), H(-2.8, 1.4), H(-1.2, 1.8)], skin, { amp: .3, bias: -.12 });
+    const eyeC = lpHex(L.glow || L.eyes), glowEye = !!L.glow || HEAD === "cowl" || HEAD === "archcowl";
+    for (const [ex, w] of [[1.8, 1], [4, .6]]) { F([H(ex - w, -.6), H(ex + w, -.9), H(ex + w * .9, .2), H(ex - w * .8, .3)], glowEye ? RUNE : "#f0e8dc", { amp: 0, ol: 0, hi: 0 });
+      if (!glowEye) { F([H(ex - w * .2, -.7), H(ex + w * .5, -.8), H(ex + w * .5, .2), H(ex - w * .2, .25)], eyeC, { amp: 0, ol: 0, hi: 0 }); x.fillStyle = "#fff"; x.fillRect((ex + w * .25) * k, Y(hy - .55), .3 * k, .3 * k); }
+      else glow(x, ex * k, Y(hy - .2), 2.2 * k, RUNE, .7);
+      x.strokeStyle = "#1a100a"; x.lineWidth = .3 * k; x.beginPath(); x.moveTo((ex - w) * k, Y(hy - .6)); x.lineTo((ex + w) * k, Y(hy - .95)); x.stroke(); }
+    F([H(.5, -1.9), H(3, -2.4), H(3, -1.7), H(.6, -1.3)], shade(hairC, -.2), { amp: 0, ol: 0, hi: 0 });
+    x.strokeStyle = C(shade(skin, -.55)); x.lineWidth = .35 * k; x.beginPath(); x.moveTo(3.1 * k, Y(hy + 3.1)); x.lineTo(4.2 * k, Y(hy + 2.9)); x.stroke();
+    if (L.mark === 1) { x.strokeStyle = "rgba(150,40,30,.9)"; x.lineWidth = .4 * k; x.beginPath(); x.moveTo(1 * k, Y(hy - 3.4)); x.lineTo(2.6 * k, Y(hy + 2.6)); x.stroke(); }
+    if (L.mark === 2) F([H(.2, .8), H(4.6, .9), H(4.4, 1.7), H(.4, 1.6)], "#962020", { amp: 0, ol: 0, hi: 0 });
+    if (L.mark === 3) R(.4, 1.6, 1.2, 0, .9);
+    if (L.tusks) { F([H(3, 3.4), H(3.5, 1.8), H(3.9, 3.4)], H3.bone, { amp: .2, olw: .3 * k }); F([H(4.1, 3.2), H(4.4, 2.1), H(4.6, 3.1)], H3.bone, { amp: .2, olw: .3 * k }); }
+    if (L.beard && HEAD !== "hoodmask" && HEAD !== "hatscarf" && HEAD !== "plague") { const ln = [0, 1.4, 3.8, 4.4][L.beard] * (PS && PS[1] ? .75 : 1);
+      F([H(-2.4, 1), H(0, 2.8), H(3, 2.6), H(4.7, 2.2), H(4.5, 4), H(2.6, 5.6 + ln), H(.4, 4.8 + ln * .6), H(-2, 3)], hairC, { amp: .3 });
+      if (L.beard === 3) F([H(1.6, 4.4 + ln), H(3.2, 4.4 + ln), H(3, 5.4 + ln), H(1.8, 5.4 + ln)], H3.gold, { amp: .3, olw: .3 * k }); }
+    if (!HOODED && !HELMLIKE && L.hairStyle !== 3) {
+      F([H(-4.9, 1.6), H(-5.4, -3.6), H(-2, -6.9), H(2.4, -6.6), H(5.1, -3.4), H(4.6, -2.2), H(1.6, -3.9), H(-.8, -2.6), H(-1.8, .2), H(-3.2, -.2)], hairC, { amp: .34 });
+      if (L.hairStyle === 4) F([H(-5.6, -6.6), H(-3.4, -9.4), H(-1.2, -7.6), H(-2.6, -5.4)], hairC, { amp: .34 });
+      if (L.hairStyle === 5) F([H(-3.6, -5.6), H(-1.6, -11), H(1.4, -10.4), H(2.6, -6.4)], hairC, { amp: .34 });
+    }
+    if (L.leaf && !HOODED) for (let i = -1; i <= 1; i++) F([H(i * 2.4 - .8, -6.2), H(i * 2.4 + .6, -8), H(i * 2.4 + 1.8, -6.4)], "#5f9a3a", { amp: .3, olw: .3 * k });
+    if (L.horns && !HOODED && !HELMLIKE) for (const sd of [-1, 1]) { const b = sd < 0 ? -2.4 : 1.8; F([H(b, -5.2), H(b + sd * 1.8, -7.4), H(b + sd * 2.8, -10.4), H(b + sd * 1.6, -9.6), H(b - sd * .4, -6.8)], "#d8c8a8", { amp: .35, olw: .3 * k }); }
+    drawHead3(HEAD);
+  }
+  function hoodBack(kind) { const top = kind === "cowl" || kind === "archcowl" ? -10.4 : -9; F([H(-6.6, 6.8), H(-7.6, -1), H(-4.8, -8), H(0, top), H(4.6, -7.2), H(6.6, -2), H(6.2, 3), H(4.2, 7)], kind === "archcowl" || kind === "cowl" ? CL2 : kind === "rangerhood" ? CAPE : CL2, { amp: .28, bias: -.15 }); }
+  function hoodFront(kind) { const hc = kind === "cowl" || kind === "archcowl" ? CL2 : kind === "rangerhood" ? CAPE : CL2, top = kind === "cowl" || kind === "archcowl" ? -10.4 : -9;
+    F([H(-6.6, 6.8), H(-7.6, -1), H(-4.8, -8), H(-1, top + .6), H(-2.4, -4.4), H(-2.8, 1), H(-1.6, 5.6)], hc, { amp: .28 });
+    F([H(-4.8, -8), H(0, top), H(4.6, -7.2), H(5.8, -3.4), H(3.2, -5), H(0, -5.4), H(-2.4, -4.4)], hc, { amp: .28 });
+    if (kind === "archcowl" || (kind === "rangerhood" && T0 >= 4)) trimLine([H(-2.4, -4.4), H(0, -5.4), H(3.2, -5), H(5.8, -3.4)], .45);
+    if (kind === "hoodmask") F([H(.2, .8), H(5.4, .4), H(5, 4), H(.4, 3.6)], CL2, { amp: .15 });
+    if (kind === "archcowl" && !stone) { R(-4.4, -2, 1, 2, .85); R(-3.4, -6.4, .9, 0, .85); } }
+  function drawHelm3(kind) {
+    const sh = [H(-5.2, 3.8), H(-5.8, -2), H(-4, -6.8), H(0, -8.2), H(4, -6.8), H(5.8, -2), H(5.4, 2), H(3, 5.2), H(-2, 5.2)];
+    if (kind === "sallet") { M([H(-6, 1.4), H(-5.6, -3.6), H(-2.4, -7.6), H(2.8, -7.4), H(5.6, -3.4), H(6.4, -.4), H(4.4, -1.2), H(-3, .8)], MET); F([H(-4.4, 1), H(-1.2, -1), H(3.6, -.6), H(4.6, 1.7), H(4.5, 3.4), H(2.2, 5.6), H(-1.6, 4.6)], skin, { amp: .26 });
+      for (const ex of [1.8, 4]) { x.fillStyle = "#1a100a"; x.fillRect((ex - .8) * k, Y(hy + .4), 1.4 * k, .5 * k); } if (L.beard) F([H(-2.4, 2), H(3, 2.8), H(4.6, 2.6), H(2.6, 5.8), H(0, 5.4)], hairC, { amp: .3 });
+      drawHead3("goggles_up"); return; }
+    M(sh, MET, { amp: .42 });
+    if (kind === "kettle") { M([H(-7.6, -1.6), H(0, -3.4), H(7.8, -1.8), H(5, -.6), H(0, -1.6), H(-5, -.4)], MET, { amp: .35 }); F([H(.4, -.6), H(5.2, -1.2), H(5, 4), H(2.2, 5.4), H(.6, 4)], skin, { amp: .26 });
+      for (const ex of [2, 4.1]) { x.fillStyle = "#1a100a"; x.fillRect((ex - .7) * k, Y(hy + .8), 1.2 * k, .5 * k); } M([H(2.8, -.8), H(3.6, -.8), H(3.6, 2.6), H(2.8, 2.6)], MET, { amp: .3, bev: 0 }); return; }
+    // visière fermée
+    F([H(.2, -1.4), H(5.4, -2.2), H(5.4, -.8), H(.6, -.2)], "#08080c", { amp: 0, ol: 0, hi: 0 });
+    if (T0 >= 4 && !stone) { glow(x, 3 * k, Y(hy - 1.2), 4 * k, RUNE, .8); F([H(1, -1.3), H(2.6, -1.6), H(2.4, -.7), H(1.2, -.5)], RUNE, { amp: 0, ol: 0, hi: 0 }); F([H(3.4, -1.6), H(4.8, -1.9), H(4.6, -1), H(3.4, -.8)], RUNE, { amp: 0, ol: 0, hi: 0 }); }
+    for (let i = 0; i < 3; i++) { x.fillStyle = "#0a0a0e"; x.fillRect((3 + i * .8) * k, Y(hy + 1.2), .4 * k, 1.6 * k); }
+    if (kind === "greathelm" || kind === "ashhelm") { M([H(-5.6, 4.4), H(-5.9, 1), H(5.6, 1), H(5.5, 4.4)], MET, { amp: .3 }); F([H(-.6, -8.2), H(-3.6, -11.2), H(-8.4 + sway * .4, -10.2), H(-9.4 + sway * .5, -6.6), H(-4.8, -7.4)], ACC, { amp: .26 }); }
+    if (kind === "ashhelm" || kind === "forgehelm") { trimLine([H(-5.8, -2), H(-4, -6.8), H(0, -8.2), H(4, -6.8), H(5.8, -2)], .55); M([H(-1, -8), H(0, -11.4), H(1, -8)], H3.gold, { amp: .4, bev: 0 }); R(2.6, -4.4, 1.3, 3, .95); }
+    if (kind === "forgehelm") { M([H(-6.4, -2.6), H(-5.6, -5.4), H(-4.6, -1.6)], MET, { amp: .3, bev: 0 }); drawHead3("goggles_up"); }
+    if (kind === "towerhelm") { M([H(-5.6, 4.4), H(-5.9, 1), H(5.6, 1), H(5.5, 4.4)], MET, { amp: .3 }); F([H(-.6, -8.2), H(-3.6, -11.2), H(-8.4 + sway * .4, -10.2), H(-9.4 + sway * .5, -6.6), H(-4.8, -7.4)], ACC, { amp: .26 }); }
+    if (kind === "wingedhelm") { trimLine([H(-5.8, -2), H(-4, -6.8), H(0, -8.2), H(4, -6.8), H(5.8, -2)], .5); for (let i = 0; i < 3; i++) F([H(-3.6, -4 + i * 1.2), H(-7.6, -7 + i * 1.4), H(-10.4 + i, -11 + i * 2), H(-6.4, -4.6 + i * 1.2)], "#f2ead6", { amp: .3 }); }
+  }
+  function drawHead3(kind) {
+    switch (kind) {
+      case "bandana": F([H(-5.2, -2.8), H(-5, -5.4), H(-1.8, -7.4), H(2.6, -7), H(5, -4), H(4.8, -3), H(0, -4.6)], ACC, { amp: .26, bias: -.2 }); F([H(-5.2, -3.4), H(-8, -2 + sway * .4), H(-7.4, -.6 + sway * .4), H(-5, -2)], ACC, { amp: .2, bias: -.3 }); break;
+      case "goggles": case "goggles_up": { if (kind === "goggles") drawHead3("bandana"); F([H(-5, -3.8), H(4.8, -4.6), H(4.8, -3.6), H(-5, -2.8)], H3.strap, { amp: .1 });
+        for (const gx of [.8, 3.4]) { M([H(gx - 1.3, -5.6), H(gx + 1.3, -5.6), H(gx + 1.4, -3.6), H(gx - 1.4, -3.6)], H3.brass, { amp: .35, bev: 0, olw: .3 * k }); F([H(gx - .8, -5.2), H(gx + .8, -5.2), H(gx + .8, -4), H(gx - .8, -4)], "#ff9a3a", { amp: .2, ol: 0 }); if (!stone) glow(x, gx * k, Y(hy - 4.6), 2.2 * k, "#ff9a3a", .45); } break; }
+      case "smithcap": F([H(-5.2, -1.8), H(-5.6, -6), H(-1.6, -8.4), H(3.2, -7.8), H(5.8, -4.4), H(5.4, -2.6), H(0, -4)], H3.leatherD, { amp: .3 }); drawHead3("goggles_up"); break;
+      case "coif": F([H(-5.6, 6), H(-6, -2), H(-4, -6.8), H(0, -7.8), H(4, -6.6), H(5.4, -3), H(3.6, -4.4), H(-.6, -4), H(-2, 0), H(-1.6, 4.8)], H3.iron, { amp: .2 }); x.strokeStyle = C("#3a3e44"); x.lineWidth = .25 * k; for (let r2 = 0; r2 < 4; r2++) { x.beginPath(); x.moveTo(-5 * k, Y(hy - 5 + r2 * 2.4)); x.lineTo(3 * k, Y(hy - 5.6 + r2 * 2.4)); x.stroke(); } break;
+      case "hood": case "hoodmask": case "rangerhood": case "cowl": case "archcowl": hoodFront(kind); if (kind === "rangerhood" && T0 >= 4) F([H(-1, -8.6), H(-5, -12.4), H(-9 + sway * .5, -12), H(-6, -9.6)], H3.bone, { amp: .3 }); break;
+      case "hat": case "hatscarf": { const cc = T0 >= 4 ? "#3a2a1c" : "#5a4028"; F([H(-8.6, -3.2), H(-2, -5.4), H(8.6, -4), H(6.6, -2.6), H(0, -3), H(-6.6, -2.2)], cc, { amp: .28 });
+        F([H(-3.4, -4.6), H(-3.2, -9.4), H(0, -8.4), H(3.6, -9.4), H(3.8, -4.8)], cc, { amp: .32 }); F([H(-3.4, -5.6), H(3.8, -5.8), H(3.8, -4.8), H(-3.4, -4.6)], T0 >= 4 ? H3.gold : ACC, { amp: .2, olw: .3 * k });
+        if (kind === "hatscarf") F([H(.2, .8), H(5.4, .4), H(5, 4.2), H(.4, 3.8)], ACC, { amp: .18, bias: -.2 }); break; }
+      case "mask": F([H(.2, -1.8), H(5.3, -1.8), H(5.1, .6), H(.4, .5)], "#141018", { amp: .2 }); for (const ex of [1.8, 4]) { x.fillStyle = "#f0e8dc"; x.fillRect((ex - .5) * k, Y(hy - .9), 1 * k, .5 * k); } break;
+      case "tricorne": F([H(-6.6, -3.4), H(1, -3), H(7, -3.8), H(4.6, -6.6), H(1, -9.6), H(-3.2, -7.8)], "#1e1820", { amp: .32 }); trimLine([H(-6.6, -3.4), H(1, -3), H(7, -3.8)], .45); drawHead3("mask"); if (T0 >= 4) F([H(1, -7.6), H(-2.6 + sway * .4, -13), H(-5.4 + sway * .5, -12), H(.2, -6.8)], "#f2ead6", { amp: .3 }); break;
+      case "beret": F([H(-5.6, -3.6), H(-6.4, -8), H(2.6, -9), H(4.8, -4.4)], ACC, { amp: .32, bias: -.15 }); if (T0 >= 2) F([H(-3.6, -6.6), H(-7, -11.6), H(-12 + sway * .6, -9.4), H(-3.2, -5.6)], "#f2ead6", { amp: .3 }); break;
+      case "plumehat": F([H(-7.4, -3.4), H(0, -5.8), H(7.6, -3.6), H(0, -2.6)], CL2, { amp: .3 }); F([H(-4, -4.4), H(-3.6, -9), H(3.6, -9.2), H(4.2, -4.6)], CL, { amp: .3 }); trimLine([H(-4, -5.4), H(4.2, -5.6)], .5);
+        F([H(-2, -8.6), H(-6, -14), H(-12 + sway * .6, -13), H(-2.4, -7.4)], T0 >= 4 ? "#ffe8b0" : "#f2ead6", { amp: .3 }); break;
+      case "cap": F([H(-5.2, -1.8), H(-5.6, -6.4), H(-1.6, -8.8), H(3.4, -8), H(6.2, -4.4), H(5, -2.6), H(0, -4.2)], CL, { amp: .3 }); F([H(-5.3, -2.6), H(5.2, -3.6), H(5.3, -2.6), H(-5.2, -1.4)], TRIM, { amp: .25 }); break;
+      case "furhat": F([H(-5.6, -2), H(-6, -7), H(-2, -9.6), H(3, -9.2), H(6, -6), H(5.6, -2.8)], "#7a6248", { amp: .36 }); F([H(-5.8, -2.6), H(5.8, -3.4), H(5.8, -1.6), H(-5.8, -.8)], "#a88a66", { amp: .3 }); if (T0 >= 4) gem(1, -6.4, .9, "#c03040"); break;
+      case "lenses": case "lensescap": { if (kind === "lensescap") F([H(-5.2, -2), H(-5.6, -6.6), H(-1.6, -9), H(3.4, -8.2), H(6, -4.6), H(5, -2.8), H(0, -4.4)], CL2, { amp: .3 });
+        F([H(-5, -2.8), H(4.8, -3.6), H(4.8, -2.6), H(-5, -1.8)], H3.strap, { amp: .1 }); for (const gx of [.8, 3.4]) { M([H(gx - 1.3, -1.4), H(gx + 1.3, -1.4), H(gx + 1.4, .6), H(gx - 1.4, .6)], H3.brass, { amp: .35, bev: 0, olw: .3 * k }); F([H(gx - .8, -1), H(gx + .8, -1), H(gx + .8, .2), H(gx - .8, .2)], "#6fe08a", { amp: .2, ol: 0 }); if (!stone) glow(x, gx * k, Y(hy - .4), 2.2 * k, "#6fe08a", .45); } break; }
+      case "plague": F([H(3, -1.6), H(10.4, 2.4), H(3.4, 2.6)], "#d8ccb0", { amp: .35 }); F([H(-7.6, -3.2), H(0, -5.2), H(7.8, -3.4), H(0, -2.4)], "#1a1410", { amp: .3 }); F([H(-3.6, -4), H(-3, -9.6), H(3.4, -9.6), H(3.8, -4)], "#221a14", { amp: .32 });
+        for (const ex of [2, 4.2]) { F([H(ex - .7, -1.2), H(ex + .7, -1.2), H(ex + .7, 0), H(ex - .7, 0)], "#9ad04a", { amp: 0, ol: 0, hi: 0 }); if (!stone) glow(x, ex * k, Y(hy - .6), 2 * k, "#9ad04a", .7); } if (T0 >= 5) trimLine([H(-3.6, -4.8), H(3.8, -4.8)], .45); break;
+      case "leaves": for (let i = -2; i <= 2; i++) F([H(i * 2 - .9, -5.6 + Math.abs(i) * .5), H(i * 2, -7.2 + Math.abs(i) * .5), H(i * 2 + 1.1, -5.4 + Math.abs(i) * .5)], i % 2 ? "#6a9a3a" : "#4a7a2a", { amp: .3, olw: .3 * k }); break;
+      case "antlers": { const big = T0 >= 4 ? 1.25 : 1; drawHead3("leaves"); for (const sd of [-1, 1]) { const b = sd < 0 ? -2.4 : 1.8;
+          F([H(b - .4, -5.6), H(b + .4, -5.6), H(b + sd * .8 * big, -9 * big), H(b - sd * 1.6 * big, -12 * big), H(b - sd * 2.2 * big, -11.6 * big), H(b - sd * .4 * big, -8.6 * big)], "#c8b48a", { amp: .3, olw: .3 * k });
+          F([H(b + sd * .4 * big, -8.4 * big), H(b + sd * 2.4 * big, -10.8 * big), H(b + sd * 1.8 * big, -11.2 * big)], "#c8b48a", { amp: .3, olw: .25 * k }); } if (T0 >= 4 && !stone) glow(x, 0, Y(hy - 9), 7 * k, "#7fe08a", .3); break; }
+      case "eaglehood": case "runehood": case "shadowhood": hoodFront(kind === "eaglehood" ? "rangerhood" : "cowl");
+        if (kind === "eaglehood") F([H(-1, -8.6), H(-5, -12.4), H(-9.6 + sway * .5, -12), H(-6, -9.6)], "#f2ead6", { amp: .3 });
+        if (kind === "runehood" && !stone) { R(-4.4, -2, 1, 2, .85); R(-3.4, -6.4, .9, 0, .85); }
+        if (kind === "shadowhood") F([H(.2, .6), H(5.4, .4), H(5, 3.8), H(.4, 3.4)], "#141018", { amp: 0 }); break;
+      case "runecrown": F([H(-4.8, -3.6), H(4.8, -4.2), H(4.8, -3.2), H(-4.8, -2.6)], H3.gold, { amp: .3, olw: .3 * k }); for (let i = 0; i < 3; i++) R(-3 + i * 3, -9.6 - Math.sin(t * 2 + i) * .6, 1.3, i, 1); break;
+      case "crown": F([H(-4.4, -4), H(-4.8, -8.4), H(-2.6, -6.4), H(-.6, -9.6), H(1.4, -6.6), H(3.6, -9), H(4.8, -4.4)], H3.gold, { amp: .4 }); gem(-.6, -6.6, .6, "#c03040"); gem(2.2, -6.4, .6, "#3a7ad0"); break;
+      case "circlet": F([H(-4.8, -3.4), H(4.8, -4), H(4.8, -3.2), H(-4.8, -2.6)], H3.silver, { amp: .3, olw: .3 * k }); gem(1, -4.4, .8, "#e080ff"); break;
+      case "hourcrown": F([H(-4.8, -3.6), H(4.8, -4.2), H(4.8, -3.2), H(-4.8, -2.6)], H3.gold, { amp: .3, olw: .3 * k }); if (!stone) { x.save(); x.strokeStyle = rgba("#8ad0ff", .8); x.lineWidth = .45 * k; for (const [rx, ry, rot] of [[7.6, 2.4, t * .8], [6.6, 2, -t * 1.1 + 1]]) { x.beginPath(); x.ellipse(.4 * k, Y(hy - 4), rx * k, ry * k, Math.sin(rot) * .3, 0, 7); x.stroke(); } x.restore(); } break;
+      case "fedora": case "cowboy": { const wd = kind === "cowboy" ? 9.4 : 7.4, cc = kind === "fedora" ? "#4a3c30" : "#6a4a2c";
+        F([H(-wd, -3.2), H(-2, -5.4), H(wd, -4), H(wd - 2, -2.6), H(0, -3), H(-wd + 2, -2.2)], cc, { amp: .28 }); F([H(-3.4, -4.6), H(-3.2, -9.4), H(0, -8.4), H(3.6, -9.4), H(3.8, -4.8)], cc, { amp: .32 }); F([H(-3.4, -5.6), H(3.8, -5.8), H(3.8, -4.8), H(-3.4, -4.6)], kind === "fedora" ? "#7a2a22" : H3.gold, { amp: .2, olw: .3 * k }); break; }
+      case "bicorne": F([H(-7.4, -3.6), H(0, -11), H(7.6, -3.8), H(0, -5.4)], "#221a28", { amp: .32 }); trimLine([H(-7.4, -3.6), H(0, -11), H(7.6, -3.8)], .45); F([H(1, -7.6), H(-2.6 + sway * .4, -13), H(-5.4 + sway * .5, -12), H(.2, -6.8)], "#f2ead6", { amp: .3 }); break;
+      case "wizardhat": F([H(-7.6, -3.2), H(0, -6), H(8, -3.6), H(0, -2.6)], CL2, { amp: .3 }); F([H(-4, -4.2), H(-2, -12), H(-6 + sway * .4, -18), H(2, -13), H(4.4, -4.4)], CL, { amp: .32 }); trimLine([H(-4, -4.8), H(4.4, -5)], .5); R(0, -8.6, 1.3, 3); break;
+      case "sagehat": F([H(-4.6, -3.6), H(-3, -10), H(-5, -15), H(1, -11), H(4.8, -3.8)], ACC, { amp: .32, bias: -.15 }); trimLine([H(-4.6, -4.4), H(4.8, -4.6)], .5); drawHead3("lenses"); break;
+      case "antlercrown": drawHead3("antlers"); for (const [fx2, fy2, fc] of [[-1, -6.6, "#ff9ad8"], [2.4, -6.2, "#ffe08a"]]) gem(fx2, fy2, .5, fc); break;
+      case "wolfpelt": case "bearpelt": { const pc = kind === "wolfpelt" ? "#8a8a88" : "#6a4c30"; F([H(-5.8, 3), H(-6.6, -6), H(-1, -9.6), H(4.6, -8), H(8.8, -3.6), H(5.4, -2), H(1, -4), H(-1.6, -2.4), H(-3.2, 3.4)], pc, { amp: .34 });
+        F([H(-3, -8), H(-2, -11.4), H(.2, -8.8)], pc, { amp: .3 }); F([H(1, -8.8), H(2.4, -11.6), H(3.4, -8.2)], pc, { amp: .3 }); for (let i = 0; i < 3; i++) F([H(4.6 + i * 1.2, -2.6), H(5.2 + i * 1.2, -.6), H(5.6 + i * 1.2, -2.8)], H3.bone, { amp: .2, olw: .25 * k }); break; }
+      case "towerhelm": case "wingedhelm": case "helm": break;
+    }
+  }
+
+  /* ── arme, bras armé ── */
+  drawWeapon(x, L.weapon, 9 * k, Y(-20), k, t, C, RUNE, L.wtier || 0);
+  if (cat === "robe" || L.cls === "druide") F([[sw - 1.8, -29.8], [sw + 2.4, -28.6], [sw + 5, -19.6], [sw + 1.2, -18.6], [sw - 2.4, -27]], CL, { amp: .2 });
+  else F([[sw - 1.6, -29.8], [sw + 2.2, -28.8], [sw + 2.6, -23.4], [sw + .2, -23], [sw - 2.4, -27.2]], sleeveCol, { amp: .2 });
+  if (cat !== "robe") { const met = cat === "heavy" && T0 >= 2; (met ? M : F)([[sw - .2, -23.6], [sw + 2.8, -23.6], [sw + 2.8, -20.2], [sw + .2, -20]], T0 === 0 ? sleeveCol : met ? MET : LEA, { amp: .28 }); if (T0 >= 4) R(sw + 1.3, -21.8, 1, 4, .85); }
+  if (PS) pauld(1, PS[0], PS[1], PS[2]);
+  F([[7.2, -21.4], [10.4, -21.8], [10.8, -19.4], [9.4, -18.2], [7.4, -18.8]], cat === "heavy" && T0 >= 3 ? MET : T0 >= 1 && cat !== "robe" ? H3.leatherD : skin, { amp: .32 });
+
+  /* runes flottantes (arcaniste), braises (mythique), emblème de maître */
+  if (L.cls === "arcaniste" && T0 >= 3 && !stone) for (let i = 0; i < 3; i++) { const a = t * 1.2 + i * 2.1; if (Math.sin(a) < -.2) continue; R(Math.cos(a) * 10, -24 + Math.sin(a) * 3 - i, 1.1, i + 2, .5 + Math.sin(a) * .3); }
+  if (T0 >= 5 && !stone) for (let i = 0; i < 5; i++) { const ph = (t * .5 + i / 5) % 1; x.fillStyle = rgba(RUNE, (1 - ph) * .9); x.fillRect((hash(i, 3) - .5) * 16 * k, Y(-6 - ph * 34), 1.1 * k, 1.1 * k); }
+  if (MS && !stone) { const ey = -50 + Math.sin(t * 1.8) * .8; lpFacet(x, TT([[0, ey - 2.2], [1.6, ey], [0, ey + 2.2], [-1.6, ey]]), lpHex(MS.aura), { amp: .4, olw: .3 * k }); glow(x, 0, Y(ey), 5 * k, MS.aura, .5); }
+  x.restore();
+}
+
+function drawShield(x, px, py, k, kind, back, C = c => c, RUNE = "#3ff0ff", tier = 1) {
+  x.save(); x.translate(px, py);
+  const tower = kind === "tower", wood = kind === "wood";
+  const pts = tower ? [[-4.6, -10.6], [4.6, -11], [4.8, 7.4], [0, 10.4], [-4.8, 7.6]] : wood && tier < 3 ? [[-4, -6.4], [0, -7.8], [4, -6.4], [4.6, 0], [3, 5.6], [0, 7.2], [-3, 5.6], [-4.6, 0]] : [[-3.8, -7.2], [3.8, -7.6], [4.2, -1], [0, 8.8], [-4.2, -1]];
+  const col = C(wood ? (tier >= 2 ? "#4a3020" : "#6a4426") : tier >= 4 ? H3.black : tier >= 3 ? H3.steel : H3.iron);
+  lpFacet(x, pts.map(([a, b]) => [a * k, b * k]), col, { amp: wood ? .25 : .42, bev: k > 1.3 && !wood ? .28 : 0, olw: Math.max(.6, .32 * k) });
+  if (wood) { x.strokeStyle = "rgba(0,0,0,.35)"; x.lineWidth = .35 * k; for (const sx of [-1.6, 1.6]) { x.beginPath(); x.moveTo(sx * k, -6.8 * k); x.lineTo(sx * k, 6.4 * k); x.stroke(); } }
+  const rim = pts.map(([a, b]) => [a * .84 * k, b * .86 * k]); x.strokeStyle = C(tier >= 4 ? H3.gold : wood ? H3.iron : H3.brass); x.lineWidth = .6 * k; x.beginPath(); rim.forEach((p, i) => i ? x.lineTo(p[0], p[1]) : x.moveTo(p[0], p[1])); x.closePath(); x.stroke();
+  lpFacet(x, [[0, -2.6], [1.8, -.6], [0, 1.4], [-1.8, -.6]].map(([a, b]) => [a * k, (b + (tower ? -1 : 0)) * k]), C(tier >= 3 ? H3.gold : H3.iron), { amp: .45, olw: .3 * k });
+  if (tier >= 4) lpRune(x, 0, (tower ? 3.4 : 3.6) * k, 1.8 * k, RUNE, 3, .9);
+  x.restore();
+}
+
+/* Armes : la matière s'améliore avec le palier (fer piqué → acier → acier noirci et or → runes) */
+function drawWeapon(x, w, hx, hy, k, t, C = c => c, RUNE = "#3ff0ff", tier = 2) {
+  const save = LP.obs, saveB = LP.bone, saveL = LP.leatherD;
+  LP.obs = tier <= 0 ? "#5a544c" : tier === 1 ? H3.iron : tier === 2 ? H3.steel : tier === 3 ? "#6a7280" : H3.black;
+  LP.bone = tier >= 4 ? H3.gold : tier >= 3 ? H3.brass : "#8a7a60"; LP.leatherD = tier >= 3 ? "#3a2418" : "#4a3020";
+  try { drawWeaponLP(x, w, hx, hy, k, t, C, tier >= 3 ? RUNE : null); }
+  finally { LP.obs = save; LP.bone = saveB; LP.leatherD = saveL; }
+}
+/* ═══════════════════════ Compagnons fantastiques (low-poly dark fantasy) ═══════════════════════ */
+function drawPetBase(x, id, cx, cy, s, t, face, ev) {
+  if (id === "ours") return drawBear(x, cx, cy, s, t, face);
+  if (id === "faucon") return drawFalcon(x, cx, cy, s, t, face);
+  if (id === "renard") return drawWolf(x, cx, cy, s * .92, t, ev && ev.col || "#e07a3a", ev && ev.eye || "#9fffd0", face);
+  if (id === "panthere") return drawPanther(x, cx, cy, s, t, face, ev);
+  if (id === "chouette") return drawOwl(x, cx, cy, s, t, face, ev);
+  if (id === "salamandre") return drawSalamander(x, cx, cy, s, t, face, ev);
+  if (id === "griffon") return drawGriffon(x, cx, cy, s, t, face, ev);
+  if (id === "drake") return drawDrake(x, cx, cy, s, t, face, ev);
+  return drawWolf(x, cx, cy, s, t, ev && ev.col || "#8f8e8a", ev && ev.eye || "#ffd36a", face);
+}
+const _petKit = (x, cx, cy, k, face) => { x.save(); x.translate(cx, cy); x.scale(face, 1); x.lineJoin = "round";
+  const F = (pts, col, o = {}) => lpFacet(x, pts.map(([a, b]) => [a * k, b * k]), lpHex(col), { olw: Math.max(.6, .3 * k), ...o });
+  const eye = (px, py, col, w = 1) => { glow(x, px * k, py * k, 2.6 * w * k, col, .85); F([[px - .8 * w, py - .4 * w], [px + .8 * w, py - .6 * w], [px + .7 * w, py + .3 * w], [px - .7 * w, py + .4 * w]], col, { amp: 0, ol: 0, hi: 0 }); };
+  const shadow = w => { const g = x.createRadialGradient(0, 0, 1, 0, 0, w * k); g.addColorStop(0, "rgba(0,0,0,.55)"); g.addColorStop(1, "rgba(0,0,0,0)"); x.fillStyle = g; x.beginPath(); x.ellipse(0, 0, w * k, 4.2 * k, 0, 0, 7); x.fill(); };
+  return { F, eye, shadow }; };
+
+function drawPanther(x, cx, cy, s, t, face = 1, ev) {
+  const k = s, { F, eye, shadow } = _petKit(x, cx, cy, k, face), fur = ev && ev.id === "lune" ? "#8a90a0" : "#26222c", dk = shade(fur, -.3), br = Math.sin(t * 3) * .3, tl = Math.sin(t * 2.2) * 2, E = ev && ev.id === "lune" ? "#cfe0ff" : "#c48cff";
+  shadow(14);
+  F([[-6.4, -9], [-4, -9.2], [-4.6, -.2], [-6.6, 0]], dk); F([[5.6, -8.6], [7.8, -8.6], [8.2, -.2], [6, 0]], dk);
+  F([[-10, -11.6], [-15, -13 + tl * .3], [-19, -16 + tl], [-20.6, -14 + tl], [-16, -10.6], [-10.4, -9.6]], fur, { amp: .35 });
+  F([[-10.6, -9.6], [-10.6, -12.6], [-6, -14.4 + br], [3, -14.8 + br], [8, -13.4], [9.6, -10.4], [7, -7.4], [0, -8], [-6, -7.8]], fur, { amp: .4 });
+  F([[-4, -14 + br], [4, -14.4 + br], [6, -12], [-3, -11.6]], shade(fur, .15), { amp: .3, ol: 0 });
+  F([[7, -13.6 + br], [10, -16.6 + br], [12.6, -14.6 + br], [11, -10.6], [8.6, -10.4]], fur, { amp: .38 });
+  const hx = 12, hy = -16.6 + br; F([[hx - 2.4, hy - 1.4], [hx, hy - 3], [hx + 3, hy - 2.2], [hx + 5, hy - .2], [hx + 5, hy + 1.4], [hx + 2.4, hy + 2.6], [hx - 1.6, hy + 2]], fur, { amp: .42 });
+  F([[hx - 1.8, hy - 1.8], [hx - 1.2, hy - 4.2], [hx + .2, hy - 2.4]], dk); F([[hx + .6, hy - 2.6], [hx + 1.6, hy - 4.6], [hx + 2.4, hy - 2.2]], fur);
+  F([[hx + 4.4, hy + .2], [hx + 5.2, hy + .6], [hx + 4.8, hy + 1.3]], "#0a0808", { amp: 0, ol: 0, hi: 0 }); eye(hx + 2, hy - .8, E, .7);
+  for (const [lx, d] of [[-9, 0], [5.6, 0]]) { F([[lx - 1.2, -11.6], [lx + 2.2, -11.8], [lx + 1.6, -6], [lx - .4, -6]], fur, { amp: .3 }); F([[lx - .2, -6.4], [lx + 1.6, -6.4], [lx + 2, -.2], [lx - .2, 0]], fur, { amp: .28 }); }
+  lpRune(x, 1 * k, -11.4 * k, 1.4 * k, E, 4, .85);
+  x.restore();
+}
+function drawOwl(x, cx, cy, s, t, face = 1, ev) {
+  const k = s, { F, eye, shadow } = _petKit(x, cx, cy, k, face), fl = Math.sin(t * 5), hy = -24 + Math.sin(t * 2) * 1.2, body = ev && ev.id === "sage" ? "#8a6a48" : "#a8b4c4", E = ev && ev.id === "sage" ? "#ffe08a" : "#9fe8ff";
+  shadow(7); x.save(); x.globalAlpha *= ev && ev.id === "ame" ? .8 : .95; glow(x, 0, hy * k, 14 * k, E, .25);
+  const wing = (dx, col, d) => { const up = fl * 5 * d; F([[dx, hy - 2], [dx - 5, hy - 6 - up], [dx - 11, hy - 6 - up * 1.3], [dx - 12, hy - 2 - up], [dx - 9, hy + 1 - up * .5], [dx - 10, hy + 3.4 - up * .3], [dx - 4, hy + 4]], col, { amp: .35 }); };
+  wing(-1, shade(body, -.35), 1);
+  F([[-4, hy - 2], [0, hy - 6], [4, hy - 2], [4.4, hy + 4], [1.4, hy + 7.4], [-1.6, hy + 7.4], [-4.4, hy + 4]], body, { amp: .4 });
+  F([[-2.6, hy + 1], [2.6, hy + 1], [2.4, hy + 6], [0, hy + 7], [-2.4, hy + 6]], shade(body, .25), { amp: .25, ol: 0 });
+  F([[-3.6, hy - 4.6], [-2.4, hy - 8.4], [-1.2, hy - 5.6]], body, { amp: .3 }); F([[1.2, hy - 5.6], [2.4, hy - 8.4], [3.6, hy - 4.6]], body, { amp: .3 });
+  for (const ex of [-1.6, 1.6]) { F([[ex - 1.4, hy - 3], [ex + 1.4, hy - 3], [ex + 1.4, hy - .6], [ex - 1.4, hy - .6]], "#1a1820", { amp: 0, ol: 0, hi: 0 }); eye(ex, hy - 1.8, E, .7); }
+  F([[-.5, hy - .4], [.5, hy - .4], [0, hy + 1.2]], "#e8c070", { amp: .2 }); wing(1.4, body, -1);
+  for (const fx2 of [-1, 1]) F([[fx2 - .6, hy + 7], [fx2 + .6, hy + 7], [fx2, hy + 9]], "#3a3028", { amp: .2, olw: .2 * k });
+  for (let i = 0; i < 3; i++) { const ph = (t * .6 + i / 3) % 1; x.fillStyle = rgba(E, (1 - ph) * .7); x.fillRect((hash(i, 4) - .5) * 10 * k, (hy + 6 + ph * 10) * k, .8 * k, .8 * k); }
+  x.restore(); x.restore();
+}
+function drawSalamander(x, cx, cy, s, t, face = 1, ev) {
+  const k = s * 1.05, { F, eye, shadow } = _petKit(x, cx, cy, k, face), skin = ev && ev.id === "cendre" ? "#5a5048" : "#a03a14", spot = ev && ev.id === "cendre" ? "#c8a070" : "#ffb03a", w = Math.sin(t * 4) * 1.2;
+  shadow(14);
+  F([[-6, -3], [-16, -4 + w], [-20, -1.4 + w], [-14, -1], [-6, -.8]], skin, { amp: .35 });
+  for (const [lx, d, ph] of [[-5, -.3, 0], [4, -.3, 1], [-4, 0, 1], [5, 0, 0]]) { const st = Math.sin(t * 4 + ph * 3) * 1; F([[lx - 1, -4], [lx + 1.2, -4], [lx + 2.6 + st, -.6], [lx + .4 + st, 0], [lx - 1.6, -1]], shade(skin, d - .1), { amp: .3 }); }
+  F([[-7, -2], [-6.6, -6.4], [0, -8], [6, -7.4], [8.6, -5], [8, -1.6], [0, -1]], skin, { amp: .42 });
+  for (const [sx, sy] of [[-4, -6], [-.6, -7.2], [3, -6.6], [-12, -3]]) { lpFacet(x, [[sx - .8, sy], [sx, sy - .8], [sx + .8, sy], [sx, sy + .7]].map(([a, b]) => [a * k, b * k]), spot, { amp: .2, ol: 0 }); glow(x, sx * k, sy * k, 2 * k, spot, .5); }
+  for (let i = 0; i < 4; i++) F([[-5 + i * 3, -7.4 - i * .2], [-4.2 + i * 3, -9.6 - i * .3], [-3.4 + i * 3, -7.6 - i * .2]], shade(skin, -.3), { amp: .25, olw: .2 * k });
+  const hx = 9.4, hy = -5.4; F([[hx - 2, hy - 2], [hx + 1.6, hy - 2.8], [hx + 5.6, hy - 1], [hx + 5.8, hy + .8], [hx + 2, hy + 2], [hx - 1.8, hy + 1.6]], skin, { amp: .42 }); eye(hx + 1.6, hy - 1.2, spot, .6);
+  if (Math.sin(t * 1.4) > .7) for (let i = 0; i < 3; i++) glow(x, (hx + 7 + i * 2.4) * k, (hy + i * .3) * k, (1.6 + i) * k, "#ff8a3a", .6 - i * .15);
+  x.restore();
+}
+function drawGriffon(x, cx, cy, s, t, face = 1, ev) {
+  const k = s * 1.05, { F, eye, shadow } = _petKit(x, cx, cy, k, face), fur = "#a8844e", fea = ev && ev.id === "orage" ? "#6a7a9a" : "#e8e0d0", br = Math.sin(t * 3) * .3, fl = Math.sin(t * 2.4) * 1.4, E = ev && ev.id === "orage" ? "#9ab8ff" : "#ffd27a";
+  shadow(15);
+  F([[-7, -9], [-4.6, -9], [-5, 0], [-7.2, 0]], shade(fur, -.3)); F([[5.4, -9], [7.6, -9], [8, 0], [5.6, 0]], shade(fur, -.3));
+  F([[-10, -12], [-14.4, -13.4], [-16.4, -9.6], [-14.6, -9]], fur, { amp: .3 }); F([[-16.4, -9.6], [-18, -8.6], [-16.6, -7.6]], "#5a4428", { amp: .2 });
+  F([[-10.6, -9.8], [-10.4, -13.4], [-4, -15.4 + br], [4, -16 + br], [8, -13], [8.6, -9.6], [6, -7.6], [-6, -7.6]], fur, { amp: .4 });
+  F([[-4, -15.4 + br], [-9, -22 - fl], [-15, -24 - fl * 1.3], [-14, -19 - fl], [-10, -15]], shade(fea, -.15), { amp: .38 });
+  F([[3.6, -15.6 + br], [8, -20.6 + br], [11, -18.6 + br], [10, -12], [7, -11.6]], fea, { amp: .4 });
+  const hx = 11, hy = -21 + br; F([[hx - 2.6, hy + 1.4], [hx - 2.2, hy - 2.4], [hx + 1, hy - 3.6], [hx + 3.6, hy - 2.2], [hx + 4, hy + .8], [hx + 1.4, hy + 2.6]], fea, { amp: .42 });
+  F([[hx + 3.4, hy - 1.6], [hx + 6.6, hy - .4], [hx + 5, hy + 1.6], [hx + 3.4, hy + 1]], "#d8a040", { amp: .35 }); eye(hx + 1.4, hy - 1, E, .6);
+  F([[hx - 1.6, hy - 2.6], [hx - 3, hy - 6], [hx - .2, hy - 3.4]], fea, { amp: .3 });
+  for (const lx of [-9.4, 5.4]) { F([[lx - 1, -11.6], [lx + 2.2, -11.8], [lx + 1.8, -6], [lx - .2, -6]], fur, { amp: .3 }); F([[lx, -6.4], [lx + 1.8, -6.4], [lx + 2.2, -.2], [lx, 0]], lx > 0 ? "#d8a040" : fur, { amp: .28 }); }
+  F([[-2, -15.2 + br], [6, -18 - fl], [11, -21 - fl * 1.2], [9.4, -15.8 - fl], [4, -12]], fea, { amp: .38 });
+  lpRune(x, -1 * k, -11 * k, 1.4 * k, E, 3, .85); x.restore();
+}
+function drawDrake(x, cx, cy, s, t, face = 1, ev) {
+  const k = s * 1.05, { F, eye, shadow } = _petKit(x, cx, cy, k, face), sc = ev && ev.id === "ombre" ? "#3a2e4a" : "#4a2226", E = ev && ev.id === "ombre" ? "#c48cff" : "#ff8a3a", br = Math.sin(t * 3) * .3, fl = Math.sin(t * 3.4) * 2.4;
+  shadow(15); glow(x, 0, -12 * k, 18 * k, E, .18);
+  F([[-6.4, -9], [-4, -9], [-4.4, 0], [-6.8, 0]], shade(sc, -.3)); F([[5, -9], [7.4, -9], [7.8, 0], [5.2, 0]], shade(sc, -.3));
+  F([[-9.6, -10.6], [-15, -10 + fl * .3], [-20, -13 + fl * .5], [-21.4, -11 + fl * .5], [-15, -7.6], [-10, -8.4]], sc, { amp: .38 }); F([[-21.4, -11 + fl * .5], [-23.4, -12.4 + fl * .5], [-22, -9.6 + fl * .5]], "#d8cba8", { amp: .2 });
+  F([[-2, -15 + br], [-8, -25 - fl], [-16, -27 - fl * 1.2], [-17, -21 - fl], [-12, -18], [-8, -14]], shade(sc, -.15), { amp: .4 }); F([[-8, -25 - fl], [-8.6, -27.4 - fl], [-7, -24.6 - fl]], "#d8cba8", { amp: .2 });
+  F([[-10.6, -9.4], [-10, -13], [-3, -15.6 + br], [4, -16 + br], [8, -13], [8.6, -9.4], [6, -7.4], [-6, -7.4]], sc, { amp: .42 });
+  F([[-3, -11], [6, -12], [7, -8.6], [-2, -8]], "#c8a070", { amp: .3 }); for (let i = 0; i < 4; i++) F([[-7 + i * 3, -15 - i * .3 + br], [-6.2 + i * 3, -18 - i * .4 + br], [-5.2 + i * 3, -15.2 - i * .3 + br]], "#d8cba8", { amp: .3, olw: .2 * k });
+  F([[4, -15.6 + br], [8.6, -20.4 + br], [11.4, -19 + br], [10, -12.6], [7, -12]], sc, { amp: .4 });
+  const hx = 11.6, hy = -21.4 + br; F([[hx - 2.6, hy + 1.4], [hx - 2.2, hy - 2.4], [hx + 1.4, hy - 3.2], [hx + 6, hy - 1], [hx + 6.4, hy + 1], [hx + 2, hy + 2.6]], sc, { amp: .44 });
+  F([[hx - 1.6, hy - 2.4], [hx - 4.6, hy - 6.6], [hx - .6, hy - 3.4]], "#d8cba8", { amp: .3 }); F([[hx + .4, hy - 3], [hx - 1.4, hy - 7.2], [hx + 1.6, hy - 3.4]], "#d8cba8", { amp: .3 }); eye(hx + 2, hy - 1, E, .6);
+  for (const lx of [-9, 5.2]) { F([[lx - 1, -11.6], [lx + 2.2, -11.8], [lx + 1.8, -6], [lx - .2, -6]], sc, { amp: .3 }); F([[lx, -6.4], [lx + 1.8, -6.4], [lx + 2.2, -.2], [lx, 0]], sc, { amp: .28 }); for (let i = 0; i < 2; i++) F([[lx + 2 + i * .2, -.8 + i * .5], [lx + 3.4, -.4 + i * .5], [lx + 2, 0 + i * .4]], "#d8cba8", { amp: 0, ol: 0, hi: 0 }); }
+  F([[-1, -15 + br], [5, -23 - fl], [12, -25 - fl * 1.2], [11, -19 - fl], [6, -16], [2, -12]], sc, { amp: .4 });
+  lpRune(x, 1 * k, -10.4 * k, 1.5 * k, E, 0, .9);
+  if (Math.sin(t * 1.2) > .75) for (let i = 0; i < 4; i++) glow(x, (hx + 8 + i * 2.6) * k, (hy + i * .4) * k, (1.6 + i) * k, E, .6 - i * .12);
   x.restore();
 }
 /* ═══════════════════════ Le village de Sombreval (plateau isométrique) ═══════════════════════
@@ -5269,7 +6090,7 @@ const DUN = {
 const app = $("#app"), viewEl = $("#view");
 let VIEW = "home";
 const UI = { qtab: "story", lastSk: "cls", tab: "fab", cat: "arme", rec: "r_epee", sel: null, invf: "all", invSel: null, lookTab: "visage", rank: {} };
-const CR = { diff: "normal", cls: "forgeron", ppl: "humain", name: "Kaeldrin", look: defaultLook("humain") };
+const CR = { pet: "loup", diff: "normal", cls: "forgeron", ppl: "humain", name: "Kaeldrin", look: defaultLook("humain") };
 let canvases = [];
 
 /* ── Appli installable (PWA) ─────────────────── */
@@ -5989,11 +6810,13 @@ function renderCreate() {
    <div class="panel stage"><canvas id="stage" aria-label="Aperçu du personnage"></canvas><button class="xray ${UI.helmOff ? "on" : ""}" style="left:auto;right:10px;z-index:2" data-act="helm" title="Montrer le visage (retirer le couvre-chef)">${nico("eye")}</button><div class="nameline"><label for="pname" class="muted">Nom</label><input id="pname" maxlength="18" value="${esc(CR.name)}" autocomplete="off"><button class="btn sm" data-act="dice" aria-label="Nom aléatoire">${nico("dice").replace("<svg", '<svg width="18" height="18" style="vertical-align:-4px"')}</button></div>${lookEditor(CR.look, CR.ppl, CR.cls)}</div>
    <div class="cside"><div class="panel"><div class="ph">Peuple</div><div class="ppl">${PEOPLES.map(q => `<button class="pp ${q.id === CR.ppl ? "on" : ""}" data-act="cppl" data-p="${q.id}"><canvas data-face="${q.id}" width="92" height="92"></canvas>${q.n}</button>`).join("")}</div></div>
     <div class="parch traits"><div class="ph">${c.n}</div><ul>${c.traits.map(t => `<li>${t}</li>`).join("")}<li>${p.n} : ${p.t}</li></ul><div style="margin-top:10px"><b style="font-family:var(--f-display)">Compétence : ${c.skill.n}</b><div>${c.skill.d}</div></div></div>
+    <div class="panel"><div class="ph">Compagnon de départ</div><div class="ppl petpick">${START_PETS.map(id => `<button class="pp ${CR.pet === id ? "on" : ""}" data-act="cpet" data-p="${id}" title="${PETS[id].d}"><canvas data-spet="${id}" width="120" height="92"></canvas>${PETS[id].n}</button>`).join("")}</div><p class="muted" style="margin:6px 0 0;font-size:13.5px">${PETS[CR.pet].d}</p></div>
     <div class="panel"><div class="ph">Difficulté</div><div class="diffs">${DIFFS.map(x => `<button class="pp ${CR.diff === x.id ? "on" : ""}" data-act="cdiff" data-d="${x.id}" title="${x.d}"><b>${x.n}</b></button>`).join("")}</div><p class="muted" style="margin:6px 0 0;font-size:14px">${DIFFS.find(x => x.id === CR.diff).d}</p></div>
     <button class="btn verd wide" style="font-size:18px;padding:14px" data-act="create">Créer mon personnage</button>
     ${saved ? `<button class="btn ghost wide" data-act="continue">Continuer la partie de ${esc(saved.name)}</button>` : ""}
     <p class="faint" style="margin:0;font-size:14px;text-align:center">Prototype jouable · sauvegarde dans ce navigateur</p></div></div>`;
   mountCanvas("#stage", STAGE);
+  document.querySelectorAll("canvas[data-spet]").forEach(cv => { const x = cv.getContext("2d"); x.clearRect(0, 0, 120, 92); glow(x, 60, 70, 60, "#a3c4d8", .12); drawPet(x, cv.dataset.spet, 56, 84, 2.6, .5, 1, null); });
   document.querySelectorAll("canvas[data-face]").forEach(cv => { const x = cv.getContext("2d"); x.clearRect(0, 0, 92, 92); const g = x.createRadialGradient(46, 40, 4, 46, 46, 50); g.addColorStop(0, "#3a2a1c"); g.addColorStop(1, "#0b0807"); x.fillStyle = g; x.fillRect(0, 0, 92, 92); drawChar(x, 46, 40 + 37 * 2.2 * (PPL(cv.dataset.face).short ? .84 : 1), 2.2, { ...heroLook(CR.cls, cv.dataset.face, { ...defaultLook(cv.dataset.face, CR.look.body), hair: CR.look.hair, mark: CR.look.mark }), bare: 1, weapon: "none" }, 0, 1); });
   $("#pname").addEventListener("input", e => CR.name = e.target.value);
 }
@@ -6027,6 +6850,7 @@ function vPerso() {
 /* ═══════════════════════ Actions ═══════════════════════ */
 const ACT = {
   go: d => go(d.v),
+  cpet: d => { CR.pet = d.p; render(); },
   ccls: d => { CR.cls = d.c; render(); }, cppl: d => { CR.ppl = d.p; const o = CR.look; CR.look = { ...defaultLook(d.p, o.body), hair: o.hair, mark: o.mark, cloak: o.cloak, skin: o.skin }; render(); },
   look: d => { const lk = S && VIEW === "perso" ? S.look : CR.look; const v = d.k === "body" || d.k === "hairCol" ? d.v : +d.v; lk[d.k] = v; if (d.k === "body") { if (v === "f" && lk.beard) lk.beard = 0; } if (S && VIEW === "perso") save(); rerender(); },
   helm: (d, el) => { UI.helmOff = !UI.helmOff; el.classList.toggle("on", UI.helmOff); },
@@ -6048,7 +6872,7 @@ const ACT = {
   innnap: () => { closeModal(); ACT.nap(); },
   inneat: () => { closeModal(); ACT.eat(); },
   dice: () => { CR.name = pick(NAMES); render(); },
-  create: () => { const n = (CR.name || "").trim(); if (!n) { toast("Donnez un nom à votre personnage.", "bad"); return; } newState(n, CR.cls, CR.ppl, { ...CR.look }); S.diff = CR.diff || "normal"; save(); VIEW = "home"; render(); viewEl.scrollTop = 0; toast(`Bienvenue à Sombreval, ${esc(n)}.`, "gold"); },
+  create: () => { const n = (CR.name || "").trim(); if (!n) { toast("Donnez un nom à votre personnage.", "bad"); return; } newState(n, CR.cls, CR.ppl, { ...CR.look }); applyStartPet(CR.pet || "loup"); S.diff = CR.diff || "normal"; save(); VIEW = "home"; render(); viewEl.scrollTop = 0; toast(`Bienvenue à Sombreval, ${esc(n)}.`, "gold"); },
   continue: () => { S = load(); VIEW = "home"; render(); viewEl.scrollTop = 0; },
   askreset: () => openModal(`<div class="mtitle">Nouvelle partie ?</div><p style="text-align:center">La partie de ${esc(S.name)} sera effacée de ce navigateur.</p><div class="mfoot"><button class="btn ghost" data-act="close">Annuler</button><button class="btn ember" data-act="reset">Effacer et recommencer</button></div>`),
   reset: () => { wipe(); S = null; EX = null; closeModal(); render(); },
@@ -6211,4 +7035,27 @@ Object.assign(ACT, {
   tutorestart: () => { tutoRestart(); closeModal(); go("home"); renderCoach(); toast("Le guide reprend depuis le début.", "gold"); },
 });
 if (typeof setInterval === "function" && typeof document !== "undefined" && document.body) setInterval(coachTick, 450);
+/* ═══════════════════════ Ambiance animée de l'interface : braises, cendres et brume ═══════════════════════ */
+(function () {
+  if (typeof document === "undefined" || !document.createElement || typeof window === "undefined" || !window.addEventListener) return;
+  const start = () => {
+    if (document.getElementById("ambient")) return;
+    const c = document.createElement("canvas"); c.id = "ambient"; c.setAttribute("aria-hidden", "true"); document.body.prepend(c);
+    const x = c.getContext("2d"); if (!x) return; let W = 0, H = 0, dpr = Math.min(1.5, window.devicePixelRatio || 1);
+    const rs = () => { W = innerWidth; H = innerHeight; c.width = W * dpr; c.height = H * dpr; }; rs(); addEventListener("resize", rs);
+    const reduce = matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const N = reduce ? 0 : Math.round(Math.min(70, W * H / 22000));
+    const P = Array.from({ length: N }, () => ({ x: Math.random(), y: Math.random(), v: .01 + Math.random() * .03, s: .6 + Math.random() * 1.6, p: Math.random() * 6.28, ash: Math.random() < .35 }));
+    let last = performance.now();
+    const loop = now => { const dt = Math.min(.05, (now - last) / 1000); last = now;
+      if (!document.hidden) { x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, W, H);
+        for (const q of P) { q.y -= q.v * dt * (q.ash ? .5 : 1); q.x += Math.sin(now / 1700 + q.p) * .00025; if (q.y < -.03) { q.y = 1.03; q.x = Math.random(); }
+          const px = q.x * W, py = q.y * H, fl = .55 + Math.sin(now / 260 + q.p * 3) * .45;
+          if (q.ash) { x.fillStyle = `rgba(180,170,160,${.12 * fl})`; x.fillRect(px, py, q.s, q.s); }
+          else { const g = x.createRadialGradient(px, py, 0, px, py, q.s * 4); g.addColorStop(0, `rgba(255,170,80,${.55 * fl * (1 - Math.abs(q.y - .5))})`); g.addColorStop(1, "rgba(255,120,40,0)"); x.fillStyle = g; x.fillRect(px - q.s * 4, py - q.s * 4, q.s * 8, q.s * 8); } } }
+      requestAnimationFrame(loop); };
+    requestAnimationFrame(loop);
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
+})();
 </script></body></html>
