@@ -370,6 +370,15 @@ button,canvas,a{touch-action:manipulation}
 .build .b{padding:12px;display:grid;gap:6px;align-content:start}.build h3{font-size:17px;color:var(--gold-hi)}
 .build:not(.built) canvas{filter:grayscale(.6) brightness(.7)}
 .dg.secret h3{color:var(--muted)}.dg.shadow h3{color:#c9a6ff}
+.spectree{font-size:13.5px;line-height:1.5;padding:6px 8px;border-radius:3px;background:rgba(0,0,0,.25)}
+.specbranch{padding:12px;margin:-2px 0 14px;border-radius:4px;background:radial-gradient(ellipse at 50% 0%,rgba(241,214,149,.08),transparent 70%);box-shadow:inset 0 0 0 1px rgba(241,214,149,.25)}
+.specbranch .branch{max-width:420px;margin:0 auto}
+.node.ult{width:84px;height:84px;box-shadow:inset 0 0 0 2px var(--bc),0 0 0 1px #000,0 0 14px rgba(241,214,149,.18)}
+.node.ult.on{box-shadow:inset 0 0 0 3px var(--bc),0 0 26px var(--bc),0 0 0 1px #000}
+.season{padding:0;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);box-shadow:inset 0 0 0 1px var(--sc,#8f7046),0 0 24px rgba(0,0,0,.4)}
+.season.off{display:block;padding:14px}.season canvas{width:100%;height:100%;min-height:160px;display:block}.season .sbody{padding:14px;display:grid;gap:4px;align-content:center}
+.seasoncard{display:grid;gap:2px;text-align:left;cursor:pointer;border:0;font:inherit;color:var(--text);padding:10px 14px;background:linear-gradient(90deg,rgba(0,0,0,.2),var(--panel));box-shadow:inset 3px 0 0 var(--sc),inset 0 0 0 1px var(--line)}
+.seasoncard b{font-family:var(--f-display);color:var(--sc)}.seasoncard span{font-size:14px;color:var(--muted)}
 /* ── Chroniques ── */
 .bestiary{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
 .beast{display:grid;gap:3px;justify-items:center;text-align:center;padding:8px;border-radius:4px;background:var(--well);box-shadow:inset 0 0 0 1px #2a2219;font-size:13px}
@@ -417,6 +426,7 @@ button,canvas,a{touch-action:manipulation}
   body.has-coach #modal .panel{margin-bottom:200px}
   #coach p{font-size:14px;margin:4px 0 8px}
   .bestiary{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .season{grid-template-columns:1fr}.season canvas{min-height:110px}
   .build{grid-template-columns:1fr}.build canvas{width:100%;height:120px}
   #toasts{left:12px;right:12px;bottom:calc(86px + env(safe-area-inset-bottom,0px));justify-items:center}
   #app.solo~#toasts{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
@@ -1023,7 +1033,7 @@ const STORY = [
   { act: "Acte I · Les brumes s'éveillent", id: "m1", n: "Le réveil de la forge", d: "Forgez votre première arme à l'enclume.", goal: s => [s.st.weapon, 1], rw: { gold: 60, xp: 60, crys: 2, pts: 1 },
     intro: "La forge de votre père est froide depuis l'hiver. Ce matin, la brume a franchi les remparts de Sombreval, et les villageois frappent à votre porte : il leur faut des lames.", outro: "Le métal chante de nouveau. Dans la rue, on murmure votre nom." },
   { act: "Acte I · Les brumes s'éveillent", id: "m2", n: "Des voix sous la ville", d: "Atteignez la profondeur 3 du Donjon des Murmures.", goal: s => [s.st.depth.murmures || 0, 3], req: "m1", rw: { gold: 120, xp: 100, crys: 3 },
-    intro: "Sous la vieille prison, des voix appellent les enfants par leur nom. Le capitaine Haldor vous confie la clé rouillée du Donjon des Murmures.", outro: "Les voix se taisent un instant, puis reprennent, plus bas, plus près." },
+    intro: "Sous la vieille prison, des voix appellent les enfants par leur nom. Le capitaine Haldor vous confie la clé rouillée du Donjon des Murmures.", outro: "Les voix se taisent un instant, puis reprennent, plus bas, plus près. Le vieux druide vous attend à la forge : il vous apprend à graver les runes. L'Autel runique est ouvert." },
   { act: "Acte I · Les brumes s'éveillent", id: "m3", n: "Le feu ancien", d: "Sertissez une rune dans un équipement.", goal: s => [s.st.sock, 1], req: "m2", rw: { gold: 80, xp: 120, crys: 3, items: [["essence", 2]] },
     intro: "Le vieux druide vous montre une gravure : les forgerons d'autrefois liaient la braise au métal. « Les runes brûlent la brume », dit-il.", outro: "La rune luit d'un rouge sourd. La brume recule de trois pas autour de vous." },
   { act: "Acte I · Les brumes s'éveillent", id: "m4", n: "Le voile des brumes", d: "Vainquez l'Esprit des Brumes au fond des Murmures.", goal: s => [s.st.boss.esprit || 0, 1], req: "m3", rw: { gold: 300, xp: 250, crys: 10, perma: { hpPct: .05 }, pts: 1 },
@@ -1156,13 +1166,13 @@ const BOSS_MATS = { reine: "coeur_givre", hydre: "larme_hydre", liche: "ame_lich
 /* ── Reconstruction de Sombreval : chantiers financés en or, visibles au village ── */
 const REBUILD = [
   { id: "remparts", n: "Remparts", d: "Une enceinte de pierre autour du village.", eff: "+4 % de santé et +3 % de défense par niveau.", max: 3, cost: [900, 2400, 5000], b: { hpPct: .04, def: .03 } },
-  { id: "moulin", n: "Moulin à vent", d: "Farine et pain frais pour les expéditions.", eff: "Faim et soif −10 % en expédition par niveau.", max: 3, cost: [700, 1800, 3800], b: { hunger: .1 }, pos: { gx: 0, gy: 0, w: 2, d: 2, door: [2, 1] } },
-  { id: "temple", n: "Temple de l'Aube", d: "Les prêtres bénissent ceux qui partent dans la brume.", eff: "+6 % d'expérience par niveau.", max: 3, cost: [1000, 2600, 5200], b: { xp: .06 }, pos: { gx: 12, gy: 0, w: 2, d: 2, door: [12, 2] } },
-  { id: "halle", n: "Halle aux marchands", d: "Des marchands de passage s'installent à Sombreval.", eff: "+6 % sur les ventes et les commandes par niveau.", max: 3, cost: [800, 2200, 4600], b: { sell: .06, orderGold: .06 }, pos: { gx: 0, gy: 9, w: 2, d: 2, door: [1, 11] } },
-  { id: "caserne", n: "Caserne de la garde", d: "Des soldats entraînent les mercenaires.", eff: "Mercenaires +8 % et location −10 % par niveau.", max: 3, cost: [900, 2400, 5000], b: { allyPow: .08, hireCut: .1 }, pos: { gx: 11, gy: 7, w: 2, d: 2, door: [11, 9] } },
-  { id: "tour", n: "Tour de guet", d: "Les guetteurs repèrent les trésors depuis les hauteurs.", eff: "+6 % de chance de butin par niveau ; au niveau 3, un bonus de plus en fin de salle.", max: 3, cost: [1100, 2800, 5600], b: { loot: .06 }, b3: { boonPick: 1 }, pos: { gx: 13, gy: 9, w: 1, d: 1, door: [12, 9] } },
-  { id: "jardins", n: "Jardins des herboristes", d: "Des simples poussent derrière des haies taillées.", eff: "+3 % de santé récupérée par salle et potions +8 % par niveau.", max: 3, cost: [600, 1600, 3400], b: { regen: .03, potion: .08 }, pos: { gx: 0, gy: 5, w: 2, d: 1, door: [2, 5] } },
-  { id: "statue", n: "Statue du Forgeron", d: "Le monument que Sombreval doit à son forgeron.", eff: "+6 % de qualité et +6 % de rareté au craft. La gloire.", max: 1, cost: [12000], b: { quality: .06, rarity: .06 }, pos: { gx: 9, gy: 8, w: 1, d: 1, door: [9, 7] } },
+  { id: "moulin", n: "Moulin à vent", d: "Farine et pain frais pour les expéditions.", eff: "Faim et soif −10 % en expédition par niveau.", max: 3, cost: [700, 1800, 3800], b: { hunger: .1 }, pos: { gx: 0, gy: 0, w: 2, d: 2, door: [1, 2] } },
+  { id: "temple", n: "Temple de l'Aube", d: "Les prêtres bénissent ceux qui partent dans la brume.", eff: "+6 % d'expérience par niveau.", max: 3, cost: [1000, 2600, 5200], b: { xp: .06 }, pos: { gx: 16, gy: 1, w: 2, d: 2, door: [16, 3] } },
+  { id: "halle", n: "Halle aux marchands", d: "Des marchands de passage s'installent à Sombreval.", eff: "+6 % sur les ventes et les commandes par niveau.", max: 3, cost: [800, 2200, 4600], b: { sell: .06, orderGold: .06 }, pos: { gx: 0, gy: 14, w: 2, d: 2, door: [1, 16] } },
+  { id: "caserne", n: "Caserne de la garde", d: "Des soldats entraînent les mercenaires.", eff: "Mercenaires +8 % et location −10 % par niveau.", max: 3, cost: [900, 2400, 5000], b: { allyPow: .08, hireCut: .1 }, pos: { gx: 15, gy: 10, w: 2, d: 2, door: [15, 12] } },
+  { id: "tour", n: "Tour de guet", d: "Les guetteurs repèrent les trésors depuis les hauteurs.", eff: "+6 % de chance de butin par niveau ; au niveau 3, un bonus de plus en fin de salle.", max: 3, cost: [1100, 2800, 5600], b: { loot: .06 }, b3: { boonPick: 1 }, pos: { gx: 17, gy: 14, w: 1, d: 1, door: [16, 14] } },
+  { id: "jardins", n: "Jardins des herboristes", d: "Des simples poussent derrière des haies taillées.", eff: "+3 % de santé récupérée par salle et potions +8 % par niveau.", max: 3, cost: [600, 1600, 3400], b: { regen: .03, potion: .08 }, pos: { gx: 5, gy: 11, w: 2, d: 1, door: [5, 12] } },
+  { id: "statue", n: "Statue du Forgeron", d: "Le monument que Sombreval doit à son forgeron.", eff: "+6 % de qualité et +6 % de rareté au craft. La gloire.", max: 1, cost: [12000], b: { quality: .06, rarity: .06 }, pos: { gx: 10, gy: 11, w: 1, d: 1, door: [10, 12] } },
 ];
 
 /* ── Nouvelles créatures ── */
@@ -1228,6 +1238,128 @@ ACHIEVEMENTS.push(
   { id: "a_fees", n: "L'ami des fées", d: "Vaincre Titania et gagner son renard.", g: s => [(s.st.boss || {}).reine_fees || 0, 1], rw: { crys: 15 } },
   { id: "a_goblin", n: "Rattrapé !", d: "Vaincre 5 gobelins voleurs.", g: s => [(s.st.killed || {}).gobelin || 0, 5], rw: { crys: 10 } },
 );
+/* ═══════════════════════ Contenu v9 : arbre étendu, Acte IV, saisons ═══════════════════════ */
+
+/* ── Palier ultime des six branches générales ── */
+const _br = id => MASTERY.find(b => b.id === id);
+_br("fab").nodes.push({ id: "f7", n: "Forge des légendes", d: "+8 % de qualité et +8 % de rareté au craft.", b: { quality: .08, rarity: .08 } });
+_br("com").nodes.push({ id: "c7", n: "Empire marchand", d: "+15 % d'or trouvé et +10 % sur les ventes.", b: { gold: .15, sell: .1 } });
+_br("exp").nodes.push({ id: "e7", n: "Explorateur légendaire", d: "+15 % de chance de butin et un bonus de plus en fin de salle.", b: { loot: .15, boonPick: 1 } });
+_br("war").nodes.push({ id: "g7", n: "Fureur du titan", d: "Compétence : ennemis à 2 cases (×1,6), étourdis.", b: {}, skill: "g7" });
+_br("arc").nodes.push({ id: "a7", n: "Pluie d'étoiles", d: "Compétence : tous les ennemis (×1,3 magique).", b: {}, skill: "a7" });
+_br("surv").nodes.push({ id: "v7", n: "Communion", d: "Compétence : soigne tout le groupe (30 + magie) et le purifie.", b: {}, skill: "v7" });
+Object.assign(SKILLS, {
+  g7: { n: "Fureur du titan", d: "Ennemis à 2 cases (×1,6), étourdis.", cost: 34, range: 0, target: "self", mult: 1.6, st: "atk", around: 2, onHit: { k: "stun", t: 2 } },
+  a7: { n: "Pluie d'étoiles", d: "Tous les ennemis (×1,3 magique).", cost: 40, range: 0, target: "self", mult: 1.3, st: "mag", around: 9 },
+  v7: { n: "Communion", d: "Soigne le groupe (30 + magie) et le purifie.", cost: 26, range: 0, heal: 30 },
+});
+
+/* ── Une branche propre à chaque spécialisation : 5 nœuds, dont 2 compétences ── */
+// [id de spé, nom de branche, couleur, [p1, p2(compétence), p3, p4, p5(compétence ultime)]]
+const SPEC_TREES = [
+  ["runes", "Gravure", "#ff8a3d", [["Burin runique", "+6 % de qualité de forge.", { quality: .06 }], ["Rune d'éclair", { cost: 16, range: 3, mult: 1.3, st: "mag", onHit: { k: "stun", t: 2 } }, "À 3 cases (×1,3 magique), étourdit."], ["Runes vivantes", "Brûlures et poisons +25 %.", { dotPct: .25 }], ["Sceau protecteur", "+8 % de défense.", { def: .08 }], ["Cataclysme runique", { cost: 32, range: 0, target: "self", mult: 1.6, st: "mag", around: 3, onHit: { k: "burn", t: 3, d: 8 } }, "Ennemis à 3 cases (×1,6), enflammés."]]],
+  ["briseur", "Fracas", "#c86a3a", [["Bras d'acier", "+8 % d'attaque.", { atkPct: .08 }], ["Onde de choc", { cost: 18, range: 0, target: "self", mult: 1.3, st: "atk", around: 1, onHit: { k: "stun", t: 2 } }, "Ennemis au contact (×1,3), étourdis."], ["Peau de forge", "+8 % de santé.", { hpPct: .08 }], ["Coup de grâce", "+20 % de dégâts sur les ennemis affaiblis.", { execute: .2 }], ["Marteau du jugement", { cost: 30, range: 1, mult: 3, st: "atk", finisher: 1.5 }, "×3, et ×1,5 de plus sur une cible affaiblie."]]],
+  ["contrebande", "Pègre", "#b8a040", [["Poches profondes", "+10 % d'or trouvé.", { gold: .1 }], ["Fumigène", { cost: 14, range: 0, target: "self", buff: { k: "guard", t: 2, r: 9 } }, "Le groupe : défense +50 % pendant 2 tours."], ["Coup en traître", "+5 % de critique.", { crit: .05 }], ["Receleur", "+10 % de chance de butin.", { loot: .1 }], ["Pluie de pièces", { cost: 26, range: 0, target: "self", mult: 1, st: "atk", around: 4, onHit: { k: "fear", t: 2 } }, "Ennemis à 4 cases (×1,0), effrayés."]]],
+  ["negoce", "Comptoir", "#d8c060", [["Bon payeur", "+10 % sur les ventes.", { sell: .1 }], ["Prime de combat", { cost: 16, range: 0, target: "self", buff: { k: "inspired", t: 2, r: 9 } }, "Alliés : +25 % de dégâts pendant 2 tours."], ["Carnet de commandes", "+15 % sur les commandes.", { orderGold: .15 }], ["Escorte payée", "Compagnon et mercenaires +10 %.", { allyPow: .1 }], ["Contrat d'assassinat", { cost: 28, range: 4, mult: 2.4, st: "atk", sure: 1 }, "À 4 cases (×2,4), critique assuré."]]],
+  ["rodeur", "Pistes", "#6fa0b8", [["Œil perçant", "+4 % de critique.", { crit: .04 }], ["Tir de barrage", { cost: 18, range: 4, mult: 1.1, st: "atk", aoe: 1 }, "Zone à 4 cases (×1,1)."], ["Archerie", "+6 % d'attaque.", { atkPct: .06 }], ["Chasseur-cueilleur", "+8 % de chance de butin.", { loot: .08 }], ["Œil du faucon", { cost: 26, range: 6, mult: 2.6, st: "atk", sure: 1 }, "À 6 cases (×2,6), critique assuré."]]],
+  ["pisteur", "Traque", "#8aa070", [["Instinct", "+15 % de dégâts sur les ennemis affaiblis.", { execute: .15 }], ["Piège à loups", { cost: 12, range: 3, mult: .6, st: "atk", onHit: { k: "stun", t: 2 } }, "À 3 cases (×0,6), immobilise."], ["Leçons du terrain", "+8 % d'expérience.", { xp: .08 }], ["Point faible", "+5 % de critique.", { crit: .05 }], ["Chasse à l'homme", { cost: 28, range: 4, mult: 1.1, st: "atk", hits: 2, onHit: { k: "mark", t: 3 } }, "Deux tirs à 4 cases (×1,1), marque la cible."]]],
+  ["apothicaire", "Laboratoire", "#5fd0a0", [["Dosages précis", "Potions +15 %.", { potion: .15 }], ["Brume curative", { cost: 20, range: 0, heal: 30 }, "Soigne le groupe (30 + magie) et le purifie."], ["Tisanes", "+4 % de santé récupérée par salle.", { regen: .04 }], ["Constitution", "+6 % de santé.", { hpPct: .06 }], ["Élixir de jouvence", { cost: 24, range: 0, target: "self", selfHeal: .6 }, "Récupère 60 % de santé."]]],
+  ["pyro", "Brasier", "#ff6a3a", [["Combustion", "Brûlures et poisons +20 %.", { dotPct: .2 }], ["Cocktail de poix", { cost: 20, range: 3, mult: 1.2, st: "mag", aoe: 1, onHit: { k: "burn", t: 3, d: 7 } }, "Zone à 3 cases (×1,2 magique), brûle 3 tours."], ["Flamme intérieure", "+8 % de puissance magique.", { magPct: .08 }], ["Masque à gaz", "Insensible au poison.", { immPoison: 1 }], ["Nuée ardente", { cost: 34, range: 0, target: "self", mult: 1.1, st: "mag", around: 9, onHit: { k: "burn", t: 3, d: 9 } }, "Tous les ennemis (×1,1 magique), brûlés."]]],
+  ["rempart", "Bastion", "#8a7ac0", [["Forteresse", "+6 % de défense.", { def: .06 }], ["Mur de boucliers", { cost: 20, range: 0, target: "self", buff: { k: "guard", t: 3, r: 9 } }, "Le groupe : défense +50 % pendant 3 tours."], ["Endurance", "+8 % de santé.", { hpPct: .08 }], ["Inébranlable", "Une fois par expédition, survit à un coup fatal.", { lastStand: 1 }], ["Défi du titan", { cost: 26, range: 0, target: "self", mult: 1.6, st: "atk", around: 1, taunt: 1 }, "Ennemis au contact (×1,6), et les force à vous viser."]]],
+  ["vengeur", "Représailles", "#c84a4a", [["Rancune", "+6 % d'attaque.", { atkPct: .06 }], ["Riposte enflammée", { cost: 14, range: 0, target: "self", buff: { k: "thorns", t: 3, r: 0 } }, "Renvoie 50 % des coups de mêlée pendant 3 tours."], ["Œil pour œil", "+5 % de critique.", { crit: .05 }], ["Justicier", "+20 % de dégâts sur les ennemis affaiblis.", { execute: .2 }], ["Colère des cendres", { cost: 30, range: 0, target: "self", mult: 1.7, st: "atk", around: 2, onHit: { k: "burn", t: 2, d: 7 } }, "Ennemis à 2 cases (×1,7), enflammés."]]],
+  ["chrono", "Sablier", "#9a8aff", [["Économie du temps", "Compétences −2 énergie.", { skillCheap: 2 }], ["Ralentissement", { cost: 16, range: 4, mult: .8, st: "mag", onHit: { k: "stun", t: 2 } }, "À 4 cases (×0,8 magique), fige la cible."], ["Réserves", "+20 énergie max.", { enFlat: 20 }], ["Prescience", "+8 % de puissance magique.", { magPct: .08 }], ["Effondrement", { cost: 34, range: 4, mult: 2, st: "mag", aoe: 1 }, "Zone à 4 cases (×2,0 magique)."]]],
+  ["element", "Tempêtes", "#6ab0ff", [["Affinité", "+6 % de puissance magique.", { magPct: .06 }], ["Lance de glace", { cost: 18, range: 5, mult: 1.8, st: "mag", onHit: { k: "fear", t: 2 } }, "À 5 cases (×1,8 magique), effraie."], ["Foudre persistante", "Brûlures et poisons +20 %.", { dotPct: .2 }], ["Arc électrique", "+5 % de critique.", { crit: .05 }], ["Météore", { cost: 38, range: 5, mult: 2.2, st: "mag", aoe: 1, onHit: { k: "burn", t: 3, d: 10 } }, "Zone à 5 cases (×2,2 magique), enflammée."]]],
+  ["pilleur", "Razzia", "#c89a4a", [["Flair", "+10 % de chance de butin.", { loot: .1 }], ["Lame empoisonnée", { cost: 14, range: 1, mult: 1.3, st: "atk", onHit: { k: "poison", t: 3, d: 6 } }, "×1,3 et empoisonne."], ["Bourse pleine", "+10 % d'or trouvé.", { gold: .1 }], ["Coup bas", "+5 % de critique.", { crit: .05 }], ["Mise à sac", { cost: 26, range: 0, target: "self", mult: .9, st: "atk", around: 1, hits: 2 }, "Deux frappes sur les ennemis au contact (×0,9)."]]],
+  ["archeo", "Reliques", "#b0a0d0", [["Œil d'expert", "+6 % de rareté.", { rarity: .06 }], ["Fouet de relique", { cost: 14, range: 2, mult: 1.5, st: "atk", onHit: { k: "bleed", t: 3, d: 5 } }, "À 2 cases (×1,5), fait saigner."], ["Restauration", "+15 % au recyclage.", { salvage: .15 }], ["Érudition", "+8 % d'expérience.", { xp: .08 }], ["Malédiction du tombeau", { cost: 28, range: 0, target: "self", mult: 1.2, st: "mag", around: 3, onHit: { k: "fear", t: 3 } }, "Ennemis à 3 cases (×1,2 magique), terrifiés."]]],
+  ["guerre", "Tambours", "#e0a040", [["Rythme martial", "Compagnon et mercenaires +8 %.", { allyPow: .08 }], ["Chant de bataille", { cost: 20, range: 0, target: "self", buff: { k: "inspired", t: 3, r: 9 } }, "Alliés : +25 % de dégâts pendant 3 tours."], ["Souffle long", "+6 % de santé.", { hpPct: .06 }], ["Cadence", "+6 % d'attaque.", { atkPct: .06 }], ["Ballade des héros", { cost: 26, range: 0, heal: 35 }, "Soigne le groupe (35 + magie) et le purifie."]]],
+  ["conteur", "Légendes", "#c070d0", [["Mémoire vive", "+8 % d'expérience.", { xp: .08 }], ["Dissonance", { cost: 22, range: 0, target: "self", mult: .9, st: "mag", around: 3, onHit: { k: "stun", t: 2 } }, "Ennemis à 3 cases (×0,9 magique), étourdis."], ["Verve", "Compétences −2 énergie.", { skillCheap: 2 }], ["Éloquence", "+8 % de puissance magique.", { magPct: .08 }], ["Conte funeste", { cost: 30, range: 0, target: "self", mult: 1, st: "mag", around: 9, onHit: { k: "fear", t: 3 } }, "Tous les ennemis (×1,0 magique), terrifiés."]]],
+  ["danse", "Ballet", "#e0607a", [["Pas chassé", "+4 % de critique.", { crit: .04 }], ["Tourbillon d'acier", { cost: 18, range: 0, target: "self", mult: .8, st: "atk", around: 1, hits: 2 }, "Deux frappes sur les ennemis au contact (×0,8)."], ["Jeu de jambes", "+1 déplacement.", { mvBonus: 1 }], ["Élan", "+6 % d'attaque.", { atkPct: .06 }], ["Mille entailles", { cost: 30, range: 1, mult: .7, st: "atk", hits: 4, onHit: { k: "bleed", t: 3, d: 6 } }, "Quatre frappes (×0,7), saignement."]]],
+  ["spadassin", "Escrime", "#a0a8c0", [["Lecture du jeu", "+10 % de dégâts sur les ennemis affaiblis.", { execute: .1 }], ["Fente précise", { cost: 16, range: 2, mult: 1.9, st: "atk", sure: 1 }, "À 2 cases (×1,9), critique assuré."], ["Parade", "+5 % de défense.", { def: .05 }], ["Précision", "+6 % de critique.", { crit: .06 }], ["Botte secrète", { cost: 28, range: 1, mult: 2.8, st: "atk", sure: 1, finisher: 1.6 }, "×2,8 critique assuré, ×1,6 de plus sur une cible affaiblie."]]],
+  ["bosquet", "Sylve", "#5fb06a", [["Cercle des bêtes", "Compagnon et mercenaires +8 %.", { allyPow: .08 }], ["Ronces", { cost: 18, range: 3, mult: 1, st: "mag", aoe: 1, onHit: { k: "bleed", t: 3, d: 5 } }, "Zone à 3 cases (×1,0 magique), saignement."], ["Sève vive", "+4 % de santé récupérée par salle.", { regen: .04 }], ["Écorce", "Insensible au poison.", { immPoison: 1 }], ["Floraison", { cost: 28, range: 0, heal: 40 }, "Soigne le groupe (40 + magie) et le purifie."]]],
+  ["forme", "Bête", "#a07850", [["Fourrure épaisse", "+6 % de santé.", { hpPct: .06 }], ["Griffes du loup-garou", { cost: 16, range: 1, mult: .7, st: "atk", hits: 3 }, "Trois coups de griffe (×0,7)."], ["Instinct sauvage", "+8 % d'attaque.", { atkPct: .08 }], ["Cuir épais", "+6 % de défense.", { def: .06 }], ["Bond sauvage", { cost: 26, range: 3, mult: 2.2, st: "atk", onHit: { k: "stun", t: 2 } }, "Bondit à 3 cases (×2,2), étourdit."]]],
+];
+for (const [spec, name, col, nodes] of SPEC_TREES) {
+  const id = "s_" + spec;
+  MASTERY.push({ id, spec, n: name, ic: "star", col, nodes: nodes.map((nd, i) => {
+    const nid = `${id}_${i + 1}`;
+    if (typeof nd[1] === "object") { SKILLS[nid] = { n: nd[0], d: nd[2], ...nd[1] }; return { id: nid, n: nd[0], d: "Compétence : " + nd[2], b: {}, skill: nid }; }
+    return { id: nid, n: nd[0], d: nd[1], b: nd[2] };
+  }) });
+}
+
+/* ── Acte IV : les terres oubliées ── */
+const ACT4 = "Acte IV · Les terres oubliées";
+const STORY4 = [
+  { act: ACT4, id: "m13", n: "Les spores du silence", d: "Vainquez la Mère-Spore dans la Forêt fongique.", goal: s => [s.st.boss.mere_spore || 0, 1], req: "m10", rw: { gold: 1000, xp: 1400, crys: 15, pts: 1 },
+    intro: "Depuis que l'aube est revenue, les champignons du nord grandissent à vue d'œil. Les bûcherons ne reviennent plus, et la nuit, la forêt luit.", outro: "La Mère-Spore s'éteint dans un soupir. Sur son trône de mousse, un rouage d'or, gravé du sceau d'une cité disparue." },
+  { act: ACT4, id: "m14", n: "Le roi d'horlogerie", d: "Vainquez l'Horloger fou dans les Ruines mécaniques.", goal: s => [s.st.boss.horloger || 0, 1], req: "m13", rw: { gold: 1200, xp: 1700, crys: 18, perma: { def: 3 }, pts: 1 },
+    intro: "Le rouage mène à une cité de cuivre engloutie. Quelqu'un y remonte encore les automates, chaque nuit, pour un roi qui ne viendra plus.", outro: "L'Horloger s'arrête au milieu d'un mot. Dans ses plans, une carte : une montagne creuse, marquée d'un dragon. Bonus permanent : +3 défense." },
+  { act: ACT4, id: "m15", n: "La carte déchirée", d: "Révélez un lieu caché (fragments de carte ou clé d'argent).", goal: s => [Object.keys(s.found || {}).length, 1], req: "m14", rw: { gold: 900, xp: 1500, crys: 15, items: [["carte", 1]] },
+    intro: "La carte de l'Horloger a été déchirée en morceaux, dispersés chez les gobelins, dans les coffres dorés et sur les étals du Marché des Ombres.", outro: "Les fragments s'assemblent. Au centre, d'une encre rouge : « Ici dort Vermithrax. Qu'il dorme. »" },
+  { act: ACT4, id: "m16", n: "Le dernier dragon", d: "Vainquez Vermithrax l'Ancien dans l'Antre du Dragon.", goal: s => [s.st.boss.dragon || 0, 1], req: "m15", rw: { gold: 2500, xp: 3000, crys: 40, perma: { atkPct: .06, hpPct: .06 }, pts: 2 },
+    intro: "La brume vient de son souffle. Tant qu'il dort, elle s'étend ; s'il s'éveille, elle brûle. Il est temps d'en finir.", outro: "Vermithrax s'effondre sur son or. La brume se lève sur toute la vallée, pour la première fois depuis cent ans. Bonus permanent : +6 % d'attaque et de santé." },
+];
+STORY.push(...STORY4);
+const _lastMain = QUESTS.map(q => !!q.main).lastIndexOf(true);
+QUESTS.splice(_lastMain + 1, 0, ...STORY4.map(c => ({ ...c, main: 1, ch: c.act })));
+QUESTS.push(
+  { id: "s16", ch: "Quête secondaire", n: "Le printemps des fées", d: "Vainquez Titania dans le Verger des Fées.", goal: s => [s.st.boss.reine_fees || 0, 1], rw: { gold: 600, xp: 800, crys: 12 } },
+  { id: "s17", ch: "Quête secondaire", n: "Collectionneur", d: "Forgez 3 objets légendaires.", goal: s => [(s.legend || []).length, 3], rw: { gold: 800, xp: 900, pts: 1 } },
+  { id: "s18", ch: "Quête secondaire", n: "Maître d'œuvre", d: "Achevez 10 étapes de reconstruction.", goal: s => [Object.values(s.rebuild || {}).reduce((a, b) => a + b, 0), 10], rw: { gold: 1000, crys: 10 } },
+  { id: "s19", ch: "Quête secondaire", n: "Chasseur de voleurs", d: "Vainquez 3 gobelins voleurs.", goal: s => [(s.st.killed || {}).gobelin || 0, 3], rw: { gold: 500, xp: 500, items: [["carte", 1]] } },
+);
+
+/* ── Événements saisonniers (calendrier réel) ── */
+Object.assign(ENEMIES, {
+  citrouille: { n: "Citrouille hantée", kind: "pumpkin", hp: 44, atk: 10, def: 3, mv: 3, range: 1, burnHit: 3, seasonal: 1 },
+  bonhomme: { n: "Bonhomme de givre", kind: "snowman", hp: 56, atk: 9, def: 5, mv: 2, range: 2, seasonal: 1 },
+  lutin: { n: "Lutin farceur", kind: "goblin", col: "#7ad06a", hp: 38, atk: 11, def: 2, mv: 5, range: 1, seasonal: 1 },
+  jongleur: { n: "Jongleur fantôme", kind: "wraith", col: "#ffd27a", hp: 42, atk: 12, def: 2, mv: 4, range: 3, seasonal: 1 },
+});
+Object.assign(IT, {
+  jeton: { n: "Jeton de saison", t: "component", ic: "fragment", tint: 1, stack: 999, val: 0, d: "Monnaie des fêtes de Sombreval. Dépensez-la avant la fin de l'événement." },
+  lanterne_cit: { n: "Lanterne-Citrouille", t: "jewel", slot: "amulette", ic: "amulet", tint: "blood", lvl: 4, stats: { fire: [5, 8], hp: [20, 30], crit: [.03, .05] }, slots: 2, dur: 999, minR: 3, val: 900, leg: { d: "+12 % d'or et de chance de butin.", b: { gold: .12, loot: .12 } }, d: "Elle ne s'éteint jamais, même sous la pluie." },
+  lame_givre: { n: "Lame du Solstice", t: "weapon", ic: "sword", lvl: 6, stats: { atk: [22, 27], frost: [6, 9], crit: [.04, .06] }, slots: 3, dur: 130, minR: 3, val: 1100, leg: { d: "+15 % de dégâts sur les ennemis affaiblis, +10 énergie.", b: { execute: .15, enFlat: 10 } }, d: "Forgée la plus longue nuit de l'année." },
+  couronne_fleurs: { n: "Couronne de fleurs", t: "jewel", slot: "anneau", ic: "ring", lvl: 4, stats: { hp: [25, 35], mag: [5, 8], en: [15, 20] }, slots: 2, dur: 999, minR: 3, val: 900, leg: { d: "+5 % de santé récupérée par salle, potions +15 %.", b: { regen: .05, potion: .15 } }, d: "Ses fleurs ne fanent jamais." },
+  bouclier_foire: { n: "Pavois du champion", t: "shield", ic: "shield", tint: "steel", lvl: 5, stats: { def: [11, 14], hp: [35, 45] }, slots: 2, dur: 160, minR: 3, val: 1000, leg: { d: "Mercenaires et compagnon +12 %.", b: { allyPow: .12 } }, d: "Le prix du tournoi de la Foire." },
+});
+for (const k in IT) IT[k].id = k;
+const _cloak0 = LOOK.cloak.length;
+LOOK.cloak.push("#d8601a", "#a8d8f0", "#e890c0", "#c8a030"); // capes saisonnières (débloquées dans les boutiques d'événement)
+const SEASONS = [
+  { id: "lanternes", n: "La Nuit des Lanternes", from: [10, 15], to: [11, 15], col: "#ff9a3a", ic: "🎃", enemy: "citrouille", deco: "lanterns", item: "lanterne_cit", cloak: _cloak0,
+    d: "Des citrouilles hantées rôdent dans les donjons. Les villageois allument des lanternes pour guider les âmes perdues.", bonus: "+15 % d'or pendant l'événement", b: { gold: .15 } },
+  { id: "givre", n: "Le Solstice de Givre", from: [12, 15], to: [1, 20], col: "#a8d8f0", ic: "❄", enemy: "bonhomme", deco: "snow", item: "lame_givre", cloak: _cloak0 + 1,
+    d: "La neige recouvre Sombreval. Des bonshommes de givre s'animent au fond des grottes.", bonus: "+15 % d'expérience pendant l'événement", b: { xp: .15 } },
+  { id: "eveil", n: "L'Éveil des Fées", from: [3, 15], to: [4, 20], col: "#e890c0", ic: "✿", enemy: "lutin", deco: "blossom", item: "couronne_fleurs", cloak: _cloak0 + 2,
+    d: "Les arbres fleurissent en une nuit et des lutins farceurs volent dans les besaces.", bonus: "+15 % de chance de butin pendant l'événement", b: { loot: .15 } },
+  { id: "foire", n: "La Foire du Solstice", from: [6, 15], to: [7, 20], col: "#e8c060", ic: "⚑", enemy: "jongleur", deco: "bunting", item: "bouclier_foire", cloak: _cloak0 + 3,
+    d: "Tournois, saltimbanques et jongleurs fantômes : toute la vallée fait la fête.", bonus: "+10 % de qualité au craft pendant l'événement", b: { quality: .1 } },
+];
+/* Saison active selon la date réelle (dates incluses, années qui chevauchent gérées) */
+function seasonAt(date = new Date()) {
+  const m = date.getMonth() + 1, d = date.getDate(), v = m * 100 + d;
+  for (const s of SEASONS) { const a = s.from[0] * 100 + s.from[1], b = s.to[0] * 100 + s.to[1]; if (a <= b ? v >= a && v <= b : v >= a || v <= b) return s; }
+  return null;
+}
+function seasonEnd(s, date = new Date()) { let y = date.getFullYear(); const end = new Date(y, s.to[0] - 1, s.to[1], 23, 59, 59); if (end < date) end.setFullYear(y + 1); return end; }
+function nextSeason(date = new Date()) { let best = null, bt = Infinity; for (const s of SEASONS) { let st = new Date(date.getFullYear(), s.from[0] - 1, s.from[1]); if (st <= date) st.setFullYear(st.getFullYear() + 1); if (st - date < bt) { bt = st - date; best = { s, at: st }; } } return best; }
+const SEASON = () => (typeof S !== "undefined" && S && S.seasonOverride) ? SEASONS.find(s => s.id === S.seasonOverride) : seasonAt();
+const seasonKey = s => s.id + "-" + (s.from[0] > s.to[0] && new Date().getMonth() < 6 ? new Date().getFullYear() - 1 : new Date().getFullYear());
+/* Quêtes et boutique de chaque saison */
+const SEASON_QUESTS = s => [
+  { id: "sq1", n: `Chasse : ${ENEMIES[s.enemy].n}`, d: `Vaincre 8 × ${ENEMIES[s.enemy].n}.`, g: S2 => [(S2.season.kills || 0), 8], rw: { jeton: 15, crys: 5 } },
+  { id: "sq2", n: "Esprit de fête", d: "Gagner 40 jetons de saison.", g: S2 => [(S2.season.earned || 0), 40], rw: { jeton: 10, gold: 400 } },
+  { id: "sq3", n: "Grande expédition", d: "Nettoyer 15 salles pendant l'événement.", g: S2 => [(S2.season.rooms || 0), 15], rw: { jeton: 20, crys: 8 } },
+];
+const SEASON_SHOP = s => [
+  { id: "item", n: IT[s.item].n, d: IT[s.item].d + " (exclusif, une fois)", price: 60, once: 1 },
+  { id: "cloak", n: "Cape de saison", d: "Une couleur de cape exclusive, à choisir dans l'apparence du héros.", price: 30, once: 1 },
+  { id: "crys", n: "Bourse de cristaux", d: "10 cristaux de brume.", price: 15 },
+  { id: "potion_maj", n: "Grandes potions ×2", d: "Deux grandes potions de soin.", price: 8 },
+  { id: "carte", n: "Fragment de carte", d: "Un morceau de la carte d'un lieu oublié.", price: 25 },
+];
+ACHIEVEMENTS.push({ id: "a_season", n: "Enfant de Sombreval", d: "Obtenir un objet exclusif d'événement saisonnier.", g: s => [Object.keys(s.seasonItems || {}).length, 1], rw: { crys: 15 } });
 /* ═══════════════════════ Effets sonores synthétisés (WebAudio, aucun fichier) ═══════════════════════
    Chaque son est fabriqué à la volée : oscillateurs + bruit filtré + enveloppes.
    Le contexte audio n'est créé qu'au premier geste du joueur (règle des navigateurs). */
@@ -1311,7 +1443,7 @@ function newState(name, cls, ppl, look) {
   s.equip.armure = makeItem("armure_cuir", 0, 45);
   const st = stats(); s.vit.hp = st.hp; s.vit.en = st.en; s.wolf.hp = wolfMax();
   S.orders = [genOrder(), genOrder()]; S.orderDay = S.day; ensureContracts();
-  s.tuto = { step: 0, w0: s.equip.arme.u }; s.achv = []; s.rebuild = {}; s.legend = []; s.found = {}; s.sbought = {}; s.opts = { sound: true, vol: .7 };
+  s.tuto = { step: 0, w0: s.equip.arme.u }; s.achv = []; s.rebuild = {}; s.legend = []; s.found = {}; s.sbought = {}; s.cosm = []; s.seasonItems = {}; s.season = {}; s.opts = { sound: true, vol: .7 };
   return s;
 }
 function save() {
@@ -1327,7 +1459,7 @@ function migrate(s) {
   s.rank = s.rank || {}; s.seen = s.seen || {}; s.bought = s.bought || {};
   s.pet = s.pet || { id: "loup", owned: ["loup"], lvl: { loup: 1 }, xp: { loup: 0 }, cd: 0 }; s.orders = s.orders || []; s.orderDay = s.orderDay || 0; s.renown = s.renown || 0;
   s.perma = s.perma || {}; s.bonusPts = s.bonusPts || 0; s.spec = s.spec || null; s.bless = s.bless || []; s.contracts = s.contracts || []; s.contractDay = s.contractDay || 0;
-  s.diff = s.diff || "normal"; s.tuto = s.tuto || { off: 1 }; s.rebuild = s.rebuild || {}; s.legend = s.legend || []; s.found = s.found || {}; s.sbought = s.sbought || {}; s.achv = s.achv || []; s.opts = s.opts || { sound: true, vol: .7 }; s.mercs = s.mercs || []; s.party = s.party || []; s.hired = s.hired || []; s.abyss = s.abyss || { best: 0, shards: 0, up: {} }; s.abyss.up = s.abyss.up || {};
+  s.diff = s.diff || "normal"; s.tuto = s.tuto || { off: 1 }; s.rebuild = s.rebuild || {}; s.legend = s.legend || []; s.cosm = s.cosm || []; s.seasonItems = s.seasonItems || {}; s.season = s.season || {}; s.found = s.found || {}; s.sbought = s.sbought || {}; s.achv = s.achv || []; s.opts = s.opts || { sound: true, vol: .7 }; s.mercs = s.mercs || []; s.party = s.party || []; s.hired = s.hired || []; s.abyss = s.abyss || { best: 0, shards: 0, up: {} }; s.abyss.up = s.abyss.up || {};
   s.st = Object.assign({ kills: 0, chests: 0, legend: 0, maxRank: 0, deaths: 0, boss: {}, orders: 0, elites: 0, rareCrafts: 0, contracts: 0, abyssFloors: 0 }, s.st); s.st.depth = Object.assign({ murmures: 0, mines: 0, vallee: 0 }, s.st.depth);
   return s;
 }
@@ -1425,6 +1557,7 @@ function bonus(k) {
   let v = (CLS(S.cls).b[k] || 0) + (PPL(S.ppl).b[k] || 0);
   for (const br of MASTERY) for (const n of br.nodes) if (hasNode(n.id)) v += n.b[k] || 0;
   const sp = specOf(); if (sp) v += sp.b[k] || 0;
+  const se = SEASON(); if (se && se.b) v += se.b[k] || 0;
   // chantiers de Sombreval et effets des objets légendaires portés
   if (S.rebuild) for (const r of REBUILD) { const l = S.rebuild[r.id] || 0; if (l) { v += (r.b[k] || 0) * l; if (l >= 3 && r.b3) v += r.b3[k] || 0; } }
   for (const s in S.equip) { const it = S.equip[s]; const lg = it && it.dur > 0 && D(it).leg; if (lg && lg.b) v += lg.b[k] || 0; }
@@ -1434,7 +1567,7 @@ function bonus(k) {
   if (ev.active.id === "veillee" && k === "quality") v += .10;
   return v;
 }
-function hasAltar() { return !!CLS(S.cls).altar || hasNode("f2"); }
+function hasAltar() { return !!CLS(S.cls).altar || hasNode("f2") || S.claimed.includes("m2"); } // le druide enseigne la gravure après le chapitre 2
 function stats() {
   const c = CLS(S.cls), p = PPL(S.ppl), L = S.lvl - 1;
   const s = { hp: c.base.hp + L * 9, en: c.base.en + L * 4, atk: c.base.atk + L * 1.2, mag: c.base.mag + L * 1.2, def: c.base.def + L * .6, crit: c.base.crit, mv: c.base.mv, fire: 0, frost: 0, range: 1 };
@@ -1512,7 +1645,7 @@ function checkRecipe(r) {
   const bl = [];
   if (mats.some(m => m.have < m.n)) bl.push("Matériaux manquants");
   if (S.lvl < r.lvl) bl.push(`Niveau ${r.lvl} requis`);
-  if (r.station === "autel" && !hasAltar()) bl.push("Autel runique requis (maîtrise Fabrication II)");
+  if (r.station === "autel" && !hasAltar()) bl.push("Autel runique requis (chapitre 2 de l'histoire ou maîtrise Fabrication II)");
   if (r.station === "legend" && (S.inst.enclume || 0) < 2) bl.push("Enclume runique niveau 2 requise");
   if (S.gold < r.gold) bl.push("Or insuffisant");
   if (S.vit.en < energyCost(r)) bl.push("Énergie insuffisante : reposez-vous à l'auberge");
@@ -1596,7 +1729,7 @@ function salvage(it, where) {
 function canSocket(it, runeId) {
   const d = D(it), rd = IT[runeId];
   if (!isEquip(d)) return "Seul l'équipement accepte des runes.";
-  if (!hasAltar()) return "Autel runique requis (maîtrise Fabrication II).";
+  if (!hasAltar()) return "Autel runique requis (chapitre 2 de l'histoire ou maîtrise Fabrication II).";
   if ((it.runes || []).length >= it.slots) return "Aucun emplacement libre.";
   if (it.r < (rd.minHost || 0)) return `Hôte ${RAR[rd.minHost].n} minimum.`;
   if (it.runes.includes(runeId)) return "Cette rune est déjà sertie.";
@@ -1712,6 +1845,7 @@ function learnNode(id) {
   const i = br.nodes.findIndex(n => n.id === id);
   if (S.mastery.includes(id)) return "Déjà appris.";
   if (masteryPoints() <= 0) return "Aucun point disponible.";
+  if (br.spec && S.spec !== br.spec) return "Branche réservée à cette spécialisation.";
   if (i > 0 && !S.mastery.includes(br.nodes[i - 1].id)) return "Apprenez d'abord le nœud précédent.";
   S.mastery.push(id); clampVit(); save(); return null;
 }
@@ -1750,6 +1884,22 @@ function mercStats(type, lvl) {
 const partySize = () => (S.party || []).length + (S.hired || []).length;
 /* Louer coûte cher : c'est un renfort ponctuel, le recrutement reste l'investissement rentable */
 const hireCost = type => Math.round(MERCS[type].hire * (1.4 + S.lvl * .3) * Math.max(.5, 1 - bonus("hireCut")));
+/* ── Événements saisonniers ── */
+function ensureSeason() { const se = SEASON(); if (!se) return null; const key = seasonKey(se);
+  if (S.season.key !== key) { const left = count(S.stash, "jeton"); if (left) { removeId(S.stash, "jeton", left); S.gold += left * 5; } S.season = { key, kills: 0, earned: 0, rooms: 0, claimed: [], bought: {} }; }
+  return se; }
+function seasonGain(n, where) { const se = ensureSeason(); if (!se || n <= 0) return 0; S.season.earned = (S.season.earned || 0) + n; if (where) where.push(makeItem("jeton", 0, 50, n)); else addId(S.stash, "jeton", n, 0, stashCap()); return n; }
+function claimSeasonQuest(id) { const se = ensureSeason(); if (!se) return "Aucun événement en cours."; const q = SEASON_QUESTS(se).find(x => x.id === id); if (!q) return "Quête inconnue."; if (S.season.claimed.includes(id)) return "Déjà réclamée.";
+  const [c, m] = q.g(S); if (c < m) return "Pas encore accomplie."; S.season.claimed.push(id); if (q.rw.jeton) addId(S.stash, "jeton", q.rw.jeton, 0, stashCap()); if (q.rw.crys) S.crys += q.rw.crys; if (q.rw.gold) S.gold += q.rw.gold; save(); return null; }
+function seasonBuy(id) { const se = ensureSeason(); if (!se) return "La boutique est fermée."; const o = SEASON_SHOP(se).find(x => x.id === id); if (!o) return "Inconnu.";
+  if (o.once && (S.season.bought[id] || (id === "item" && S.seasonItems[se.item]) || (id === "cloak" && S.cosm.includes(se.cloak)))) return "Déjà obtenu.";
+  if (count(S.stash, "jeton") < o.price) return "Jetons insuffisants.";
+  if (id === "item") { const it = makeItem(se.item, 3, 85); if (!addInst(S.stash, it, stashCap())) return "Réserve pleine."; S.seasonItems[se.item] = 1; }
+  else if (id === "cloak") S.cosm.push(se.cloak);
+  else if (id === "crys") S.crys += 10;
+  else if (!addId(S.stash, id, id === "potion_maj" ? 2 : 1, 0, stashCap())) return "Réserve pleine.";
+  removeId(S.stash, "jeton", o.price); S.season.bought[id] = (S.season.bought[id] || 0) + 1; save(); return null; }
+const seasonReady = () => { const se = SEASON(); if (!se || !S.season || S.season.key !== seasonKey(se)) return 0; return SEASON_QUESTS(se).filter(q => !S.season.claimed.includes(q.id) && q.g(S)[0] >= q.g(S)[1]).length; };
 /* ── Reconstruction de Sombreval ── */
 const rebuildLvl = id => (S.rebuild && S.rebuild[id]) || 0;
 const rebuildCost = id => { const r = REBUILD.find(x => x.id === id); const l = rebuildLvl(id); return l >= r.max ? null : r.cost[l]; };
@@ -2144,6 +2294,23 @@ function drawEnemy(x, kind, cx, cy, s, t, big = 1, tint) {
     x.strokeStyle = "#5a4a3a"; x.lineWidth = 1.8 * k; x.beginPath(); x.moveTo(-12 * k, -2 * k); x.lineTo(-13 * k, -46 * k); x.stroke();
     x.fillStyle = "#e8e0cc"; x.beginPath(); x.arc(-13 * k, -48 * k, 3 * k, 0, 7); x.fill(); glow(x, -13 * k, -48 * k, 12 * k, "#b07aff", .6);
     for (let i = 0; i < 3; i++) { const a2 = t * 1.5 + i * 2.1; x.fillStyle = "rgba(200,160,255,.75)"; x.beginPath(); x.arc(Math.cos(a2) * 16 * k, -22 * k + Math.sin(a2) * 5 * k, 2 * k, 0, 7); x.fill(); }
+  } else if (kind === "pumpkin") {
+    const hop = Math.abs(Math.sin(t * 4)) * 3 * k; glow(x, 0, -14 * k - hop, 26 * k, "#ff8a2a", .45 + Math.sin(t * 6) * .1);
+    x.strokeStyle = "#2a3a12"; x.lineWidth = 2 * k; for (const sd of [-1, 1]) { x.beginPath(); x.moveTo(sd * 6 * k, -6 * k - hop); x.quadraticCurveTo(sd * 14 * k, -2 * k, sd * 12 * k, 0); x.stroke(); }
+    const g = x.createRadialGradient(-4 * k, -18 * k - hop, 2, 0, -14 * k - hop, 16 * k); g.addColorStop(0, "#ffa040"); g.addColorStop(1, "#a83a08"); x.fillStyle = g;
+    for (const ox of [-6, 0, 6]) { x.beginPath(); x.ellipse(ox * k, -14 * k - hop, 8 * k, 11 * k, 0, 0, 7); x.fill(); }
+    x.fillStyle = "#3a5a1a"; x.fillRect(-1.5 * k, -28 * k - hop, 3 * k, 5 * k);
+    x.fillStyle = `rgba(255,220,90,${.85 + Math.sin(t * 9) * .15})`; x.beginPath(); x.moveTo(-8 * k, -18 * k - hop); x.lineTo(-3 * k, -20 * k - hop); x.lineTo(-4 * k, -15 * k - hop); x.fill(); x.beginPath(); x.moveTo(8 * k, -18 * k - hop); x.lineTo(3 * k, -20 * k - hop); x.lineTo(4 * k, -15 * k - hop); x.fill();
+    x.beginPath(); x.moveTo(-8 * k, -10 * k - hop); x.lineTo(-4 * k, -7 * k - hop); x.lineTo(0, -10 * k - hop); x.lineTo(4 * k, -7 * k - hop); x.lineTo(8 * k, -10 * k - hop); x.lineTo(5 * k, -5 * k - hop); x.lineTo(-5 * k, -5 * k - hop); x.fill();
+  } else if (kind === "snowman") {
+    glow(x, 0, -20 * k, 24 * k, "#bfe8ff", .25);
+    x.fillStyle = "#eef6fa"; x.beginPath(); x.arc(0, -9 * k, 10 * k, 0, 7); x.fill(); x.beginPath(); x.arc(0, -24 * k + br, 7.5 * k, 0, 7); x.fill(); x.beginPath(); x.arc(0, -36 * k + br, 5.5 * k, 0, 7); x.fill();
+    x.fillStyle = "rgba(160,200,230,.5)"; x.beginPath(); x.arc(3 * k, -6 * k, 7 * k, 0, 7); x.fill();
+    x.fillStyle = "#1a1a24"; x.fillRect(-2.6 * k, -38 * k + br, 1.8 * k, 1.8 * k); x.fillRect(1 * k, -38 * k + br, 1.8 * k, 1.8 * k); for (let i = 0; i < 3; i++) x.fillRect(-.8 * k, (-27 + i * 4) * k + br, 1.6 * k, 1.6 * k);
+    x.fillStyle = "#e8701a"; x.beginPath(); x.moveTo(0, -35.5 * k + br); x.lineTo(8 * k, -34 * k + br); x.lineTo(0, -33.5 * k + br); x.fill();
+    x.fillStyle = "#2a2a3a"; x.fillRect(-5 * k, -43 * k + br, 10 * k, 2 * k); x.fillRect(-3.5 * k, -50 * k + br, 7 * k, 7 * k);
+    x.strokeStyle = "#5a3a1a"; x.lineWidth = 1.6 * k; x.beginPath(); x.moveTo(6 * k, -25 * k + br); x.lineTo(15 * k, -32 * k + br); x.moveTo(-6 * k, -25 * k + br); x.lineTo(-14 * k, -30 * k + br); x.stroke();
+    x.fillStyle = "#8a2a22"; x.fillRect(-6 * k, -31 * k + br, 12 * k, 2.6 * k);
   } else if (kind === "shroom") {
     const cap = tint || "#3ad0c0", k2 = k;
     x.fillStyle = "#d8ccb0"; x.beginPath(); x.moveTo(-5 * k2, 0); x.quadraticCurveTo(-7 * k2, -14 * k2 + br, -4 * k2, -22 * k2 + br); x.lineTo(4 * k2, -22 * k2 + br); x.quadraticCurveTo(7 * k2, -14 * k2 + br, 5 * k2, 0); x.fill();
@@ -2202,19 +2369,20 @@ function isoBlock(x, px, py, w, h, col) { const g = x.createLinearGradient(px, p
 /* ═══════════════════════ Le village de Sombreval (plateau isométrique) ═══════════════════════
    Le héros se déplace de case en case (clic sur le sol), son compagnon le suit.
    Cliquer un bâtiment y conduit le héros ; il entre en arrivant devant la porte. */
-const VN = 14;
+const VN = 18;
 const VILLAGE = {
-  // empreintes entières : (gx, gy, w, d) ; porte = case devant la façade avant
+  // empreintes entières : (gx, gy, w, d) ; porte = case devant la façade ; au moins une case d'écart entre bâtiments
   blds: [
-    { id: "forge", n: "Forge", go: "forge", gx: 3, gy: 2, w: 3, d: 2, h: 34, col: "#4a4038", roof: "#3a2a20", chimney: 1, door: [4, 4] },
-    { id: "auberge", n: "Auberge", go: "inn", gx: 9, gy: 1, w: 3, d: 2, h: 40, col: "#7a6248", roof: "#6a3022", door: [10, 3] },
-    { id: "quetes", n: "Tableau des quêtes", go: "quests", gx: 7, gy: 3, w: 1, d: 1, h: 16, board: 1, door: [7, 4] },
-    { id: "guilde", n: "Guilde des maîtres", go: "mastery", gx: 2, gy: 8, w: 2, d: 2, h: 58, col: "#5a5468", roof: "#2e3a5a", rune: 1, door: [3, 10] },
-    { id: "marche", n: "Marché", go: "events", gx: 8, gy: 9, w: 3, d: 1, h: 0, stalls: 1, door: [9, 10] },
-    { id: "donjon", n: "Porte des brumes", go: "map", gx: 11, gy: 11, w: 2, d: 1, h: 30, col: "#3a3f46", gate: 1, door: [12, 12] },
-    { id: "maison1", gx: 11, gy: 4, w: 2, d: 2, h: 26, col: "#6a5a48", roof: "#5a2a1e" },
-    { id: "maison2", gx: 0, gy: 3, w: 2, d: 2, h: 24, col: "#5e5244", roof: "#4a2e22" },
-    { id: "maison3", gx: 4, gy: 11, w: 2, d: 2, h: 26, col: "#6a5a48", roof: "#5a2a1e" },
+    { id: "forge", n: "Forge", go: "forge", gx: 3, gy: 3, w: 3, d: 2, h: 34, col: "#4a4038", roof: "#3a2a20", chimney: 1, door: [4, 5] },
+    { id: "auberge", n: "Auberge", go: "inn", gx: 12, gy: 2, w: 3, d: 2, h: 40, col: "#7a6248", roof: "#6a3022", door: [13, 4] },
+    { id: "quetes", n: "Tableau des quêtes", go: "quests", gx: 8, gy: 5, w: 1, d: 1, h: 16, board: 1, door: [8, 6] },
+    { id: "guilde", n: "Guilde des maîtres", go: "mastery", gx: 2, gy: 11, w: 2, d: 2, h: 58, col: "#5a5468", roof: "#2e3a5a", rune: 1, door: [3, 13] },
+    { id: "marche", n: "Marché", go: "events", gx: 11, gy: 13, w: 3, d: 1, h: 0, stalls: 1, door: [12, 14] },
+    { id: "donjon", n: "Porte des brumes", go: "map", gx: 14, gy: 16, w: 2, d: 1, h: 30, col: "#3a3f46", gate: 1, door: [15, 17] },
+    { id: "maison1", gx: 15, gy: 6, w: 2, d: 2, h: 26, col: "#6a5a48", roof: "#5a2a1e" },
+    { id: "maison2", gx: 0, gy: 5, w: 2, d: 2, h: 24, col: "#5e5244", roof: "#4a2e22" },
+    { id: "maison3", gx: 6, gy: 15, w: 2, d: 2, h: 26, col: "#6a5a48", roof: "#5a2a1e" },
+    { id: "maison4", gx: 5, gy: 0, w: 2, d: 2, h: 22, col: "#66584a", roof: "#4e2a1e" },
   ],
   init: false, smoke: [], embers: [], mist: makeMist(9), hoverB: null, hovTile: null,
   setup() {
@@ -2223,27 +2391,31 @@ const VILLAGE = {
     this.blds = this.blds.filter(b => !b.proj);
     for (const r of REBUILD) { const l = (S && S.rebuild && S.rebuild[r.id]) || 0; if (l && r.pos) this.blds.push({ id: r.id, n: r.n, go: "chantiers", proj: r.id, lvl: l, ...r.pos, h: { moulin: 30, temple: 44, halle: 22, caserne: 30, tour: 64, jardins: 0, statue: 0 }[r.id] }); }
     const g = Array.from({ length: VN }, () => Array(VN).fill(0)); // 0 herbe, 1 route, 2 place pavée
-    const road = (x, y) => { if (x >= 0 && y >= 0 && x < VN && y < VN) g[y][x] = 1; };
-    for (let x = 0; x < VN; x++) road(x, 6);
-    for (let y = 4; y < VN; y++) road(7, y);
-    for (let x = 7; x <= 12; x++) road(x, 12);
-    [[4, 4], [4, 5], [10, 3], [10, 4], [10, 5], [3, 10], [4, 10], [4, 9], [4, 8], [4, 7], [9, 10], [8, 10], [7, 4]].forEach(([x, y]) => road(x, y));
-    for (let y = 7; y <= 8; y++) for (let x = 5; x <= 9; x++) if (g[y][x] === 0) g[y][x] = 2;
-    this.ground = g;
     this.block = Array.from({ length: VN }, () => Array(VN).fill(0));
     for (const b of this.blds) for (let y = b.gy; y < b.gy + b.d; y++) for (let x = b.gx; x < b.gx + b.w; x++) this.block[y][x] = 1;
-    this.well = [6, 8]; this.block[8][6] = 1;
-    this.lamps = [[6, 5], [8, 7], [5, 7], [11, 6], [8, 11]];
+    this.well = [8, 11]; this.block[11][8] = 1;
+    const road = (x, y) => { if (x >= 0 && y >= 0 && x < VN && y < VN && !this.block[y][x]) g[y][x] = 1; };
+    for (let x = 0; x < VN; x++) road(x, 8);          // grand-rue est-ouest
+    for (let y = 2; y < VN; y++) road(9, y);          // grand-rue nord-sud
+    for (let y = 9; y <= 12; y++) for (let x = 7; x <= 11; x++) if (!this.block[y][x]) g[y][x] = 2; // place
+    // chemins : de chaque porte jusqu'à la rue la plus proche (parcours en largeur)
+    for (const b of this.blds) { if (!b.door) continue; const [dx0, dy0] = b.door; const prev = new Map([[dx0 + "," + dy0, null]]); const q = [[dx0, dy0]]; let hit = null;
+      while (q.length && !hit) { const [x, y] = q.shift(); if (g[y][x] && !(x === dx0 && y === dy0)) { hit = [x, y]; break; }
+        for (const [ax, ay] of [[0, 1], [1, 0], [0, -1], [-1, 0]]) { const nx = x + ax, ny = y + ay, k = nx + "," + ny; if (nx < 0 || ny < 0 || nx >= VN || ny >= VN || prev.has(k) || this.block[ny][nx]) continue; prev.set(k, [x, y]); q.push([nx, ny]); } }
+      let c = hit; while (c) { road(c[0], c[1]); c = prev.get(c.join()); } road(dx0, dy0); }
+    this.ground = g;
+    this.lamps = [[8, 7], [10, 9], [6, 9], [12, 7], [10, 13], [4, 7], [14, 15]].filter(([x, y]) => !this.block[y][x]);
     this.trees = [];
     const doors = new Set(this.blds.filter(b => b.door).map(b => b.door.join()));
     for (let y = 0; y < VN; y++) for (let x = 0; x < VN; x++) {
       if (g[y][x] || this.block[y][x] || doors.has(x + "," + y)) continue;
       const edge = x === 0 || y === 0 || x === VN - 1 || y === VN - 1; const h = hash(x + 3, y + 7);
-      if ((edge && h < .55) || (!edge && h < .07)) { this.trees.push({ gx: x, gy: y, s: .85 + hash(y, x) * .45, c: pick(["#1e3a24", "#244428", "#2a3a22", "#1c3020"]) }); this.block[y][x] = 1; }
+      const nearB = this.blds.some(b => x >= b.gx - 1 && x <= b.gx + b.w && y >= b.gy - 1 && y <= b.gy + b.d); // pas d'arbre collé aux façades
+      if (!nearB && ((edge && h < .55) || (!edge && h < .09))) { this.trees.push({ gx: x, gy: y, s: .85 + hash(y, x) * .45, c: pick(["#1e3a24", "#244428", "#2a3a22", "#1c3020"]) }); this.block[y][x] = 1; }
     }
     this.flowers = []; for (let y = 0; y < VN; y++) for (let x = 0; x < VN; x++) if (!g[y][x] && !this.block[y][x] && hash(x * 7, y * 3) < .18) this.flowers.push([x, y, hash(x, y)]);
     // héros et compagnon
-    let p = (S && S.vpos) || [4, 5]; if (this.block[p[1]] && this.block[p[1]][p[0]]) p = [4, 5];
+    let p = (S && S.vpos) || [4, 6]; if (!this.walkable(p[0], p[1])) p = [4, 6];
     this.hero = { x: p[0], y: p[1], rx: p[0], ry: p[1], path: [], face: 1, moving: false, target: null };
     this.pet = { x: p[0] - 1, y: p[1] + 1, rx: p[0] - 1, ry: p[1] + 1, path: [], face: 1 };
     if (!this.walkable(this.pet.x, this.pet.y)) { this.pet.x = p[0]; this.pet.y = p[1]; this.pet.rx = p[0]; this.pet.ry = p[1]; }
@@ -2255,7 +2427,14 @@ const VILLAGE = {
       for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = x + dx, ny = y + dy, k = nx + "," + ny; if (prev.has(k) || !this.walkable(nx, ny)) continue; prev.set(k, [x, y]); q.push([nx, ny]); } }
     if (!prev.has(tx + "," + ty)) return null; const path = []; let c = [tx, ty]; while (c && !(c[0] === fx && c[1] === fy)) { path.unshift(c); c = prev.get(c.join()); } return path;
   },
-  layout(I) { const tw = Math.min(I.w * .96 / VN, (I.h - 24) / (VN * .5 + 1.6)); this.L = { tw, th: tw / 2, ox: I.w / 2, oy: (I.h - VN * tw / 2) / 2 + tw * .9 }; },
+  layout(I) { this.I = I; const tw0 = Math.min(I.w * .96 / VN, (I.h - 24) / (VN * .5 + 1.6)); this.zoom = I.w < 700 ? Math.min(2, 1.25 + (700 - I.w) / 700) : 1;
+    const tw = tw0 * this.zoom, keep = this.L && Math.abs(this.L.tw - tw) < .01; this.L = { tw, th: tw / 2, ox: keep ? this.L.ox : I.w / 2, oy: keep ? this.L.oy : (I.h - VN * tw / 2) / 2 + tw * .9 }; if (this.zoom > 1) this.follow(1); },
+  /* Caméra (téléphone) : centre doucement le héros, sans sortir du plateau */
+  follow(k) { const L = this.L, I = this.I, h = this.hero; if (!L || !I || !h) return; const tw = L.tw;
+    const hx = (h.rx - h.ry + 0) * tw / 2, hy = (h.rx + h.ry + 1) * tw / 4; let ox = I.w / 2 - hx, oy = I.h * .55 - hy;
+    const minX = I.w - VN * tw / 2 - tw * .3, maxX = VN * tw / 2 + tw * .3; ox = Math.max(Math.min(ox, maxX), Math.min(minX, maxX));
+    const minY = I.h - VN * tw / 2 - tw * .6, maxY = tw * 1.6; oy = Math.max(Math.min(oy, maxY), Math.min(minY, maxY));
+    L.ox += (ox - L.ox) * k; L.oy += (oy - L.oy) * k; },
   walkTo(tx, ty, target) {
     this.setup(); const h = this.hero; const from = h.path.length ? h.path[0] : [h.x, h.y];
     if (from[0] === tx && from[1] === ty && !h.path.length) { if (target) this.enter(target); return; }
@@ -2264,7 +2443,7 @@ const VILLAGE = {
   },
   enter(b) { if (S) { S.vpos = [this.hero.x, this.hero.y]; save(); } if (b.go === "inn") openInn(); else go(b.go); },
   update(dt) {
-    this.setup(); const L = this.L; if (!L) return; const sp = 4.2;
+    this.setup(); const L = this.L; if (!L) return; const sp = 4.2; if (this.zoom > 1) this.follow(Math.min(1, dt * 3));
     const step = (u, onTile) => {
       if (!u.path.length) { u.moving = false; return; }
       const [tx, ty] = u.path[0]; const dx = tx - u.rx, dy = ty - u.ry, d = Math.hypot(dx, dy); u.moving = true;
@@ -2310,6 +2489,8 @@ const VILLAGE = {
     for (const [fx, fy, r] of this.flowers) { const [cx, cy] = isoP(L, fx + .3 + r * .4, fy + .5); x.fillStyle = r < .3 ? "#c9a050" : r < .6 ? "#a0506a" : "#6a8ac0"; for (let i = 0; i < 3; i++) x.fillRect(cx + (i - 1) * 4 * u, cy - (i % 2) * 2 * u, 2 * u, 2 * u); x.strokeStyle = "rgba(120,160,80,.6)"; x.beginPath(); x.moveTo(cx - 6 * u, cy + 2 * u); x.lineTo(cx - 4 * u, cy - 3 * u); x.moveTo(cx + 5 * u, cy + 2 * u); x.lineTo(cx + 6 * u, cy - 3 * u); x.stroke(); }
     // remparts (chantier) le long des bords arrière
     if (S && S.rebuild && S.rebuild.remparts) this.drawWalls(x, S.rebuild.remparts, t, u);
+    const season = SEASON();
+    if (season && season.id === "givre") for (let gy = 0; gy < VN; gy++) for (let gx = 0; gx < VN; gx++) { const k = this.ground[gy][gx]; poly(x, [isoP(L, gx, gy), isoP(L, gx + 1, gy), isoP(L, gx + 1, gy + 1), isoP(L, gx, gy + 1)], `rgba(235,242,248,${k ? .25 : .62 + hash(gx, gy) * .2})`); }
     // bord du plateau
     const e1 = isoP(L, 0, VN), e2 = isoP(L, VN, VN), e3 = isoP(L, VN, 0), dh = 16 * u;
     poly(x, [e1, e2, [e2[0], e2[1] + dh], [e1[0], e1[1] + dh]], "#1a140e"); poly(x, [e2, e3, [e3[0], e3[1] + dh], [e2[0], e2[1] + dh]], "#120e0a");
@@ -2323,6 +2504,8 @@ const VILLAGE = {
     for (const b of this.blds) objs.push({ k: "b", b, z: (b.gx + b.w - 1) + (b.gy + b.d - 1) + .4, rect: this.rectB(b) });
     for (const tr of this.trees) objs.push({ k: "t", tr, z: tr.gx + tr.gy + .45, rect: this.rectT(tr) });
     objs.push({ k: "well", z: this.well[0] + this.well[1] + .4, rect: this.rectU(this.well[0], this.well[1], 30) });
+    if (season && season.id === "lanternes") for (const [gx, gy] of this.decoSpots()) objs.push({ k: "pumpkin", gx, gy, z: gx + gy + .3, rect: this.rectU(gx, gy, 16) });
+    if (season && season.id === "givre") for (const [gx, gy] of this.decoSpots().slice(0, 4)) objs.push({ k: "snowman", gx, gy, z: gx + gy + .3, rect: this.rectU(gx, gy, 30) });
     for (const lp of this.lamps) objs.push({ k: "lamp", lp, z: lp[0] + lp[1] + .3, rect: this.rectU(lp[0], lp[1], 40) });
     const p = this.pet;
     objs.push({ k: "pet", z: p.rx + p.ry + .6, rect: this.rectU(p.rx, p.ry, 30) });
@@ -2340,6 +2523,8 @@ const VILLAGE = {
       else if (o.k === "t") this.drawTree(x, o.tr, t);
       else if (o.k === "well") this.drawWell(x, t, u);
       else if (o.k === "lamp") this.drawLamp(x, o.lp, t, u);
+      else if (o.k === "pumpkin") { const [cx, cy] = isoP(L, o.gx + .5, o.gy + .5); glow(x, cx, cy - 5 * u, 22 * u, "#ff8a2a", .35 + Math.sin(t * 3 + o.gx) * .1); x.fillStyle = "#d8601a"; x.beginPath(); x.ellipse(cx, cy - 5 * u, 8 * u, 6 * u, 0, 0, 7); x.fill(); x.strokeStyle = "rgba(90,30,8,.6)"; x.lineWidth = 1; x.beginPath(); x.ellipse(cx, cy - 5 * u, 3 * u, 6 * u, 0, 0, 7); x.stroke(); x.fillStyle = "#3a5a1a"; x.fillRect(cx - 1, cy - 13 * u, 2.4 * u, 3 * u); x.fillStyle = "#ffd06a"; x.fillRect(cx - 4 * u, cy - 7 * u, 2.4 * u, 2 * u); x.fillRect(cx + 1.5 * u, cy - 7 * u, 2.4 * u, 2 * u); x.fillRect(cx - 3 * u, cy - 3.5 * u, 6 * u, 1.4 * u); }
+      else if (o.k === "snowman") { const [cx, cy] = isoP(L, o.gx + .5, o.gy + .5); x.fillStyle = "#f0f6fa"; x.beginPath(); x.arc(cx, cy - 7 * u, 8 * u, 0, 7); x.arc(cx, cy - 19 * u, 5.5 * u, 0, 7); x.fill(); x.fillStyle = "#1a1a1a"; x.fillRect(cx - 2.5 * u, cy - 21 * u, 1.6 * u, 1.6 * u); x.fillRect(cx + 1 * u, cy - 21 * u, 1.6 * u, 1.6 * u); x.fillStyle = "#e8701a"; x.beginPath(); x.moveTo(cx, cy - 19 * u); x.lineTo(cx + 6 * u, cy - 18 * u); x.lineTo(cx, cy - 17.5 * u); x.fill(); x.fillStyle = "#8a2a22"; x.fillRect(cx - 5 * u, cy - 15 * u, 10 * u, 2.4 * u); }
       else if (o.k === "pet") drawPet(x, petId(), ...isoP(L, p.rx + .5, p.ry + .5), u * .95, p.path.length ? t * 3 : t, p.face);
       else drawChar(x, ...isoP(L, h.rx + .5, h.ry + .5), u * .95, heroLook(S.cls, S.ppl, S.look, S.equip), h.moving ? t * 3 : t, h.face);
       x.restore();
@@ -2347,6 +2532,14 @@ const VILLAGE = {
     for (const q of this.smoke) { x.fillStyle = `rgba(60,58,56,${q.a})`; x.beginPath(); x.arc(q.x, q.y, q.r * u, 0, 7); x.fill(); }
     for (const q of this.embers) { x.fillStyle = `rgba(255,${150 + Math.random() * 80 | 0},60,${1 - q.l / 1.6})`; x.fillRect(q.x, q.y, 1.6, 1.6); }
     this.lighting(x, I, t, u);
+    if (season && season.id === "foire") { const pairs = [[[6, 9], [12, 9]], [[7, 12], [12, 12]], [[8, 7], [12, 7]]]; for (const [a, b] of pairs) { const A = isoP(L, a[0] + .5, a[1] + .5, 34 * u), B = isoP(L, b[0] + .5, b[1] + .5, 34 * u);
+        x.strokeStyle = "rgba(60,40,20,.8)"; x.lineWidth = 1; x.beginPath(); x.moveTo(...A); x.quadraticCurveTo((A[0] + B[0]) / 2, (A[1] + B[1]) / 2 + 14 * u, ...B); x.stroke();
+        for (let i = 1; i < 12; i++) { const k = i / 12, mx = (1 - k) * (1 - k) * A[0] + 2 * (1 - k) * k * (A[0] + B[0]) / 2 + k * k * B[0], my = (1 - k) * (1 - k) * A[1] + 2 * (1 - k) * k * ((A[1] + B[1]) / 2 + 14 * u) + k * k * B[1];
+          x.fillStyle = ["#c84a3a", "#e8c060", "#3a7ac8"][i % 3]; x.beginPath(); x.moveTo(mx - 3 * u, my); x.lineTo(mx + 3 * u, my); x.lineTo(mx, my + 7 * u + Math.sin(t * 4 + i) * u); x.fill(); } } }
+    if (season && ["givre", "eveil", "lanternes"].includes(season.id)) { if (!this.sfall) this.sfall = Array.from({ length: 60 }, () => ({ x: Math.random(), y: Math.random(), s: .5 + Math.random(), p: Math.random() * 6 }));
+      for (const q of this.sfall) { q.y += (season.id === "givre" ? .0016 : .0009) * q.s; q.x += Math.sin(t + q.p) * .0006 + (season.id === "lanternes" ? .0007 : 0); if (q.y > 1.02) { q.y = -.02; q.x = Math.random(); } if (q.x > 1.02) q.x = -.02;
+        const px = q.x * W, py = q.y * H; if (season.id === "givre") { x.fillStyle = `rgba(245,250,255,${.5 + q.s * .3})`; x.beginPath(); x.arc(px, py, 1.2 + q.s, 0, 7); x.fill(); }
+        else { x.save(); x.translate(px, py); x.rotate(t * q.s + q.p); x.fillStyle = season.id === "eveil" ? ["#ff9ad8", "#ffd0ec"][Math.floor(q.p) % 2] : ["#d8701a", "#a8401a", "#c89a2a"][Math.floor(q.p) % 3]; x.beginPath(); x.ellipse(0, 0, 3 * q.s, 1.4 * q.s, 0, 0, 7); x.fill(); x.restore(); } } }
     drawMist(x, W, H, this.mist, 1 / 60);
     // lucioles autour des bosquets
     if (!this.flies) this.flies = Array.from({ length: 22 }, (_, i) => ({ x: Math.random(), y: .35 + Math.random() * .55, p: Math.random() * 6.28, s: .5 + Math.random() }));
@@ -2399,8 +2592,13 @@ const VILLAGE = {
     const L = this.L, u = L.tw / 64 * tr.s; const [px, py] = isoP(L, tr.gx + .5, tr.gy + .5); const sw = Math.sin(t * .8 + tr.gx) * 1.2 * u;
     x.fillStyle = "rgba(0,0,0,.35)"; x.beginPath(); x.ellipse(px, py, 11 * u, 4.5 * u, 0, 0, 7); x.fill();
     x.fillStyle = "#2a1a0e"; x.fillRect(px - 1.8 * u, py - 11 * u, 3.6 * u, 11 * u);
-    for (let i = 0; i < 3; i++) { const yy = py - 10 * u - i * 9 * u, ww = (13 - i * 3) * u; x.fillStyle = shade(tr.c, i * .08 - .05); x.beginPath(); x.moveTo(px - ww + sw * i * .3, yy); x.lineTo(px + sw * (i + 1) * .4, yy - 17 * u); x.lineTo(px + ww + sw * i * .3, yy); x.closePath(); x.fill(); }
+    const se = SEASON(), tc = se && se.id === "eveil" && hash(tr.gx, tr.gy) < .55 ? "#c87aa0" : se && se.id === "lanternes" && hash(tr.gy, tr.gx) < .5 ? "#8a4a1e" : tr.c;
+    for (let i = 0; i < 3; i++) { const yy = py - 10 * u - i * 9 * u, ww = (13 - i * 3) * u; x.fillStyle = se && se.id === "givre" && i === 2 ? "#e8f0f4" : shade(tc, i * .08 - .05); x.beginPath(); x.moveTo(px - ww + sw * i * .3, yy); x.lineTo(px + sw * (i + 1) * .4, yy - 17 * u); x.lineTo(px + ww + sw * i * .3, yy); x.closePath(); x.fill(); }
   },
+  /* Cases d'herbe libres au bord des chemins, pour les décorations de saison */
+  decoSpots() { if (this.deco && this.decoSig === this.sig) return this.deco; const out = [];
+    for (let y = 1; y < VN - 1; y++) for (let x = 1; x < VN - 1; x++) { if (this.ground[y][x] || this.block[y][x]) continue; const nearRoad = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([a, b]) => this.ground[y + b] && this.ground[y + b][x + a] === 1); if (nearRoad && hash(x * 5, y * 11) < .32) out.push([x, y]); }
+    this.deco = out.slice(0, 12); this.decoSig = this.sig; return this.deco; },
   /* Remparts : palissade (1), mur de pierre (2), tours et bannières (3) */
   drawWalls(x, lvl, t, u) {
     const L = this.L, hh = (lvl >= 2 ? 18 : 13) * u, col = lvl >= 2 ? "#5a5650" : "#5a3e24", top = lvl >= 2 ? "#6e6a62" : "#7a5634";
@@ -2597,6 +2795,9 @@ function genFloor() {
     if (near.length >= count) spots = near.sort(() => Math.random() - .5); }
   if (bossFloor) { const b = enemyFrom(bossKey, d, dg); Object.assign(b, { x: 5, y: 1 }); units.push(b); }
   for (let i = 0; i < count; i++) { const e = enemyFrom(pick(pool), d, dg); const sp = spots.find(([a, b]) => !units.some(u => u.x === a && u.y === b)); if (!sp) break; Object.assign(e, { x: sp[0], y: sp[1] }); units.push(e); }
+  // créature de l'événement saisonnier en cours
+  const season = typeof SEASON === "function" ? SEASON() : null;
+  if (season && !bossFloor && Math.random() < .32) { const sp = spots.find(([a, b]) => !units.some(u => u.x === a && u.y === b)); if (sp) { const se = enemyFrom(season.enemy, d, dg); Object.assign(se, { x: sp[0], y: sp[1] }); units.push(se); } }
   // un gobelin voleur se faufile parfois dans la salle : il fuit avec un trésor
   if (!bossFloor && d >= 2 && Math.random() < .09) { const sp = spots.find(([a, b]) => !units.some(u => u.x === a && u.y === b)) || foeSpots.find(([a, b]) => !units.some(u => u.x === a && u.y === b));
     if (sp) { const gb = enemyFrom("gobelin", d, dg); Object.assign(gb, { x: sp[0], y: sp[1], ttl: 4 }); units.push(gb); } }
@@ -2788,6 +2989,7 @@ function fxText(u, s, col) { F().fx.push({ x: u.x, y: u.y, s, col, t: 0, big: /C
 function syncAllies() { for (const a of F().units) { if (a.id === "hero") S.vit.hp = a.hp; if (a.id === "wolf") S.wolf.hp = a.hp; if (a.merc && EX.mercs[a.mref]) EX.mercs[a.mref].hp = a.hp; } }
 function onDeath(u) {
   u.dead = .01;
+  if (u.side === "enemy" && ENEMIES[u.key] && ENEMIES[u.key].seasonal && SEASON()) { ensureSeason(); S.season.kills = (S.season.kills || 0) + 1; EX.bonusLoot = EX.bonusLoot || []; seasonGain(3, EX.bonusLoot); }
   if (u.side === "enemy" && u.key) { S.st.killed = S.st.killed || {}; S.st.killed[u.key] = (S.st.killed[u.key] || 0) + 1; if (u.boss && S.diff === "cauchemar") S.st.nightBoss = (S.st.nightBoss || 0) + 1; SFX.play("death"); }
   { const f = F(), col = u.side === "enemy" ? (["spirit", "wraith", "wisp", "frostqueen"].includes(u.kind) ? "#bfe8ff" : u.kind === "lich" || u.kind === "knight" ? "#c9a6ff" : "#e8d8c0") : "#ff9a8a";
     for (let i = 0; i < (u.boss ? 60 : 26); i++) f.sparks.push({ x: u.x, y: u.y, vx: rnd(-.7, .7), vy: rnd(-1.6, -.3), l: rnd(-.2, .2), col, soul: 1 }); }
@@ -2985,6 +3187,7 @@ function victory() {
   const f = F(); if (f.phase === "won") return; f.phase = "won"; SFX.play("victory"); const dg = DG(EX.d);
   EX.elitesRoom = f.units.filter(u => u.side === "enemy" && u.elite).length;
   const loot = rollLoot(dg, EX.depth); const lost = []; EX.elitesRoom = 0; const mod = f.mod;
+  if (SEASON()) { ensureSeason(); S.season.rooms = (S.season.rooms || 0) + 1; EX.bonusLoot = EX.bonusLoot || []; seasonGain(1 + (Math.random() < .3 ? 1 : 0), EX.bonusLoot); }
   if (EX.bonusLoot) { loot.push(...EX.bonusLoot); EX.bonusLoot = null; }
   if (dg.infinite && EX.depth % 10 === 0) loot.push(makeItem("eclat_vide", 0, 50, 1));
   if (mod && mod.loot) for (let i = 0; i < mod.loot; i++) loot.push(...rollLoot(dg, EX.depth).slice(0, 1));
@@ -3526,7 +3729,7 @@ function renderHud() {
   <button class="gearb" data-act="settings" title="Réglages" aria-label="Réglages">${nico("gear")}</button>`;
 }
 const NAV = [["home", "Accueil", "home"], ["perso", "Personnage", "armor"], ["forge", "Atelier", "forge"], ["inv", "Inventaire", "bag"], ["map", "Expéditions", "dungeon"], ["taverne", "Taverne", "mug"], ["chantiers", "Chantiers", "hammer"], ["quests", "Quêtes", "scroll"], ["mastery", "Maîtrise", "tree"], ["chron", "Chroniques", "book"], ["events", "Événements", "banner"]];
-const navDots = () => ({ chron: achReady(), quests: questsReady() + contractsReady(), mastery: masteryPoints() + (S.lvl >= 5 && !S.spec ? 1 : 0) });
+const navDots = () => ({ events: seasonReady(), chron: achReady(), quests: questsReady() + contractsReady(), mastery: masteryPoints() + (S.lvl >= 5 && !S.spec ? 1 : 0) });
 function renderNav() {
   const dots = navDots(), secDots = NAV.filter(([id]) => !NAV_MAIN.includes(id)).reduce((a, [id]) => a + (dots[id] || 0), 0), secOn = !NAV_MAIN.includes(VIEW);
   $("#nav").innerHTML = NAV.map(([id, n, ic]) => `<button class="navb ${NAV_MAIN.includes(id) ? "" : "sec"} ${VIEW === id ? "on" : ""}" data-act="go" data-v="${id}">${nico(ic)}<span>${n}</span>${dots[id] ? `<span class="dot">${dots[id]}</span>` : ""}</button>`).join("") +
@@ -3579,6 +3782,7 @@ function vHome() {
    <div class="home-side">
     <div class="panel"><div class="ph">${esc(S.name)} <small>${CLS(S.cls).n}</small></div>${vitBars()}${statsGrid()}
       <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="btn sm" data-act="rest" title="Santé, énergie et loup au maximum">${nico("bed").replace("<svg", '<svg width="16" height="16" style="vertical-align:-3px"')} Auberge · ${restCost()} or</button><button class="btn ghost sm" data-act="nap" title="Récupère jusqu'à 60 %, mais creuse la faim et la soif">Dormir à la forge</button><button class="btn ghost sm" data-act="eat">Manger et boire</button></div></div>
+    ${(() => { const se = ensureSeason(); return se ? `<button class="panel seasoncard" data-act="go" data-v="events" style="--sc:${se.col}"><b>${se.ic} ${se.n}</b><span>${se.bonus} · ${count(S.stash, "jeton")} jetons${seasonReady() ? ` · <b style="color:var(--gold-hi)">${seasonReady()} récompense${seasonReady() > 1 ? "s" : ""}</b>` : ""}</span></button>` : ""; })()}
     <div class="panel evcard"><div class="evart"><canvas id="evart"></canvas></div><div class="evbody"><div class="muted" style="font-size:13px;letter-spacing:.12em;text-transform:uppercase">Événement actif</div><h3>${ev.active.n}</h3><p style="margin:6px 0 8px">${ev.active.d}</p><div class="timer" data-timer="${ev.ends}">${fmtLeft(ev.ends - Date.now())}</div><button class="btn sm wide" style="margin-top:10px" data-act="go" data-v="events">Voir l'événement</button></div></div>
     <div class="panel"><div class="ph">Commandes <small>jour ${S.day}</small></div><div class="list">${S.orders.map(o => orderRow(o, true)).join("")}</div><button class="btn ghost sm wide" style="margin-top:8px" data-act="toorders">Ouvrir à l'Atelier</button></div>
     <div class="panel"><div class="ph">Contrats de la Guilde <small>${contractsReady() ? `<b class="ok">${contractsReady()} à réclamer</b>` : "limités dans le temps"}</small></div><div class="list">${(S.contracts || []).map(c => contractRow(c, true)).join("") || '<p class="muted" style="margin:0">Aucun contrat pour l\'instant.</p>'}</div>${(S.bless || []).length ? `<div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap">${S.bless.map(blessChip).join("")}</div>` : ""}<button class="btn ghost sm wide" style="margin-top:8px" data-act="toqtab" data-t="contracts">Voir les contrats</button></div>
@@ -3673,7 +3877,7 @@ function forgeSalv() {
    <div><button class="btn ember" data-act="salvage">Recycler</button></div></div></div>`;
 }
 function forgeRunes() {
-  if (!hasAltar()) return `<div class="panel" style="box-shadow:inset 0 0 0 1px var(--line)"><p style="margin:0">L'autel runique est fermé. Le Forgeron runique y a accès dès le départ ; les autres classes l'ouvrent avec le nœud <b>Autel runique</b> de la branche Fabrication.</p><button class="btn sm" style="margin-top:10px" data-act="go" data-v="mastery">Ouvrir la maîtrise</button></div>`;
+  if (!hasAltar()) return `<div class="panel" style="box-shadow:inset 0 0 0 1px var(--line)"><p style="margin:0">L'autel runique est fermé. Le Forgeron runique y a accès dès le départ ; les autres l'ouvrent en terminant le <b>chapitre 2</b> de l'histoire (le vieux druide enseigne la gravure), ou plus tôt avec le nœud <b>Autel runique</b> de la branche Fabrication.</p><button class="btn sm" style="margin-top:10px" data-act="go" data-v="mastery">Ouvrir la maîtrise</button></div>`;
   const list = equipList(); const o = pickedEquip(list); if (!o) return `<p class="muted">Aucun équipement.</p>`;
   const it = o.it; const runes = S.stash.filter(x => IT[x.id].rune);
   return `<div class="grid forge" style="grid-template-columns:minmax(0,1fr) minmax(0,1.2fr)"><div class="list">${list.map(eqRow).join("")}</div>
@@ -3908,18 +4112,25 @@ function openLore(q, end) {
 }
 
 /* ── Maîtrise ────────────────────────────────── */
+function branchHTML(br, locked) {
+  const got = br.nodes.filter(n => hasNode(n.id)).length;
+  return `<div class="branch ${locked ? "locked" : ""}" style="--bc:${br.col}"><div class="qicon" style="color:${br.col};width:54px;height:54px">${nico(br.ic)}</div><h3 style="color:${br.col}">${br.n} <small class="faint num">${got}/${br.nodes.length}</small></h3>
+     ${br.nodes.map((n, i) => { const on = hasNode(n.id), can = !locked && !on && masteryPoints() > 0 && (i === 0 || hasNode(br.nodes[i - 1].id)); const ult = i === br.nodes.length - 1 && n.skill;
+       return `${i ? '<div class="link"></div>' : ""}<button class="node ${on ? "on" : can ? "can" : ""} ${n.skill ? "sknode" : ""} ${ult ? "ult" : ""}" style="color:${br.col}" data-act="learn" data-n="${n.id}" ${can ? "" : "disabled"} aria-label="${n.n}">${nico(n.skill ? "star" : i === 1 && br.id === "fab" ? "gem" : br.ic)}</button><div class="nodetxt"><b>${n.n}${n.skill ? ` <span style="color:var(--gold-hi)">· ${ult ? "ultime" : "compétence"}</span>` : ""}</b>${n.d}${n.skill && SKILLS[n.skill] ? ` <span class="faint">(${SKILLS[n.skill].cost} én.)</span>` : ""}</div>`; }).join("")}</div>`;
+}
 function vMastery() {
   const sp = specOf(), specs = SPECS[S.cls] || [];
   const specPanel = `<div class="panel"><div class="ph">Spécialisation · ${CLS(S.cls).n} <small>${sp ? "définitive" : S.lvl >= 5 ? "à choisir" : "niveau 5"}</small></div>
-    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))">${specs.map(s => { const on = sp && sp.id === s.id, off = sp && !on;
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))">${specs.map(s => { const on = sp && sp.id === s.id, off = sp && !on, tree = MASTERY.find(b => b.spec === s.id);
       return `<div class="spec ${on ? "on" : ""} ${off ? "off" : ""}"><b>${s.n}</b><span>${s.d}</span><div class="sk"><span class="qicon">${nico("star")}</span><div><b>${s.skill.n}</b> <span class="faint">· ${s.skill.cost} énergie</span><br><span>${s.skill.d}</span></div></div>
+       ${tree ? `<div class="spectree"><span class="faint">Branche « ${tree.n} » :</span> ${tree.nodes.map(n => n.skill ? `<b style="color:var(--gold-hi)">${n.n}</b>` : n.n).join(" · ")}</div>` : ""}
        ${sp ? (on ? '<span class="chip done">Choisie</span>' : "") : `<button class="btn ${S.lvl >= 5 ? "ember" : ""} sm" data-act="spec" data-id="${s.id}" ${S.lvl >= 5 ? "" : "disabled"}>${S.lvl >= 5 ? "Choisir cette voie" : "Niveau 5 requis"}</button>`}</div>`; }).join("")}</div></div>`;
-  const skills = heroSkills();
+  const skills = heroSkills(), tree = sp && MASTERY.find(b => b.spec === sp.id);
   viewEl.innerHTML = `<div class="grid">${specPanel}
    <div class="panel"><div class="ph">Compétences de combat <small>${skills.length} apprise${skills.length > 1 ? "s" : ""}</small></div><div style="display:flex;gap:6px;flex-wrap:wrap">${skills.map(s => `<span class="chip" title="${s.d}"><b>${s.n}</b> · ${costOf(s)} én.</span>`).join("")}</div></div>
-   <div class="panel"><div class="ph">Arbre de maîtrise <small>Points disponibles : <b style="color:var(--gold-hi)" class="num">${masteryPoints()}</b> · 1 par niveau, plus les chapitres et contrats</small></div>
-   <div class="grid mast">${MASTERY.map(br => { const got = br.nodes.filter(n => hasNode(n.id)).length; return `<div class="branch" style="--bc:${br.col}"><div class="qicon" style="color:${br.col};width:54px;height:54px">${nico(br.ic)}</div><h3 style="color:${br.col}">${br.n} <small class="faint num">${got}/${br.nodes.length}</small></h3>
-     ${br.nodes.map((n, i) => { const on = hasNode(n.id), can = !on && masteryPoints() > 0 && (i === 0 || hasNode(br.nodes[i - 1].id)); return `${i ? '<div class="link"></div>' : ""}<button class="node ${on ? "on" : can ? "can" : ""} ${n.skill ? "sknode" : ""}" style="color:${br.col}" data-act="learn" data-n="${n.id}" ${can ? "" : "disabled"} aria-label="${n.n}">${nico(n.skill ? "star" : i === 1 && br.id === "fab" ? "gem" : br.ic)}</button><div class="nodetxt"><b>${n.n}${n.skill ? ' <span style="color:var(--gold-hi)">· compétence</span>' : ""}</b>${n.d}</div>`; }).join("")}</div>`; }).join("")}</div>
+   <div class="panel"><div class="ph">Arbre de maîtrise <small>Points disponibles : <b style="color:var(--gold-hi)" class="num">${masteryPoints()}</b> · 1 par niveau, plus les chapitres, contrats et hauts faits</small></div>
+   ${tree ? `<div class="specbranch"><div class="muted" style="text-align:center;margin-bottom:6px">Branche de votre spécialisation</div>${branchHTML(tree)}</div>` : ""}
+   <div class="grid mast">${MASTERY.filter(b => !b.spec).map(b => branchHTML(b)).join("")}</div>
    <div style="display:flex;justify-content:center;margin-top:16px"><button class="btn ghost sm" data-act="respec" ${S.mastery.length ? "" : "disabled"}>Réinitialiser l'arbre · ${50 + S.lvl * 10} or</button></div></div></div>`;
 }
 
@@ -3976,17 +4187,43 @@ function vTavern() {
 }
 
 /* ── Événements & caravane ───────────────────── */
+function seasonPanel() {
+  const se = ensureSeason();
+  if (!se) { const nx = nextSeason(); return `<div class="panel season off" style="grid-column:1/-1"><div class="ph">Événements saisonniers</div><p style="margin:0">Aucune fête en ce moment. Prochaine : <b style="color:${nx.s.col}">${nx.s.ic} ${nx.s.n}</b> dans <span data-timer="${+nx.at}">${fmtLeft(nx.at - Date.now())}</span>.</p>
+    <p class="faint" style="margin:6px 0 0;font-size:13.5px">Quatre fêtes rythment l'année : Lanternes (automne), Solstice de Givre (hiver), Éveil des Fées (printemps) et Foire du Solstice (été).</p></div>`; }
+  const tok = count(S.stash, "jeton"), end = seasonEnd(se), qs = SEASON_QUESTS(se), shop = SEASON_SHOP(se);
+  return `<div class="panel season" style="grid-column:1/-1;--sc:${se.col}"><canvas id="seasonart"></canvas><div class="sbody">
+    <div class="muted" style="font-size:13px;letter-spacing:.12em;text-transform:uppercase">Événement saisonnier · se termine dans <span data-timer="${+end}">${fmtLeft(end - Date.now())}</span></div>
+    <h3 style="font-size:23px;color:${se.col}">${se.ic} ${se.n}</h3><p style="margin:4px 0">${se.d}</p><p style="margin:0"><span class="chip" style="color:${se.col}">${se.bonus}</span> <span class="chip gold">${nico("gem").replace("<svg", '<svg width="14" height="14"')} ${tok} jeton${tok > 1 ? "s" : ""}</span></p></div></div>
+   <div class="panel"><div class="ph">Quêtes de saison</div><div class="list" style="gap:8px">${qs.map(q => { const [c, m] = q.g(S), done = S.season.claimed.includes(q.id);
+     return `<div class="row quest ${done ? "off" : ""}" style="cursor:default"><div class="qicon" style="color:${se.col}">${nico("star")}</div><div class="t"><b>${q.n}</b><span style="color:var(--text)">${q.d}</span>${done ? "" : `<div class="prog"><i style="width:${Math.min(1, c / m) * 100}%"></i></div><span class="num">${Math.min(c, m)} / ${m}</span>`}<div style="margin-top:4px"><span class="chip gold">${[q.rw.jeton && q.rw.jeton + " jetons", q.rw.crys && q.rw.crys + " cristaux", q.rw.gold && q.rw.gold + " or"].filter(Boolean).join(" · ")}</span></div></div>
+       ${done ? '<span class="chip done">Terminée</span>' : c >= m ? `<button class="btn ember sm" data-act="sqclaim" data-id="${q.id}">Réclamer</button>` : ""}</div>`; }).join("")}</div>
+     <p class="faint" style="margin:8px 0 0;font-size:13.5px">Des ${ENEMIES[se.enemy].n.toLowerCase()}s apparaissent dans tous les donjons. Chaque salle nettoyée rapporte des jetons, et chaque ${ENEMIES[se.enemy].n.toLowerCase()} vaincue trois de plus.</p></div>
+   <div class="panel"><div class="ph">Boutique de la fête <small>jetons</small></div><div class="list" style="gap:6px">${shop.map(o => { const owned = o.once && (S.season.bought[o.id] || (o.id === "item" && S.seasonItems[se.item]) || (o.id === "cloak" && S.cosm.includes(se.cloak)));
+     return `<div class="row" style="cursor:default">${o.id === "item" ? slotHTML({ id: se.item, r: 3, q: 1, u: "x" }, { size: "sm" }) : o.id === "cloak" ? `<div class="slot sm" style="background:${LOOK.cloak[se.cloak]}"></div>` : o.id === "crys" ? `<div class="slot sm">${currIco("crys")}</div>` : slotHTML({ id: o.id, r: 0, q: 1, u: "x" }, { size: "sm" })}
+       <div class="t"><b>${o.n}</b><span>${o.d}</span></div>${owned ? '<span class="chip done">Obtenu</span>' : `<button class="btn sm" data-act="sbuy2" data-id="${o.id}" ${tok >= o.price ? "" : "disabled"}>${o.price} jetons</button>`}</div>`; }).join("")}</div></div>`;
+}
+function drawSeasonArt(c) {
+  const se = SEASON(); if (!c || !se) return; const r = c.getBoundingClientRect(); if (!r.width) return; c.width = r.width * 2; c.height = r.height * 2; const x = c.getContext("2d"); x.scale(2, 2); const W = r.width, H = r.height;
+  const g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, { lanternes: "#2a1408", givre: "#1a2a3a", eveil: "#2a1a2a", foire: "#2a2010" }[se.id]); g.addColorStop(1, "#080605"); x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.fillStyle = "#0e0c0a"; x.beginPath(); x.moveTo(0, H * .75); for (let i = 0; i <= 10; i++) x.lineTo(W * i / 10, H * (.6 + hash(i, 4) * .15)); x.lineTo(W, H); x.lineTo(0, H); x.fill();
+  if (se.id === "lanternes") for (let i = 0; i < 7; i++) { const cx = W * (.1 + i * .13), cy = H * (.3 + hash(i, 2) * .3); glow(x, cx, cy, 26, "#ff8a2a", .55); x.fillStyle = "#e86a1a"; x.beginPath(); x.ellipse(cx, cy, 8, 7, 0, 0, 7); x.fill(); x.fillStyle = "#ffd06a"; x.fillRect(cx - 3, cy - 2, 2, 2); x.fillRect(cx + 1, cy - 2, 2, 2); x.fillRect(cx - 2, cy + 2, 4, 1.5); }
+  if (se.id === "givre") for (let i = 0; i < 70; i++) { x.fillStyle = `rgba(240,250,255,${.4 + hash(i, 3) * .6})`; x.beginPath(); x.arc(hash(i, 7) * W, hash(i, 9) * H, 1 + hash(i, 5) * 1.6, 0, 7); x.fill(); }
+  if (se.id === "eveil") for (let i = 0; i < 50; i++) { x.fillStyle = ["#ff9ad8", "#ffd0ec", "#fff0a0"][i % 3]; x.beginPath(); x.ellipse(hash(i, 7) * W, hash(i, 9) * H, 3, 1.5, i, 0, 7); x.fill(); }
+  if (se.id === "foire") { for (let k = 0; k < 2; k++) for (let i = 0; i < 12; i++) { const px = W * i / 11, py = H * (.18 + k * .2) + Math.sin(i / 11 * Math.PI) * 18; x.fillStyle = ["#c84a3a", "#e8c060", "#3a7ac8"][(i + k) % 3]; x.beginPath(); x.moveTo(px - 8, py); x.lineTo(px + 8, py); x.lineTo(px, py + 14); x.fill(); } }
+  vignette(x, W, H, .45);
+}
 function vEvents() {
   const ev = currentEvent(); const car = ev.active.id === "caravane";
   const nextCar = (() => { for (let i = 1; i <= 3; i++) { const n = currentEvent(ev.ends + (i - 1) * EV_LEN + 1); if (n.active.id === "caravane") return ev.ends + (i - 1) * EV_LEN; } return ev.ends; })();
-  viewEl.innerHTML = `<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));align-items:start">
+  viewEl.innerHTML = `<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));align-items:start">${seasonPanel()}
    <div class="panel evcard"><div class="evart" style="height:150px"><canvas id="evart"></canvas></div><div class="evbody"><div class="muted" style="font-size:13px;letter-spacing:.12em;text-transform:uppercase">En cours · horloge réelle</div><h3 style="font-size:21px">${ev.active.n}</h3><p>${ev.active.d}</p>Se termine dans <span class="timer" data-timer="${ev.ends}">${fmtLeft(ev.ends - Date.now())}</span></div></div>
    <div class="panel"><div class="ph">Prochains événements</div><div class="list">${ev.next.map(n => `<div class="row" style="cursor:default"><div class="qicon">${nico("banner")}</div><div class="t"><b>${n.ev.n}</b><span>${n.ev.d}</span></div><span class="timer" data-timer="${n.at}" style="font-size:13px">${fmtLeft(n.at - Date.now())}</span></div>`).join("")}</div></div>
    <div class="panel" style="grid-column:1/-1"><div class="ph">Étals de la caravane des brumes <small>${car ? "ouverts" : `fermés · retour dans <span data-timer="${nextCar}">${fmtLeft(nextCar - Date.now())}</span>`}</small></div>
     <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(230px,1fr))">${SHOP.map((o, i) => { const left = o.limit ? o.limit - (S.bought[o.id] || 0) : 99; const price = o.gold ? `${shopPrice(o)} or` : `${o.crys} cristaux`; const afford = o.gold ? S.gold >= shopPrice(o) : S.crys >= o.crys;
       return `<div class="row" style="cursor:default">${slotHTML({ id: o.id, r: 0, q: o.n, u: "x" })}<div class="t"><b>${IT[o.id].n}${o.n > 1 ? ` ×${o.n}` : ""}</b><span>${price}${o.limit ? ` · ${left} restant${left > 1 ? "s" : ""}` : ""}</span></div><button class="btn sm" data-act="buy" data-i="${i}" ${car && afford && left > 0 ? "" : "disabled"}>Acheter</button></div>`; }).join("")}</div>
     ${car ? "" : `<p class="muted" style="margin:10px 0 0">Prototype : les événements tournent tous les 3 jours sur l'horloge réelle.</p>`}</div></div>`;
-  drawEventArt($("#evart"), ev.active.id);
+  drawEventArt($("#evart"), ev.active.id); drawSeasonArt($("#seasonart"));
 }
 
 /* ── Donjon ──────────────────────────────────── */
@@ -4097,7 +4334,7 @@ function renderCreate() {
 /* ── Éditeur d'apparence (création et écran Personnage) ── */
 function lookEditor(lk, pplId, clsId) {
   const p = PPL(pplId), c = CLS(clsId), tab = UI.lookTab;
-  const sw = (k, list, colOf) => `<div class="sws">${list.map((v, i) => { const col = colOf(v, i); const on = (k === "hairCol" ? lk.hairCol === v : lk[k] === i); return `<button class="sw ${on ? "on" : ""}" style="background:${col}" data-act="look" data-k="${k}" data-v="${k === "hairCol" ? v : i}" aria-label="${k} ${i + 1}"></button>`; }).join("")}</div>`;
+  const sw = (k, list, colOf) => `<div class="sws">${list.map((v, i) => { if (k === "cloak" && i >= _cloak0 && !(S && (S.cosm || []).includes(i) && lk === S.look)) return ""; const col = colOf(v, i); const on = (k === "hairCol" ? lk.hairCol === v : lk[k] === i); return `<button class="sw ${on ? "on" : ""}" style="background:${col}" data-act="look" data-k="${k}" data-v="${k === "hairCol" ? v : i}" aria-label="${k} ${i + 1}"></button>`; }).join("")}</div>`;
   const chips = (k, list) => `<div class="sws">${list.map((n, i) => `<button class="chipbtn ${lk[k] === i ? "on" : ""}" data-act="look" data-k="${k}" data-v="${i}">${n}</button>`).join("")}</div>`;
   const row = (lab, html) => `<div class="lrow"><span class="muted">${lab}</span>${html}</div>`;
   const hairCols = [...new Set([p.hair, ...LOOK.hairCol])];
@@ -4180,6 +4417,8 @@ const ACT = {
   shadow: () => openShadow(),
   sbuy: d => { const r = shadowBuy(+d.i); const bad = typeof r === "string" && /fermé|Épuisé|insuffisant|pleine/.test(r); toast(bad ? r : `Acheté${r ? " : " + r : ""}.`, bad ? "bad" : "gold"); if (!bad) SFX.play("coin"); openShadow(); renderHud(); },
   rbuild: d => { const r = REBUILD.find(x => x.id === d.id); const e = buildProject(d.id); if (!e) { SFX.play("level"); if (VILLAGE) VILLAGE.init = false; } toast(e || `${r.n} : niveau ${rebuildLvl(d.id)} achevé !`, e ? "bad" : "gold"); rerender(); },
+  sqclaim: d => { const e = claimSeasonQuest(d.id); if (!e) SFX.play("quest"); toast(e || "Récompense de saison obtenue !", e ? "bad" : "gold"); rerender(); },
+  sbuy2: d => { const e = seasonBuy(d.id); if (!e) SFX.play("coin"); toast(e || (d.id === "cloak" ? "Nouvelle cape disponible dans l'apparence du héros." : "Acheté !"), e ? "bad" : "gold"); rerender(); },
   more: () => openMore(), gosheet: d => { closeModal(); go(d.v); },
   settings: () => openSettings(), installinfo: () => openInstall(),
   install: async () => { const p = PWA.prompt; if (!p) { openInstall(); return; } PWA.prompt = null; p.prompt(); try { await p.userChoice; } catch (e) { } closeModal(); rerender(); },
@@ -4241,7 +4480,7 @@ const TUTO = [
     done: s => s.mastery.length >= 1, hl: () => VIEW !== "mastery" ? ['#modal [data-act="gosheet"][data-v="mastery"]', '.navb[data-v="mastery"]', '[data-act="more"]'] : ['.node.can'] },
   { id: "rest", t: "Reprenez des forces", d: "Santé et énergie ne remontent pas toutes seules. Dormez à l'auberge (tout revient) ou à la forge (gratuit, 60 %). Chaque nuit fait passer un jour : commandes et contrats ont des échéances.",
     done: s => (s.st.rests || 0) >= 1, hl: () => VIEW !== "home" ? ['.navb[data-v="home"]'] : ['[data-act="rest"]', '[data-act="nap"]'] },
-  { id: "end", t: "À vous de jouer", d: "Il reste beaucoup à découvrir : commandes des villageois, contrats de la Guilde, mercenaires à la Taverne, six lieux et leurs gardiens, et l'Abysse sans fond. Les Chroniques gardent la trace de vos exploits. Bonne forge !", next: 1, last: 1 },
+  { id: "end", t: "À vous de jouer", d: "Il reste beaucoup à découvrir : commandes et contrats, mercenaires à la Taverne, la reconstruction de Sombreval, la forge légendaire, des lieux cachés, les fêtes de saison et l'Abysse sans fond. Votre spécialisation, au niveau 5, ouvre une branche de compétences qui lui est propre. Bonne forge !", next: 1, last: 1 },
 ];
 const tutoOn = () => S && S.tuto && !S.tuto.off && S.tuto.step < TUTO.length;
 function tutoStep() { return tutoOn() ? TUTO[S.tuto.step] : null; }
