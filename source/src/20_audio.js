@@ -57,9 +57,37 @@ const SFX = {
   lose() { [392, 330, 262, 196].forEach((f, i) => tone(f, 1.4, "sine", .08, { at: i * .2, rev: 1 })); },
   bell() { tone(196, 3, "sine", .14, { rev: 1 }); tone(392, 2.5, "sine", .05, { rev: 1 }); tone(587, 2, "sine", .03, { rev: 1 }); },
 };
+// ── un son par arme, par compagnon ──
+Object.assign(SFX, {
+  w_marteau() { tone(70, .35, "sine", .32, { to: 38 }); noise(.22, .4, { f: 700, to: 140, q: .7 }); tone(1500, .5, "triangle", .05, { at: .02, rev: 1 }); tone(2210, .35, "sine", .03, { at: .02, rev: 1 }); },
+  w_lance() { noise(.22, .32, { f: 1800, to: 5000, q: 1.4 }); tone(240, .12, "triangle", .06, { to: 520 }); noise(.06, .25, { f: 900, at: .12 }); },
+  w_hache() { noise(.14, .4, { f: 2600, to: 900, q: 1 }); noise(.12, .35, { f: 500, to: 180, at: .08 }); tone(120, .16, "square", .06, { at: .08, to: 70 }); },
+  w_arbalete() { tone(180, .09, "square", .08, { to: 90 }); noise(.05, .3, { f: 3200, q: 3 }); tone(520, .2, "triangle", .05, { at: .02, to: 1600 }); noise(.3, .08, { f: 5000, to: 1500, at: .05, q: 4 }); },
+  w_faux() { noise(.45, .3, { f: 900, to: 4200, q: 2.5 }); tone(330, .45, "sine", .035, { to: 180, rev: 1 }); },
+  w_fleau() { for (let i = 0; i < 3; i++) tone(2400 + i * 300, .05, "square", .025, { at: i * .04 }); tone(60, .45, "sine", .36, { at: .13, to: 30 }); noise(.3, .45, { f: 500, to: 90, at: .13 }); },
+  w_epee() { noise(.2, .25, { f: 4200, to: 1200, q: 1.5 }); [880, 1320, 1760].forEach((f, i) => tone(f, .9, "sine", .035, { at: .03 + i * .01, rev: 1 })); },
+  p_loup() { noise(.16, .3, { f: 600, to: 250, q: 2 }); tone(160, .16, "sawtooth", .06, { to: 90 }); },
+  p_corbeau() { tone(900, .12, "sawtooth", .05, { to: 600 }); tone(820, .14, "sawtooth", .04, { at: .14, to: 520 }); },
+  p_chouette() { tone(420, .3, "sine", .07, { to: 380, rev: 1 }); tone(380, .4, "sine", .06, { at: .32, to: 330, rev: 1 }); },
+  p_chat() { noise(.12, .22, { f: 3500, to: 2000, q: 2 }); tone(700, .18, "triangle", .04, { to: 1100 }); },
+  p_salamandre() { noise(.5, .3, { f: 900, to: 300, type: "lowpass" }); tone(110, .4, "sawtooth", .04, { to: 60 }); },
+  p_drake() { noise(.7, .35, { f: 1200, to: 250, type: "lowpass", rev: 1 }); tone(90, .6, "sawtooth", .07, { to: 45 }); },
+});
 function sfx(k) { try { if (SFX[k]) SFX[k](); } catch (e) { } }
 // musique : nappes graves et cloches lentes, en mode mineur
-const MUSIC = { bastion: [110, [0, 3, 7, 10]], combat: [98, [0, 3, 7, 8]], boss: [82, [0, 1, 7, 8]], map: [104, [0, 3, 5, 7]], titre: [110, [0, 3, 7, 12]] };
+const MUSIC = { bastion: [110, [0, 3, 7, 10], "fire"], combat: [98, [0, 3, 7, 8]], boss: [82, [0, 1, 7, 8]], map: [104, [0, 3, 5, 7]], titre: [110, [0, 3, 7, 12]],
+  b0: [98, [0, 3, 7, 10], "drip"], b1: [92, [0, 2, 3, 7], "wind"], b2: [87, [0, 3, 5, 10], "creak"], b3: [82, [0, 1, 4, 7], "fire"], b4: [104, [0, 2, 6, 9], "choir"] };
+// bruitages d'ambiance : gouttes, vent, racines qui grincent, braises, chœur lointain
+function ambience(kind) {
+  const c = SND.ctx; if (!c) return; const t = c.currentTime, out = SND.music;
+  const n = (d, v, o) => { const s = c.createBufferSource(); s.buffer = SND.noise; const f = c.createBiquadFilter(); f.type = o.type || "bandpass"; f.frequency.setValueAtTime(o.f, t + (o.at || 0)); if (o.to) f.frequency.linearRampToValueAtTime(o.to, t + (o.at || 0) + d); f.Q.value = o.q || 1; const g = c.createGain(); g.gain.setValueAtTime(0, t + (o.at || 0)); g.gain.linearRampToValueAtTime(v, t + (o.at || 0) + d * .4); g.gain.linearRampToValueAtTime(0, t + (o.at || 0) + d); s.connect(f); f.connect(g); g.connect(out); g.connect(SND.rev); s.start(t + (o.at || 0)); s.stop(t + (o.at || 0) + d + .05); };
+  const p = (f, d, v, o = {}) => { const os = c.createOscillator(), g = c.createGain(); os.type = o.type || "sine"; os.frequency.setValueAtTime(f, t + (o.at || 0)); if (o.to) os.frequency.exponentialRampToValueAtTime(o.to, t + (o.at || 0) + d); g.gain.setValueAtTime(0, t + (o.at || 0)); g.gain.linearRampToValueAtTime(v, t + (o.at || 0) + (o.a || .005)); g.gain.exponentialRampToValueAtTime(.0005, t + (o.at || 0) + d); os.connect(g); g.connect(out); g.connect(SND.rev); os.start(t + (o.at || 0)); os.stop(t + (o.at || 0) + d + .05); };
+  if (kind === "drip") { for (let i = 0; i < 2; i++) if (Math.random() < .6) { const f = 1400 + Math.random() * 1200, at = Math.random() * 1.4; p(f, .18, .05, { at, to: f * .55 }); } }
+  if (kind === "wind") n(1.6, .05, { f: 300 + Math.random() * 300, to: 700 + Math.random() * 500, q: 6 });
+  if (kind === "creak" && Math.random() < .45) p(90 + Math.random() * 60, .7, .03, { type: "sawtooth", to: 70, a: .2, at: Math.random() });
+  if (kind === "fire") { for (let i = 0; i < 5; i++) n(.04, .07, { f: 2500 + Math.random() * 2500, q: 2, at: Math.random() * 1.4 }); n(1.5, .03, { f: 200, type: "lowpass" }); }
+  if (kind === "choir" && Math.random() < .5) { const f = 330 * Math.pow(2, [0, 3, 7, 10][Math.floor(Math.random() * 4)] / 12); for (const dt of [0, .006]) p(f * (1 + dt), 2.6, .02, { a: 1.1, type: "triangle" }); }
+}
 function musicPlay(kind) {
   if (!SND.ctx) return; SND.mKind = kind;
   const on = S ? S.opts.music : 1;
@@ -72,13 +100,14 @@ function musicPlay(kind) {
     if (step % 4 === 0) { // nappe
       for (const iv of [0, sc[1], sc[2]]) { const f = root * Math.pow(2, (iv + (step % 16 >= 8 ? sc[3] - sc[2] : 0)) / 12); const o = c.createOscillator(), g = c.createGain(), fl = c.createBiquadFilter(); o.type = "sawtooth"; o.frequency.value = f / 2; fl.type = "lowpass"; fl.frequency.value = 500; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.05, t + 1.5); g.gain.linearRampToValueAtTime(0, t + 6.2); o.connect(fl); fl.connect(g); g.connect(SND.music); g.connect(SND.rev); o.start(t); o.stop(t + 6.5); }
     }
-    if (Math.random() < (SND.mKind === "combat" || SND.mKind === "boss" ? .7 : .45)) { // cloche / harpe
+    if (Math.random() < (SND.mKind === "combat" || SND.mKind === "boss" || /^b\d/.test(SND.mKind) ? .6 : .45)) { // cloche / harpe
       const iv = sc[Math.floor(Math.random() * sc.length)] + (Math.random() < .4 ? 12 : 0); const f = root * 2 * Math.pow(2, iv / 12);
       const o = c.createOscillator(), g = c.createGain(); o.type = "triangle"; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.05, t + .01); g.gain.exponentialRampToValueAtTime(.0005, t + 2.4); o.connect(g); g.connect(SND.music); g.connect(SND.rev); o.start(t); o.stop(t + 2.5);
     }
-    if ((SND.mKind === "combat" || SND.mKind === "boss") && step % 2 === 0) { // tambour
+    if ((SND.mKind === "combat" || SND.mKind === "boss" || (/^b\d/.test(SND.mKind) && step % 4 === 0)) && step % 2 === 0) { // tambour
       const o = c.createOscillator(), g = c.createGain(); o.frequency.setValueAtTime(70, t); o.frequency.exponentialRampToValueAtTime(35, t + .3); g.gain.setValueAtTime(.18, t); g.gain.exponentialRampToValueAtTime(.001, t + .35); o.connect(g); g.connect(SND.music); o.start(t); o.stop(t + .4);
     }
+    const A = (MUSIC[SND.mKind] || [])[2]; if (A && (S ? S.opts.music : 1)) try { ambience(A); } catch (e) { }
     step++;
   };
   tick(); SND.mTimer = setInterval(tick, 1500);

@@ -31,7 +31,8 @@ function botTurn() {
   return Bn.phase === "dead" ? "dead" : "ok";
 }
 function playRun() {
-  startRun(); T.runs++;
+  T.achN = achReady().length; T.bestiary = S.bestiary;
+  if (T.runs % 7 === 6) { startDaily(); T.dailies = (T.dailies || 0) + 1; } else startRun(); T.runs++;
   let turns = 0;
   while (turns++ < 1500) {
     const B = S.run.board;
@@ -44,6 +45,7 @@ function playRun() {
       if (wasBoss) { T.bossWin[d] = (T.bossWin[d] || 0) + 1; bossReward(); }
       nextFloor();
       if (wasBoss) { const hpk = S.run.hp / runHpMax(); if (hpk < .5 || S.run.depth > 40) return endRun(false); }
+      { const evk = eventFor(S.run.depth - 1); if (evk) { const C = eventChoices(evk).filter(c => c.ok); applyEvent(evk, pick(C).k); T.events = (T.events || 0) + 1; } }
       if ((S.run.depth - 1) % 5 === 3 || wasBoss) { const ch = campChoices(); takeBoon(ch[0]); S.run.hp = Math.min(runHpMax(), S.run.hp + 2); }
     }
   }
@@ -76,4 +78,4 @@ console.log("Record moyen après 5/10/20/30 descentes :", [5, 10, 20, 30].map(i 
 console.log("Gardiens (victoires/essais) :", Object.keys(T.bossTry).map(k => k + ":" + (T.bossWin[k] || 0) + "/" + T.bossTry[k]).join(" "));
 console.log("Morts par profondeur :", JSON.stringify(T.deathAt));
 console.log("Fin de carrière :", careers.slice(0, 5).map(c => `rec ${c.final} ${c.wpn} armure ${c.armor}`).join(" · "));
-console.log("Erreurs :", T.errors.length ? "\n" + T.errors.slice(0, 5).join("\n") : "aucune");
+console.log("Événements : " + (T.events || 0) + " · défis : " + (T.dailies || 0) + " · succès disponibles : " + T.achN + " · bestiaire : " + JSON.stringify(T.bestiary) + "\nErreurs :", T.errors.length ? "\n" + T.errors.slice(0, 5).join("\n") : "aucune");

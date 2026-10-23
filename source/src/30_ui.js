@@ -13,15 +13,22 @@ if (HASWIN) { addEventListener("beforeinstallprompt", e => { e.preventDefault();
 
 function sceneInit() {
   SC.cv = $("#scene"); SC.x = SC.cv.getContext("2d");
-  const rs = () => { SC.dpr = Math.min(2, devicePixelRatio || 1); SC.w = innerWidth; SC.h = innerHeight; SC.cv.width = Math.round(SC.w * SC.dpr); SC.cv.height = Math.round(SC.h * SC.dpr); if (SCREENS[UI.screen] && SCREENS[UI.screen].resize) SCREENS[UI.screen].resize(); };
+  const rs = () => { SC.dpr = Math.min(3, devicePixelRatio || 1); SC.w = innerWidth; SC.h = innerHeight; SC.cv.width = Math.round(SC.w * SC.dpr); SC.cv.height = Math.round(SC.h * SC.dpr); if (SCREENS[UI.screen] && SCREENS[UI.screen].resize) SCREENS[UI.screen].resize(); };
   addEventListener("resize", rs); rs();
-  SC.cv.addEventListener("pointerdown", e => { audioInit(); if (SC.tap) SC.tap(e.clientX, e.clientY); });
+  // toucher : appui court = action, appui long (ou clic droit) = fiche ; la souris survole
+  let P0 = null;
+  SC.cv.addEventListener("pointerdown", e => { audioInit(); if (e.button === 2) return; const p = P0 = { x: e.clientX, y: e.clientY, t: performance.now(), long: false }; p.timer = setTimeout(() => { if (P0 === p && SC.long) { p.long = true; SC.long(p.x, p.y); } }, 430); });
+  SC.cv.addEventListener("pointermove", e => { if (e.pointerType === "mouse") { SC.mx = e.clientX; SC.my = e.clientY; } else if (P0) { SC.mx = e.clientX; SC.my = e.clientY; } if (P0 && Math.hypot(e.clientX - P0.x, e.clientY - P0.y) > 14) { clearTimeout(P0.timer); P0.moved = true; } if (P0 && P0.moved && SC.drag) SC.drag(e.clientX - (P0.lx ?? P0.x), e.clientY - (P0.ly ?? P0.y)); if (P0) { P0.lx = e.clientX; P0.ly = e.clientY; } });
+  SC.cv.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") SC.mx = SC.my = null; });
+  const up = e => { const p = P0; P0 = null; if (!p) return; clearTimeout(p.timer); if (e.pointerType !== "mouse") SC.mx = SC.my = null; if (!p.long && !p.moved && SC.tap) SC.tap(p.x, p.y); };
+  SC.cv.addEventListener("pointerup", up); SC.cv.addEventListener("pointercancel", () => { if (P0) clearTimeout(P0.timer); P0 = null; });
+  SC.cv.addEventListener("contextmenu", e => { e.preventDefault(); if (P0) clearTimeout(P0.timer); P0 = null; if (SC.long) SC.long(e.clientX, e.clientY); });
   const loop = now => { const dt = Math.min(.05, (now - (SC.last || now)) / 1000); SC.last = now; SC.t += dt; const x = SC.x; x.setTransform(SC.dpr, 0, 0, SC.dpr, 0, 0); try { if (SC.draw) SC.draw(x, SC.t, dt); } catch (e) { console.error(e); } requestAnimationFrame(loop); };
   requestAnimationFrame(loop);
 }
 const SCREENS = {};
 function go(name, arg) {
-  UI.screen = name; UI.arg = arg; SC.tap = null;
+  UI.screen = name; UI.arg = arg; SC.tap = null; SC.long = null; SC.drag = null;
   const S2 = SCREENS[name];
   $("#top").innerHTML = S2.top ? S2.top(arg) : ""; $("#bot").innerHTML = S2.bot ? S2.bot(arg) : ""; $("#mid").innerHTML = S2.mid ? S2.mid(arg) : "";
   SC.draw = S2.scene ? S2.scene(arg) : null;
@@ -58,7 +65,7 @@ SCREENS.title = {
   scene: () => (x, t, dt) => drawForgeScene(x, t, dt, { actors: false, dark: .85, dim: .25 }),
   mid: () => `<div class="title" style="pointer-events:auto"><div class="logo">La Forge<br>des Brumes<small>LA MINE SANS FOND</small></div><p class="lore" style="max-width:380px">Sous la forge, une mine maudite. Descendez, frappez, remontez forger. Plus bas, toujours plus bas.</p><button class="btn main" data-a="play" style="min-width:250px">${ico("hammer")}${loadF() ? "Continuer" : "Jouer"}</button>${PWA.standalone ? "" : `<button class="btn ghost sm" data-a="install">${ico("install")}Installer l'appli</button>`}</div>`,
 };
-ACT.play = () => { S = loadF() || newSave(); musicPlay("bastion"); if (S.run && S.run.board) go("mine"); else go("forge"); };
+ACT.play = () => { S = loadF() || newSave(); UI.achSeen = null; achCheck(); musicPlay("bastion"); if (S.run && S.run.board) go("mine"); else go("forge"); };
 ACT.install = async () => {
   if (PWA.prompt) { PWA.prompt.prompt(); try { await PWA.prompt.userChoice; } catch (e) { } PWA.prompt = null; return; }
   const how = PWA.framed ? `<p>Ici, le jeu est affiché dans un aperçu : ouvrez-le sur son site pour l'installer.</p><p class="center"><a class="btn main" href="${GAME_URL}" target="_blank" rel="noopener">Ouvrir le jeu</a></p>`
@@ -105,7 +112,7 @@ function forgeTap(px, py) { const F = FG.lay; if (!F || !FG.smith) return; const
 // ── la forge (écran principal) ──
 SCREENS.forge = {
   top: () => `${oreChips(S.ore, true)}<span class="pill" style="color:#ffb060" title="Braises">${ico("ember", "#ff8a3a")}${S.braises}</span><span class="grow"></span><button class="btn ghost icon crest" data-a="look" title="Forgeron">${crestImg(S.look.crest, 22)}</button><button class="btn ghost icon" data-a="opts">${ico("gear")}</button>`,
-  bot: () => `<p class="hint"><b>${esc(S.look.name)}</b>, maître forgeron · ${S.best ? `record : profondeur <b>${S.best}</b>` : "la mine attend"}</p><button class="btn main" data-a="descend" style="width:100%;max-width:460px">${ico("map")}Descendre${S.up.raccourci && S.bossDepth ? ` · prof. ${S.bossDepth + 1}` : ""}</button><div class="row w"><button class="btn" data-a="forgeOpen">${ico("anvil")}Forger</button><button class="btn" data-a="petOpen">${ico("paw")}Compagnon</button></div>`,
+  bot: () => { const n = achReady().length; return `<p class="hint"><b>${esc(S.look.name)}</b>, maître forgeron · ${S.best ? `record : profondeur <b>${S.best}</b>` : "la mine attend"}</p><div class="row w"><button class="btn main" data-a="descend" style="flex:2">${ico("map")}Descendre${S.up.raccourci && S.bossDepth ? ` · ${S.bossDepth + 1}` : ""}</button><button class="btn daily ${S.daily.day === dayKey() && S.daily.tries ? "" : "new"}" data-a="dailyOpen">${ico("daily", "#c49cff")}Défi</button></div><div class="row w three"><button class="btn" data-a="forgeOpen">${ico("anvil")}Forger</button><button class="btn" data-a="petOpen">${ico("paw")}Compagnon</button><button class="btn" data-a="codex">${ico("book")}Codex${n ? `<i class="badge">${n}</i>` : ""}</button></div>`; },
   scene: () => (x, t, dt) => drawForgeScene(x, t, dt, { sound: UI.screen === "forge" }),
   mount: () => { SC.tap = forgeTap; if (!S.look.done) return ACT.look(); forgeTuto(); },
 };
@@ -136,14 +143,16 @@ function paintMarks(root) { root.querySelectorAll("canvas[data-cv]").forEach(c =
   if (k === "smith") put(smithPix(smithLook(), "idle"));
   if (k === "pet") put(petPix(v, 0));
   if (k === "crest") put(crestPix({ f: +v, c: +w2 }));
+  if (k === "foe") put(foeArt(v, 0));
+  if (k === "wpn") put(spr("wpnico|" + v + "|" + w2, 30, 30, g => drawWeapon(g, v, 8, 22, -45 * Math.PI / 180, WPN_MET[+w2 || 0]), { ax: 15, ay: 29 }));
 }); }
 ACT.forgeOpen = () => { sheet(forgeHTML(), { mount: paintMarks, onClose: () => refreshBars() }); };
 ACT.ftab = v => { UI.ftab = v; ACT.forgeOpen(); };
 ACT.equipW = k => { S.equip.wpn = k; saveF(); ACT.forgeOpen(); };
 ACT.equipR = k => { S.equip.rune = S.equip.rune === k ? null : k; saveF(); ACT.forgeOpen(); };
 ACT.buyUp = k => { if (!buyUp(k)) return; sfx("level"); saveF(); ACT.forgeOpen(); };
-ACT.forgeW = k => minigame(WEAPONS[k].n, q => { if (forgeWeapon(k, q)) { saveF(); toast(`${WEAPONS[k].n} : <b>${TIERS[S.weapons[k].tier].n}</b>, ${QUALITY[q].n.toLowerCase()} !`); } ACT.forgeOpen(); });
-ACT.forgeA = () => minigame(ARMOR[S.equip.armor + 1].n, q => { if (forgeArmor(q)) { saveF(); toast(`${ARMOR[S.equip.armor].n} forgée, ${QUALITY[q].n.toLowerCase()} !`); } ACT.forgeOpen(); });
+ACT.forgeW = k => minigame(WEAPONS[k].n, q => { if (forgeWeapon(k, q)) { saveF(); achCheck(); toast(`${WEAPONS[k].n} : <b>${TIERS[S.weapons[k].tier].n}</b>, ${QUALITY[q].n.toLowerCase()} !`); } ACT.forgeOpen(); });
+ACT.forgeA = () => minigame(ARMOR[S.equip.armor + 1].n, q => { if (forgeArmor(q)) { saveF(); achCheck(); toast(`${ARMOR[S.equip.armor].n} forgée, ${QUALITY[q].n.toLowerCase()} !`); } ACT.forgeOpen(); });
 // mini-jeu : trois coups de marteau au bon moment
 function minigame(name, done) {
   let hits = [], pos = 0, dir = 1, speed = .9, raf = 0, over = false;
@@ -182,3 +191,41 @@ function lookHTML() {
 ACT.look = () => { const box = $("#sheet .box"), st = box ? box.scrollTop : 0; sheet(lookHTML(), { close: !!S.look.done, mount: r => { paintMarks(r); const b = $("#sheet .box"); if (b) b.scrollTop = st; const n = $("#lname"); if (n) n.oninput = () => { S.look.name = n.value.replace(/[<>]/g, "").slice(0, 16); saveF(); }; }, onClose: () => refreshBars() }); };
 ACT.lk = v => { const [k, val] = v.split(":"), n = +val, L = S.look; if (k === "cf") L.crest.f = n; else if (k === "cc") L.crest.c = n; else L[k] = n; saveF(); ACT.look(); };
 ACT.lookOk = () => { const L = S.look; if (!L.name.trim()) L.name = "Bran"; const first = !L.done; L.done = 1; saveF(); closeSheet(); refreshBars(); if (first) forgeTuto(); };
+
+// ── codex : bestiaire, armes, succès ──
+const STARS = (v, tiers) => `<span class="stars">${tiers.map(t => `<i class="${v >= t ? "on" : ""}">★</i>`).join("")}</span>`;
+function codexHTML() {
+  const tab = UI.ctab || "best", B = S.bestiary || {}, n = achReady().length;
+  const T = [["best", "Bestiaire"], ["arme", "Armes"], ["ach", "Succès" + (n ? ` (${n})` : "")]];
+  let body = "";
+  if (tab === "best") {
+    const card = (id, M, art, tiers, boss) => { const k = B[id] || 0; return `<div class="card ${k ? "" : "unseen"}" data-a="${k ? "bestInfo" : ""}" data-v="${id}"><canvas data-cv="foe:${art}" width="${boss ? 120 : 96}" height="${boss ? 100 : 80}" class="px"></canvas><h3 style="margin:4px 0 2px;font-size:14px">${k ? M.n : "???"}</h3><p class="small dim" style="margin:0">${k ? `${k} terrassé${k > 1 ? "s" : ""}` : boss ? "Un gardien" : "Profondeur " + (M.from || 1)}</p>${STARS(k, tiers)}</div>`; };
+    const seen = Object.keys(MONSTERS).filter(k => B[k]).length + BOSSES.filter(b => B[b.id]).length;
+    body = `<p class="small dim">${seen} / ${Object.keys(MONSTERS).length + BOSSES.length} créatures découvertes. Chaque étoile est un succès à réclamer.</p><div class="cards">${Object.keys(MONSTERS).map(k => card(k, MONSTERS[k], MONSTERS[k].art, [1, 10, 50])).join("")}</div><h3 style="margin-top:14px">Gardiens</h3><div class="cards">${BOSSES.map(b => card(b.id, b, b.art, [1, 3, 10], 1)).join("")}</div>`;
+  }
+  if (tab === "arme") body = `<p class="small dim">Forgez chaque arme, puis portez-la en argent et en âme.</p><div class="cards">${WEAPON_IDS.map(k => { const W = WEAPONS[k], o = S.weapons[k]; return `<div class="card ${o ? "" : "unseen"}"><canvas data-cv="wpn:${W.art}:${o ? o.tier : 0}" width="72" height="72" class="px"></canvas><h3 style="margin:4px 0 2px;font-size:14px">${W.n}</h3><p class="small dim" style="margin:0">${o ? TIERS[o.tier].n + (o.q === 2 ? " · chef-d'œuvre" : "") : weaponUnlocked(k) ? "À forger" : "Profondeur " + W.unlock}</p>${STARS(o ? o.tier + 1 : 0, [1, 2, 3])}</div>`; }).join("")}</div>`;
+  if (tab === "ach") { const A = S.ach || {}, L = achList().sort((a, b) => ((A[a.id] ? 2 : a.cur() >= a.goal ? 0 : 1) - (A[b.id] ? 2 : b.cur() >= b.goal ? 0 : 1)));
+    body = `<p class="small dim">${Object.keys(A).length} / ${L.length} succès obtenus.</p>` + L.map(a => { const done = A[a.id], ready = !done && a.cur() >= a.goal, p = Math.min(1, a.cur() / a.goal); return `<div class="item ${ready ? "on" : ""} ${done ? "done" : ""}"><div class="grow"><h3 style="margin:0;font-size:14px">${a.n}</h3><div class="prog"><i style="width:${Math.round(p * 100)}%"></i></div><p class="small dim" style="margin:2px 0 0">${Math.min(a.cur(), a.goal)} / ${a.goal}</p></div>${done ? `<span class="small good">${ico("star", "#9fe07a")}Obtenu</span>` : ready ? `<button class="btn sm" data-a="claim" data-v="${a.id}">${ico("ember", "#ff8a3a")}+${a.r}</button>` : `<span class="small dim">${ico("ember", "#6a5a4a")}${a.r}</span>`}</div>`; }).join(""); }
+  return `<div class="tabs">${T.map(([k, n2]) => `<button class="btn ${tab === k ? "on" : "ghost"}" data-a="ctab" data-v="${k}">${n2}</button>`).join("")}</div>${body}`;
+}
+ACT.codex = () => { const box = $("#sheet .box"), keep = UI.codexOpen && box ? box.scrollTop : 0; UI.codexOpen = 1; sheet(codexHTML(), { mount: r => { paintMarks(r); const b = $("#sheet .box"); if (b) b.scrollTop = keep; }, onClose: () => { UI.codexOpen = 0; refreshBars(); } }); };
+ACT.ctab = v => { UI.ctab = v; UI.codexOpen = 0; ACT.codex(); };
+ACT.claim = id => { const r = claimAch(id); if (!r) return; sfx("level"); saveF(); toast(`Succès obtenu : <b>+${r} braises</b>`); ACT.codex(); };
+ACT.bestInfo = id => { const boss = BOSSES.find(b => b.id === id), M = boss || MONSTERS[id], k = (S.bestiary || {})[id] || 0;
+  sheet(`<div class="card-foe"><canvas data-cv="foe:${M.art}" width="${boss ? 180 : 132}" height="${boss ? 168 : 132}" class="px portrait"></canvas><div class="grow"><h2 style="margin:0">${M.n}</h2><p class="small dim">${boss ? "Gardien" : "Profondeur " + (M.from || 1) + " et plus"} · ${k} terrassé${k > 1 ? "s" : ""}</p><p class="small">${ico("heart", "#e0503a")} ${M.hp} PV de base · ${ico("swords", "#ff8a6a")} ${M.dmg} dégât${M.dmg > 1 ? "s" : ""}</p></div></div><p class="lore">${M.d}</p><div class="center"><button class="btn ghost" data-a="codex">Retour</button></div>`, { mount: paintMarks, onClose: () => refreshBars() }); };
+// succès débloqués : un petit mot, une fois
+function achCheck() { if (!S) return; const R = achReady(); if (!UI.achSeen) { UI.achSeen = new Set(R.map(a => a.id)); return; } const fresh = R.filter(a => !UI.achSeen.has(a.id)); for (const a of fresh) UI.achSeen.add(a.id); if (fresh.length) { sfx("coin"); toast(`${ico("star", "#ffd27a")} Succès : <b>${fresh[0].n}</b>${fresh.length > 1 ? ` (+${fresh.length - 1})` : ""}<br><span class="small dim">À réclamer dans le Codex</span>`); } }
+// ── défi du jour ──
+const fmtDay = d => { const s = String(d); return s.slice(6, 8) + "/" + s.slice(4, 6); };
+ACT.dailyOpen = () => {
+  const seed = dailySeed(), L = dailyLoadout(seed), today = S.daily.day === dayKey() ? S.daily : { best: 0, tries: 0, rewarded: 0 };
+  sheet(`<h2 class="center">${ico("daily", "#c49cff")} Défi du ${fmtDay(dayKey())}</h2><p class="center lore">Aujourd'hui, tout le monde descend dans la même mine, avec le même équipement.</p>
+    <div class="item"><canvas data-cv="dpreview" width="96" height="96" class="px portrait"></canvas><div class="grow"><p class="small" style="margin:0">${ico(WEAPONS[L.wpn].ic, "#ffb060")} <b>${WEAPONS[L.wpn].n}</b> en fer</p><p class="small" style="margin:4px 0">${ico("armor", "#a8aeb4")} ${ARMOR[L.armor].n}</p><p class="small" style="margin:4px 0">${ico("paw", "#d8c8b0")} ${PETS[L.pet].n}</p><p class="small" style="margin:0">${ico("seal", "#c49cff")} ${L.rune ? RUNES[L.rune].n : "Aucune rune"}</p></div></div>
+    <p class="small dim">Score : profondeur × 100, + 10 par monstre, + le minerai ramassé. Le minerai du défi ne se garde pas ; la première descente du jour rapporte des braises.</p>
+    <div class="row" style="justify-content:center;gap:16px"><div class="center"><div class="score sm">${today.best}</div><span class="small dim">record du jour</span></div><div class="center"><div class="score sm">${today.tries}</div><span class="small dim">essai${today.tries > 1 ? "s" : ""}</span></div></div>
+    <div class="center" style="margin-top:12px"><button class="btn main" data-a="dailyGo" style="min-width:240px">${ico("map")}Relever le défi</button></div>`, { mount: r => { const c = r.querySelector('[data-cv="dpreview"]'); if (c) { const x = c.getContext("2d"); x.imageSmoothingEnabled = false; const look = Object.assign(smithLook(), { armor: L.armor, wpn: WEAPONS[L.wpn].art, wt: 0, mw: 0 }); blit(x, smithPix(look, "idle"), 32, 94, 2); } } });
+};
+ACT.dailyGo = () => { closeSheet(); startDaily(); saveF(); sfx("door"); go("mine"); };
+ACT.dailyShare = async v => { const [sc, d] = v.split("|"), txt = `La Forge des Brumes — défi du ${fmtDay(dayKey())} : score ${sc}, profondeur ${d}. ${GAME_URL}`;
+  try { if (navigator.share) { await navigator.share({ text: txt }); return; } } catch (e) { return; }
+  try { await navigator.clipboard.writeText(txt); toast("Score copié : collez-le où vous voulez."); } catch (e) { toast(txt); } };

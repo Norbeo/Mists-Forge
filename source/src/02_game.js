@@ -4,7 +4,7 @@ function newSave() {
   return { v: 2, ore: { fer: 0, argent: 0, ame: 0 }, braises: 0,
     weapons: { marteau: { tier: 0, q: 1 } }, equip: { wpn: "marteau", armor: 0, armorQ: 1, rune: null },
     runes: [], pet: "loup", up: { pv: 0, potion: 0, sacoche: 0, dressage: 0, raccourci: 0 },
-    look: defaultLook(), best: 0, bossDepth: 0, runs: 0, deaths: 0, kills: 0, run: null, seen: {}, tuto: {}, opts: { sound: 1, music: 1, fast: 0 }, created: Date.now() };
+    look: defaultLook(), bestiary: {}, ach: {}, daily: { day: 0, best: 0, tries: 0, rewarded: 0 }, best: 0, bossDepth: 0, runs: 0, deaths: 0, kills: 0, run: null, seen: {}, tuto: {}, opts: { sound: 1, music: 1, fast: 0 }, created: Date.now() };
 }
 const DIRS8 = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]];
 const DIRS4 = DIRS8.slice(0, 4);
@@ -22,17 +22,31 @@ function defaultLook() { return { name: "Bran", body: 0, skin: 1, hair: 1, hairC
 function smithLook(armor) { const L = S.look || defaultLook(), w = S.weapons[S.equip.wpn], a = armor != null ? armor : S.equip.armor; return { body: L.body, skin: L.skin, hair: L.hair, hairCol: L.hairCol, beard: L.beard, scar: L.scar, cloth: L.cloth, cape: L.cape, finish: L.finish, helm: L.helm, armor: a, mw: a && a === S.equip.armor && S.equip.armorQ === 2 ? 1 : 0, wpn: WEAPONS[S.equip.wpn].art, wt: w ? w.tier : 0 }; }
 
 // ── descente ──
-function startRun() {
-  const start = S.up.raccourci && S.bossDepth ? S.bossDepth + 1 : 1;
-  S.run = { depth: start, start, hp: heroHpMax(), potions: 1 + S.up.potion, boons: [], loot: { fer: 0, argent: 0, ame: 0 }, embers: 0, kills: 0, board: null, petHp: 3 + S.up.dressage, stats: { floors: 0 } };
+function startRun(daily) {
+  const start = !daily && S.up.raccourci && S.bossDepth ? S.bossDepth + 1 : 1;
+  S.run = { depth: start, start, hp: heroHpMax(), potions: 1 + S.up.potion, boons: [], loot: { fer: 0, argent: 0, ame: 0 }, embers: 0, kills: 0, board: null, petHp: 3 + S.up.dressage, stats: { floors: 0 }, daily: daily || 0 };
   S.runs++;
-  S.run.board = genFloor(S.run.depth);
+  S.run.board = genFloor(S.run.depth, floorSeed(S.run));
   return S.run;
 }
+const floorSeed = run => run.daily ? (run.daily + run.depth * 7919) >>> 0 : undefined;
+// ── défi du jour : même mine et même équipement pour tout le monde ──
+function dailySeed(d = dayKey()) { return hashStr("forge-des-brumes|" + d); }
+function dailyLoadout(seed) { const r = mkRng(seed ^ 0x5bd1e995); return { wpn: r.pick(WEAPON_IDS), pet: r.pick(PET_IDS), armor: r.int(0, 2), rune: r.chance(.6) ? r.pick(RUNE_IDS) : null }; }
+function startDaily() {
+  const seed = dailySeed(), L = dailyLoadout(seed);
+  S.dailyBak = { weapons: S.weapons, equip: S.equip, pet: S.pet, up: S.up };
+  S.weapons = { [L.wpn]: { tier: 0, q: 1 } }; S.equip = { wpn: L.wpn, armor: L.armor, armorQ: 1, rune: L.rune }; S.pet = L.pet; S.up = { pv: 0, potion: 0, sacoche: 0, dressage: 0, raccourci: 0 };
+  if (S.daily.day !== dayKey()) S.daily = { day: dayKey(), best: 0, tries: 0, rewarded: 0 };
+  S.daily.tries++;
+  return startRun(seed);
+}
+function dailyScore(run, depth) { return Math.max(0, depth - 1) * 100 + run.kills * 10 + (run.loot.fer + run.loot.argent * 2 + run.loot.ame * 4) * 5; }
 const isBossFloor = d => d % 5 === 0;
 function oreFor(depth, rng = RNG) { const up = S && S.run && S.run.boons.includes("oeil") ? 4 : 0; const d = depth + up; if (d >= 16 && rng.chance(.12)) return "ame"; if (d >= 11) return rng.chance(.7) ? "argent" : "fer"; if (d >= 6) return rng.chance(.4) ? "argent" : "fer"; return "fer"; }
 function genFloor(depth, seed) {
   const rng = seed ? mkRng(seed) : RNG;
+  if (seed) RNG.seed((seed * 31 + 7) >>> 0);
   for (let tries = 0; tries < 60; tries++) {
     const T = []; for (let y = 0; y < ROWS; y++) { T.push([]); for (let x = 0; x < COLS; x++) T[y].push({ t: "floor" }); }
     const boss = isBossFloor(depth);
@@ -78,12 +92,12 @@ const unitAtXY = (B, x, y) => B.units.find(u => u.x === x && u.y === y && u.hp >
 const foes = B => B.units.filter(u => u.side === "e" && u.hp > 0);
 const tileAt = (B, x, y) => inB(x, y) ? B.tiles[y][x] : null;
 const solid = t => !t || t.t === "wall" || t.t === "ore";
-function walkable(B, x, y, fly) { const t = tileAt(B, x, y); if (!t || solid(t)) return false; if (!fly && t.t === "lava") return false; return !unitAtXY(B, x, y); }
+function walkable(B, x, y, fly) { const t = tileAt(B, x, y); if (!t || solid(t)) return false; if (!fly && (t.t === "lava" || t.t === "pit")) return false; return !unitAtXY(B, x, y); }
 
 // ── déplacement du héros ──
 function reachable(B, u, steps, fly) {
   const out = new Map(); out.set(key(u.x, u.y), 0); const q = [[u.x, u.y, 0]];
-  while (q.length) { const [x, y, d] = q.shift(); if (d >= steps) continue; for (const [dx, dy] of DIRS8) { const nx = x + dx, ny = y + dy; if (!inB(nx, ny) || out.has(key(nx, ny))) continue; const t = tileAt(B, nx, ny); if (solid(t) && !fly) continue; if (solid(t)) continue; if (unitAtXY(B, nx, ny)) continue; if (t.t === "lava" && !fly) continue; out.set(key(nx, ny), d + 1); q.push([nx, ny, d + 1]); } }
+  while (q.length) { const [x, y, d] = q.shift(); if (d >= steps) continue; for (const [dx, dy] of DIRS8) { const nx = x + dx, ny = y + dy; if (!inB(nx, ny) || out.has(key(nx, ny))) continue; const t = tileAt(B, nx, ny); if (solid(t) && !fly) continue; if (solid(t)) continue; if (unitAtXY(B, nx, ny)) continue; if ((t.t === "lava" || t.t === "pit") && !fly) continue; out.set(key(nx, ny), d + 1); q.push([nx, ny, d + 1]); } }
   out.delete(key(u.x, u.y)); return out;
 }
 // cases touchées par l'arme si on vise (tx, ty)
@@ -151,26 +165,40 @@ function push(B, u, dir, ev) {
   ev.push({ k: "push", id: u.id, from: [u.x, u.y], to: [nx, ny] }); u.x = nx; u.y = ny; u.intent = null;
   if (t.t === "spikes" && t.on) hurt(B, u, 1, ev, "Piques");
   if (t.t === "lava" && !isFlying(u)) hurt(B, u, 3, ev, "Lave");
+  if (t.t === "pit" && !isFlying(u)) { ev.push({ k: "fall", id: u.id }); hurt(B, u, u.kind === "boss" ? 3 : 99, ev, "Chute"); }
 }
-function isFlying(u) { return u.kind === "foe" ? !!MONSTERS[u.foe].fly : u.kind === "pet" ? !!PETS[u.pet].fly : false; }
+function isFlying(u) { return u.kind === "foe" ? !!MONSTERS[u.foe].fly : u.kind === "pet" ? !!PETS[u.pet].fly : !!u.fly; }
 function hurt(B, u, d, ev, src) {
   if (u.hp <= 0) return false;
   if (u.kind === "hero" && B.blocks > 0 && src !== "Piques") { B.blocks--; ev.push({ k: "block", id: u.id }); return false; }
   if (u.under) return false;
   u.hp = Math.max(0, u.hp - d); ev.push({ k: "hit", id: u.id, dmg: d, src });
   if (u.hp <= 0) { die(B, u, ev); return true; }
+  if (u.kind === "boss" && !u.phase2 && u.hp <= u.hpMax / 2) bossPhase(B, u, ev);
   return false;
 }
 function die(B, u, ev) {
   ev.push({ k: "die", id: u.id });
   if (u.side === "e") {
     S.run.kills++; S.kills++;
+    const bid = u.kind === "boss" ? u.boss : u.foe; if (!S.bestiary) S.bestiary = {}; S.bestiary[bid] = (S.bestiary[bid] || 0) + 1;
     if (u.kind === "foe" && u.foe === "gelee") explode(B, u, ev);
     const pet = B.units.find(p => p.kind === "pet");
     const dropC = .22 + (pet && PETS[pet.pet].loot && pet.lastHit === u.id ? .5 : 0);
     if (u.kind === "foe" && chance(dropC)) { const o = oreFor(B.depth); S.run.loot[o]++; ev.push({ k: "drop", x: u.x, y: u.y, ore: o, n: 1 }); }
     if (u.kind === "boss") { const n = 2 + Math.floor(B.depth / 10) + (S.equip.rune === "fortune" ? 1 : 0); S.run.loot.ame += n; ev.push({ k: "drop", x: u.x, y: u.y, ore: "ame", n }); B.bossDead = true; for (const m of foes(B)) if (m !== u) { m.hp = 0; ev.push({ k: "die", id: m.id }); } }
   }
+}
+// à mi-vie, chaque gardien change de comportement
+function bossPhase(B, e, ev) {
+  e.phase2 = 1; e.n = 0;
+  const h = hero(B), free = () => { const out = []; for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) { const t = B.tiles[y][x]; if ((t.t === "floor" || t.t === "spikes") && !unitAtXY(B, x, y) && cheb({ x, y }, h) > 1) out.push([x, y]); } return B.rng.shuffle(out); };
+  const sum = (k, n) => { let c = 0; for (const [x, y] of DIRS8.map(([a, b]) => [e.x + a, e.y + b])) { if (c >= n) break; if (walkable(B, x, y)) { const m = addUnit(B, mkFoe(k, x, y, B.depth)); ev.push({ k: "spawn", id: m.id }); c++; } } };
+  if (e.boss === "dragon") { e.fly = 1; ev.push({ k: "phase2", id: e.id, text: "Le dragon prend son envol !" }); }
+  if (e.boss === "ver") { ev.push({ k: "phase2", id: e.id, text: "Le ver brise le sol !" }); for (const [x, y] of free().slice(0, 3)) { B.tiles[y][x] = { t: "pit" }; ev.push({ k: "pit", x, y }); } }
+  if (e.boss === "contremaitre") { ev.push({ k: "phase2", id: e.id, text: "Le Contremaître rallie les morts !" }); sum("squelette", 2); }
+  if (e.boss === "reine") { ev.push({ k: "phase2", id: e.id, text: "La Reine entre en furie !" }); sum("araignee", 1); }
+  e.intent = null; planBoss(B, e);
 }
 function explode(B, u, ev) {
   ev.push({ k: "boom", x: u.x, y: u.y });
@@ -182,7 +210,7 @@ function checkClear(B, ev) {
   if (B.cleared || foes(B).length) return;
   B.cleared = true; B.mv = 99; B.atk = 0; B.rocks = null;
   // les filons restants s'effondrent ; l'escalier apparaît
-  for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) if (B.tiles[y][x].t === "ore") { B.tiles[y][x] = { t: "floor", rubble: 1 }; ev.push({ k: "collapse", x, y }); }
+  for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) { if (B.tiles[y][x].t === "ore") { B.tiles[y][x] = { t: "floor", rubble: 1 }; ev.push({ k: "collapse", x, y }); } else if (B.tiles[y][x].t === "pit") { B.tiles[y][x] = { t: "floor", rubble: 1 }; ev.push({ k: "collapse", x, y }); } }
   const h = hero(B); let best = null; const R = reachable(B, h, 99);
   for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) { const t = B.tiles[y][x]; if (t.t === "floor" && R.has(key(x, y)) && (!best || y < best[1] || (y === best[1] && Math.abs(x - 2) < Math.abs(best[0] - 2)))) best = [x, y]; }
   if (!best) best = [h.x, Math.max(0, h.y - 1)];
@@ -231,7 +259,7 @@ function execIntent(B, e, ev) {
     hurt(B, u, I.dmg, ev);
     if (I.type === "web" && u.kind === "hero" && u.hp > 0) { u.st.web = 1; ev.push({ k: "web", id: u.id }); }
   }
-  if (I.type === "emerge") e.under = 0;
+  if (I.type === "emerge") { e.under = 0; if (e.phase2) { let pits = 0; for (const r of B.tiles) for (const t of r) if (t.t === "pit") pits++; if (pits < 6) { const h = hero(B), c = []; for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) if (B.tiles[y][x].t === "floor" && !unitAtXY(B, x, y) && cheb({ x, y }, h) > 1) c.push([x, y]); if (c.length) { const [x, y] = B.rng.pick(c); B.tiles[y][x] = { t: "pit" }; ev.push({ k: "pit", x, y }); } } } }
 }
 // IA : se rapprocher, s'aligner, annoncer
 function moveFoe(B, e, ev) {
@@ -240,9 +268,9 @@ function moveFoe(B, e, ev) {
   const M = e.kind === "foe" ? MONSTERS[e.foe] : null, h = hero(B);
   if (M && M.slow && e.n % 2 === 1) return;
   if (M && M.phase) e.st.phased = e.n % 2 === 1 ? 1 : 0;
-  const mv = e.kind === "boss" ? (BOSSES.find(b => b.id === e.boss).move) : M.move;
+  const mv = e.kind === "boss" ? (BOSSES.find(b => b.id === e.boss).move + (e.phase2 && e.boss === "dragon" ? 1 : 0)) : M.move;
   if (!mv) return;
-  const fly = M ? !!M.fly : false;
+  const fly = M ? !!M.fly : !!e.fly;
   const ai = M ? M.ai : "melee";
   const want = (x, y) => {
     const d = Math.max(Math.abs(x - h.x), Math.abs(y - h.y));
@@ -301,8 +329,12 @@ function planBoss(B, e) {
     if (ph === 2) e.intent = { type: "summon", what: Bo.summon, tiles: null };
     else e.intent = { type: "web", tiles: [...lineTiles(B, e.x, e.y, dx || 1, dy, 6), ...lineTiles(B, e.x, e.y, dx || -1, dy ? -dy : 1, 4)], dmg: e.dmg };
   } else if (Bo.ai === "boss_burrow") {
-    if (!e.under) { if (ph === 0) e.intent = { type: "burrow", tiles: [[e.x, e.y]], at: [h.x, h.y] }; else e.intent = { type: "melee", tiles: DIRS8.map(([a, b]) => [e.x + a, e.y + b]).filter(([a, b]) => inB(a, b)), dmg: e.dmg }; }
+    if (!e.under) { if (ph === 0 || (e.phase2 && ph === 2)) e.intent = { type: "burrow", tiles: [[e.x, e.y]], at: [h.x, h.y] }; else e.intent = { type: "melee", tiles: DIRS8.map(([a, b]) => [e.x + a, e.y + b]).filter(([a, b]) => inB(a, b)), dmg: e.dmg }; }
     else { const at = [h.x, h.y]; e.intent = { type: "emerge", at, tiles: [at, ...DIRS8.map(([a, b]) => [h.x + a, h.y + b]).filter(([a, b]) => inB(a, b) && !solid(tileAt(B, a, b)))], dmg: e.dmg }; }
+  } else if (Bo.ai === "boss_fire" && e.phase2) {
+    // en vol : pluie de feu autour du héros, puis piqué en ligne
+    if (ph === 1) { e.intent = { type: "fire", tiles: lineTiles(B, e.x, e.y, dx || 1, dy, 6), dmg: e.dmg }; }
+    else { const t = [[h.x, h.y]], c = []; for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) if (!solid(tileAt(B, x, y)) && (x !== h.x || y !== h.y) && cheb({ x, y }, h) <= 2) c.push([x, y]); B.rng.shuffle(c); t.push(...c.slice(0, 5)); e.intent = { type: "fire", tiles: t, dmg: e.dmg - 1 }; }
   } else if (Bo.ai === "boss_fire") {
     if (ph === 1) e.intent = { type: "melee", tiles: DIRS8.map(([a, b]) => [e.x + a, e.y + b]).filter(([a, b]) => inB(a, b)), dmg: e.dmg - 1 };
     else { const col = Math.abs(h.x - e.x) <= Math.abs(h.y - e.y); const t = []; if (col) for (let y = e.y + 1; y < ROWS; y++) for (const xx of [h.x]) { if (!solid(tileAt(B, xx, y))) t.push([xx, y]); } else for (let x = 0; x < COLS; x++) if (x !== e.x && !solid(tileAt(B, x, h.y))) t.push([x, h.y]); e.intent = { type: "fire", tiles: t, dmg: e.dmg }; }
@@ -334,12 +366,11 @@ function nextFloor() {
   const run = S.run, B = run.board, h = hero(B), p = B.units.find(u => u.kind === "pet");
   run.hp = h.hp; run.petHp = p ? p.hp : 0;
   run.embers += run.depth + (B.boss ? 15 : 0); run.stats.floors++;
-  S.best = Math.max(S.best, run.depth);
-  if (B.boss) { S.bossDepth = Math.max(S.bossDepth, run.depth); }
+  if (!run.daily) { S.best = Math.max(S.best, run.depth); if (B.boss) S.bossDepth = Math.max(S.bossDepth, run.depth); }
   run.depth++;
   if (S.equip.rune === "vie") run.hp = Math.min(heroHpMax() + run.boons.filter(b => b === "coeur").length * 2, run.hp + 1);
   if (run.petHp <= 0 && run.depth % 5 === 1) run.petHp = 3 + S.up.dressage;
-  run.board = genFloor(run.depth);
+  run.board = genFloor(run.depth, floorSeed(run));
 }
 function campChoices(rng = RNG) { const pool = BOON_IDS.slice(); rng.shuffle(pool); return pool.slice(0, 3); }
 function takeBoon(k) { const run = S.run; run.boons.push(k); if (k === "coeur") run.hp = heroHpMax() + run.boons.filter(b => b === "coeur").length * 2; if (k === "potion") run.potions++; }
@@ -348,10 +379,19 @@ function bossReward() { const un = RUNE_IDS.filter(r => !S.runes.includes(r)); i
 // fin de descente : on garde tout en remontant, une partie seulement si on meurt
 function endRun(dead) {
   const run = S.run; if (!run) return null;
+  if (run.daily) {
+    if (dead) S.deaths++;
+    const score = dailyScore(run, run.depth), first = !S.daily.rewarded, rec = score > S.daily.best;
+    S.daily.best = Math.max(S.daily.best, score);
+    const br = first ? Math.max(5, Math.floor(score / 25)) : 0; S.daily.rewarded = 1; S.braises += br;
+    if (S.dailyBak) { Object.assign(S, S.dailyBak); S.dailyBak = null; }
+    S.run = null;
+    return { dead, daily: 1, depth: run.depth, score, best: S.daily.best, rec, embers: br, kills: run.kills, got: {}, lost: null };
+  }
   const keep = dead ? .4 + S.up.sacoche * .15 : 1;
   const got = {}; for (const o in run.loot) { got[o] = Math.floor(run.loot[o] * keep); S.ore[o] += got[o]; }
   const embers = run.embers + (dead ? 0 : 5);
-  S.braises += embers; S.best = Math.max(S.best, dead ? run.depth - 1 : run.depth - 1);
+  S.braises += embers;
   if (dead) S.deaths++;
   const res = { dead, depth: run.depth, got, lost: dead ? Object.fromEntries(Object.keys(run.loot).map(o => [o, run.loot[o] - got[o]])) : null, embers, kills: run.kills };
   S.run = null;
@@ -370,4 +410,55 @@ function petUnlocked(k) { return PETS[k].unlock <= S.best; }
 // sauvegarde
 function saveF() { if (!HASWIN || !S) return; try { localStorage.setItem(SAVE_KEY_F, JSON.stringify(Object.assign({}, S, { run: S.run ? Object.assign({}, S.run, { board: serialBoard(S.run.board) }) : null }))); } catch (e) { } }
 function serialBoard(B) { if (!B) return null; const o = Object.assign({}, B); delete o.rng; delete o.ev; return o; }
-function loadF() { if (!HASWIN) return null; try { const s = JSON.parse(localStorage.getItem(SAVE_KEY_F)); if (!s) return null; const b = newSave(); for (const k in b) if (s[k] === undefined) s[k] = b[k]; for (const k in b.up) if (s.up[k] === undefined) s.up[k] = 0; s.look = Object.assign(defaultLook(), s.look || {}); if (s.run && s.run.board) s.run.board.rng = RNG; return s; } catch (e) { return null; } }
+function loadF() { if (!HASWIN) return null; try { const s = JSON.parse(localStorage.getItem(SAVE_KEY_F)); if (!s) return null; const b = newSave(); for (const k in b) if (s[k] === undefined) s[k] = b[k]; for (const k in b.up) if (s.up[k] === undefined) s.up[k] = 0; s.look = Object.assign(defaultLook(), s.look || {}); s.daily = Object.assign(b.daily, s.daily || {}); if (s.run && s.run.board) s.run.board.rng = RNG; return s; } catch (e) { return null; } }
+
+// ── événements entre les étages ──
+const EVENTS = {
+  marchand: { n: "Le marchand fantôme", ic: "coin", d: "Une silhouette translucide pousse une brouette vide. « Du métal contre mes trésors, forgeron… »" },
+  autel: { n: "L'autel maudit", ic: "skull", d: "Une pierre noire suinte une lueur pourpre. Quelque chose, dessous, attend une offrande." },
+  mineur: { n: "Un mineur coincé", ic: "hammer", d: "Sous un éboulis, une main remue faiblement. « À l'aide… je vous en prie… »" },
+  source: { n: "La source claire", ic: "heal", d: "Une eau pure coule de la roche, froide comme la nuit. Elle apaise les plaies." },
+};
+// après l'étage `done` (jamais juste avant le campement ni après un gardien)
+function eventFor(done, rng = RNG) { if (done < 2 || done % 5 === 0 || done % 5 === 3) return null; return rng.chance(.4) ? rng.pick(Object.keys(EVENTS)) : null; }
+function setRunHp(v) { const run = S.run; run.hp = clamp(v, 1, runHpMax()); const h = hero(run.board); if (h) h.hp = run.hp; }
+function eventChoices(id) {
+  const run = S.run, L = run.loot, deep = run.depth > 8;
+  const has = c => Object.keys(c).every(o => L[o] >= c[o]);
+  if (id === "marchand") return [
+    { k: "potion", n: "Une fiole", d: "+1 potion", cost: deep ? { argent: 2 } : { fer: 3 } },
+    { k: "boon", n: "Un talisman", d: "Une faveur au hasard", cost: deep ? { argent: 3, fer: 2 } : { fer: 6 } },
+    { k: "heal", n: "Un onguent", d: "Soin complet", cost: deep ? { argent: 2 } : { fer: 4 } },
+    { k: "leave", n: "Partir", d: "" }].map(c => Object.assign(c, { ok: !c.cost || has(c.cost) }));
+  if (id === "autel") return [
+    { k: "blood", n: "Offrir votre sang", d: "−2 PV, une faveur au hasard", ok: run.hp > 2 },
+    { k: "defile", n: "Profaner l'autel", d: "+2 Âme, mais un monstre de plus vous attend", ok: true },
+    { k: "leave", n: "Passer son chemin", d: "", ok: true }];
+  if (id === "mineur") return [{ k: "free", n: "Le dégager", d: "Récompense… ou piège ?", ok: true }, { k: "leave", n: "Le laisser", d: "", ok: true }];
+  if (id === "source") return [{ k: "drink", n: "Boire", d: "+3 PV", ok: true }, { k: "fill", n: "Remplir une fiole", d: "+1 potion", ok: true }];
+  return [];
+}
+function applyEvent(id, k) {
+  const run = S.run, B = run.board, ch = eventChoices(id).find(c => c.k === k); if (!ch || !ch.ok) return null;
+  if (ch.cost) for (const o in ch.cost) run.loot[o] -= ch.cost[o];
+  const boon = () => { const b = pick(BOON_IDS); takeBoon(b); if (b === "coeur") setRunHp(run.hp); return BOONS[b].n; };
+  if (k === "potion" || k === "fill") { run.potions++; return "Une fiole de plus."; }
+  if (k === "boon") return "Faveur : " + boon() + ".";
+  if (k === "heal") { setRunHp(runHpMax()); return "Vos plaies se referment."; }
+  if (k === "drink") { setRunHp(run.hp + 3); return "+3 PV."; }
+  if (k === "blood") { setRunHp(run.hp - 2); return "L'autel boit. Faveur : " + boon() + "."; }
+  if (k === "defile") { run.loot.ame += 2; const spots = []; for (let y = 0; y < 3; y++) for (let x = 0; x < COLS; x++) if (walkable(B, x, y)) spots.push([x, y]); if (spots.length) { const [x, y] = pick(spots); const pool = Object.keys(MONSTERS).filter(m => (MONSTERS[m].from || 1) <= run.depth); addUnit(B, mkFoe(pick(pool), x, y, run.depth)); planAll(B); } return "+2 Âme. Un grondement répond, plus bas…"; }
+  if (k === "free") { if (chance(.65)) { const o = run.depth > 8 ? "argent" : "fer", n = o === "fer" ? 3 : 2; run.loot[o] += n; let m = `Il vous offre ${n} ${ORES[o].n.toLowerCase()} et un sourire édenté.`; if (chance(.3)) { run.potions++; m += " Et une fiole !"; } return m; } setRunHp(run.hp - 2); return "C'était une goule ! Elle vous griffe (−2 PV) et s'enfuit."; }
+  return "Vous reprenez la descente.";
+}
+// ── succès : bestiaire, armes, profondeur ──
+function achList() {
+  const L = [];
+  for (const k of Object.keys(MONSTERS)) [1, 10, 50].forEach((n, i) => L.push({ id: `b:${k}:${i}`, g: "best", who: k, n: `${MONSTERS[k].n} : ${n === 1 ? "premier terrassé" : n + " terrassés"}`, cur: () => (S.bestiary || {})[k] || 0, goal: n, r: [5, 15, 40][i] }));
+  for (const Bo of BOSSES) [1, 3, 10].forEach((n, i) => L.push({ id: `b:${Bo.id}:${i}`, g: "best", who: Bo.id, n: `${Bo.n} : ${n === 1 ? "vaincu" : "vaincu " + n + " fois"}`, cur: () => (S.bestiary || {})[Bo.id] || 0, goal: n, r: [20, 40, 80][i] }));
+  for (const k of WEAPON_IDS) ["forgée", "palier Argent", "palier Âme"].forEach((t, i) => L.push({ id: `w:${k}:${i}`, g: "arme", who: k, n: `${WEAPONS[k].n} : ${t}`, cur: () => S.weapons[k] ? S.weapons[k].tier + 1 : 0, goal: i + 1, r: [10, 25, 60][i] }));
+  for (const d of [5, 10, 15, 20, 25, 30, 40, 50]) L.push({ id: `d:${d}`, g: "prof", n: `Atteindre la profondeur ${d}`, cur: () => S.best, goal: d, r: d * 3 });
+  return L;
+}
+function achReady() { const A = S.ach || {}; return achList().filter(a => !A[a.id] && a.cur() >= a.goal); }
+function claimAch(id) { if (!S.ach) S.ach = {}; const a = achList().find(x => x.id === id); if (!a || S.ach[id] || a.cur() < a.goal) return 0; S.ach[id] = 1; S.braises += a.r; return a.r; }

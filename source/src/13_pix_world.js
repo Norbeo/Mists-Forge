@@ -25,13 +25,14 @@ function slab(g, oy, B, seed, fn) {
 }
 function floorTile(depth, t, gx, gy, frame = 0) {
   const bi = bIdx(depth), B = BIOMES[bi], v = Math.floor(hash2(gx, gy, depth) * 4);
-  const kind = t.t === "spikes" ? "sp" + (t.on ? 1 : 0) : t.t === "lava" ? "lv" + frame : t.t === "stairs" ? "st" : t.rubble ? "rb" + v : "fl" + v;
+  const kind = t.t === "pit" ? "pit" : t.t === "spikes" ? "sp" + (t.on ? 1 : 0) : t.t === "lava" ? "lv" + frame : t.t === "stairs" ? "st" : t.rubble ? "rb" + v : "fl" + v;
   return spr("tile|" + bi + "|" + kind, TW, TH + SLAB + 1, g => {
     if (t.t === "lava") {
       const E = PAL.ember; slab(g, 0, B, v, (x, y, c, n) => { const d = Math.abs(x - 16) / 16 + Math.abs(y - 8) / 8; if (d > .8) return null; const w = Math.sin((x + y * 2) * .6 + frame * 1.5) + Math.sin((x - y) * .4 - frame); return w > 1.1 ? E[4] : w > .2 ? E[3] : w > -.6 ? E[2] : E[1]; });
       return;
     }
     slab(g, 0, B, v + (t.rubble ? 7 : 0));
+    if (t.t === "pit") { fillDia(g, 0, 0, (x, y) => { const d = Math.abs(x + .5 - 16) / 16 + Math.abs(y + .5 - 8) / 8, j = hash2(x, y, 3) * .12; return d < .82 - j ? (d < .55 ? "#000000" : d < .7 ? "#0a0604" : B.side[0]) : null; }); for (let i = 0; i < 6; i++) { const x = 8 + (hash2(i, 9) * 16 | 0), y = 4 + (hash2(9, i) * 8 | 0); if (inDia(x, y)) P_(g, x, y, B.top[3]); } return; }
     if (t.t === "stairs") {
       for (let s = 0; s < 4; s++) fillDia(g, 0, 0, (x, y) => { const d = Math.abs(x - 16) / 16 + Math.abs(y - 8) / 8; const lim = .78 - s * .18; return d < lim && d > lim - .18 ? (s % 2 ? "#120c0a" : B.side[1]) : null; });
       fillDia(g, 0, 0, (x, y) => (Math.abs(x - 16) / 16 + Math.abs(y - 8) / 8) < .2 ? "#050302" : null);

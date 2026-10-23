@@ -12,6 +12,14 @@ Un forgeron et un compagnon descendent une mine maudite sans fond, étage par é
 - Mort : on perd une partie du minerai de la descente.
 - Personnalisation du forgeron (`S.look`) : carrure, peau, coiffure, cheveux, barbe, cicatrice, tenue, cape, finition du métal, casque, nom et blason (champ + meuble). Ouverte au premier lancement, puis via le blason en haut ou en touchant le forgeron.
 
+- Entre les étages : événements (marchand fantôme, autel maudit, mineur coincé, source claire), payés avec le minerai de la descente.
+- Gardiens à phases (à mi-vie) : le dragon s'envole (pluie de feu, piqué), le ver brise le sol (gouffres : un monstre poussé dedans tombe), le Contremaître et la Reine rallient des renforts.
+- Codex : bestiaire (`S.bestiary`), collection d'armes, succès à réclamer en braises (`S.ach`, `achList()`).
+- Défi du jour : graine du jour (`dailySeed`), même mine et même équipement imposé (`dailyLoadout`), score, braises une fois par jour, partage. L'équipement normal est mis de côté dans `S.dailyBak`.
+- Contrôles : appui court = action ; appui long ou clic droit = fiche (monstre : PV, prochaine action) ; sur téléphone, vue rapprochée (bouton loupe) qui cadre forgeron + monstres, on peut faire glisser.
+- Décors : un mur/filon devient transparent sous la souris, et à moitié s'il cache une unité ou un piège ; le clic va en priorité à la case jouable derrière.
+- Sons : un son par arme (`w_<arme>`) et par compagnon (`p_<compagnon>`), une musique + ambiance par profondeur (`b0`…`b4`).
+
 ## Style graphique
 Pixel art sombre **dessiné par le code** (rien de Couronne de Cendres) : petits sprites en pixels, contour auto, agrandis d'un facteur entier sans lissage.
 - La mine en **losanges isométriques** (case 32×16, blocs en relief, tri par profondeur), 5 ambiances selon la profondeur.
