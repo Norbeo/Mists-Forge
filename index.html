@@ -24,9 +24,11 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--txt);font-family
 #hud .res{display:inline-flex;align-items:center;gap:5px;font-family:var(--f-head);font-weight:700;font-size:15px;padding:3px 10px 3px 6px;border-radius:20px;background:#0009;border:1px solid #ffffff14;box-shadow:inset 0 0 10px #000}
 #hud .res .ic{width:18px;height:18px}
 #hud .title{font-family:var(--f-title);font-size:18px;color:var(--gold2);text-shadow:0 0 12px #ff7a2a66,0 2px 0 #000;margin-right:auto;letter-spacing:.04em}
-#view{flex:1;overflow:auto;position:relative;pointer-events:none;-webkit-overflow-scrolling:touch}
-#view>*{pointer-events:auto}
-#view.pass{pointer-events:none}
+#view{flex:1 1 auto;min-height:0;overflow-x:hidden;overflow-y:auto;position:relative;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y}
+#view.pass{pointer-events:none}#view.pass>*{pointer-events:auto}
+#view>.wrap{padding-bottom:28px}
+.stickybar{position:sticky;bottom:0;z-index:4;display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;margin:16px -12px 0;padding:12px 12px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(#07060a00,#07060af0 30%);backdrop-filter:blur(2px)}
+.stickybar .btn.main{min-width:220px}
 #nav{display:flex;justify-content:center;gap:4px;padding:6px 8px calc(env(safe-area-inset-bottom) + 6px);background:linear-gradient(#0000,#000e 30%);}
 #nav button{flex:1;max-width:120px;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;color:var(--dim);font-family:var(--f-head);font-size:11px;letter-spacing:.05em;padding:6px 2px;position:relative;cursor:pointer;transition:color .2s}
 #nav button .ic{width:26px;height:26px;transition:transform .25s,filter .25s}
@@ -83,7 +85,7 @@ p{margin:6px 0;line-height:1.45}
 /* fenêtre modale */
 #modal{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:#000b;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);padding:12px;animation:fade .25s}
 #modal[hidden]{display:none}
-#modal .box{max-width:560px;width:100%;max-height:calc(100% - 24px);overflow:auto;animation:rise .35s cubic-bezier(.2,.9,.3,1.2)}
+#modal .box{max-width:560px;width:100%;max-height:calc(100% - 24px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;animation:rise .35s cubic-bezier(.2,.9,.3,1.2)}
 #modal .box.wide{max-width:860px}
 @keyframes fade{from{opacity:0}}@keyframes rise{from{opacity:0;transform:translateY(24px) scale(.96)}}
 #toasts{position:fixed;top:calc(env(safe-area-inset-top) + 56px);left:50%;transform:translateX(-50%);z-index:30;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none;width:min(92vw,440px)}
@@ -98,14 +100,17 @@ p{margin:6px 0;line-height:1.45}
 @keyframes logo{50%{text-shadow:0 0 40px #ff7a2a,0 0 80px #ff4a1aaa,0 4px 0 #3a1408,0 6px 20px #000}}
 .titlebox .btn{min-width:240px}
 /* hameau */
-.hot{position:absolute;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;background:none;border:0;color:var(--txt);font-family:var(--f-head);font-size:12px;text-shadow:0 2px 4px #000,0 0 10px #000;transition:transform .2s}
-.hot:hover{transform:translate(-50%,-104%) scale(1.06)}
+.hot{position:absolute;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:0;border-radius:8px;gap:3px;cursor:pointer;background:none;border:0;color:var(--txt);font-family:var(--f-head);font-size:12px;text-shadow:0 2px 4px #000,0 0 10px #000;transition:transform .2s}
+.hot:hover,.hot:active{background:radial-gradient(closest-side,#ffb04a14,transparent)}.hot:hover .lbl,.hot:active .lbl{border-color:var(--gold);box-shadow:0 0 12px #ffb04a66}
 .hot .lbl{background:#000a;border:1px solid #c9a24a55;padding:3px 9px;border-radius:10px;white-space:nowrap;display:flex;gap:5px;align-items:center}
 .hot .lbl b{color:var(--gold2)}
 .hot .dotn{width:9px;height:9px;border-radius:50%;background:var(--ember);box-shadow:0 0 8px var(--ember);animation:pulse 1.4s infinite}
 /* combat */
 #cbar{position:fixed;left:0;right:0;bottom:0;z-index:5;padding:6px 8px calc(env(safe-area-inset-bottom) + 6px);background:linear-gradient(#0000,#000e 25%);display:flex;flex-direction:column;gap:6px;align-items:center}
-#cbar .skills{display:flex;gap:6px;justify-content:center;flex-wrap:nowrap;max-width:100%}
+#cbar .skills{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;max-width:100%}
+.partyrow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;max-width:520px;margin:0 auto}
+.partyrow canvas{width:100%;height:auto;max-width:96px}
+.partyrow .btn.sm{padding:5px 7px}
 .sk{width:66px;min-height:72px;background:linear-gradient(#251c18,#100a08);border:1px solid #4a3426;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:4px 2px;cursor:pointer;font-family:var(--f-head);font-size:9.5px;line-height:1.05;text-align:center;color:var(--txt);position:relative;transition:transform .12s,box-shadow .2s;box-shadow:inset 0 0 12px #000}
 .sk .ic{width:28px;height:28px}
 .sk.on{border-color:var(--gold);box-shadow:inset 0 0 12px #000,0 0 14px #ffb04a88;transform:translateY(-3px)}
@@ -145,7 +150,9 @@ p{margin:6px 0;line-height:1.45}
 .reward{display:flex;align-items:center;gap:10px;padding:6px 8px;border-bottom:1px solid #ffffff0d;animation:rise .4s both}
 @media (max-width:640px){
   body{font-size:15px}.wrap{padding:8px 8px 16px}h1{font-size:22px}
-  .sk{width:calc((100vw - 40px)/6);min-width:50px;font-size:8.5px;min-height:64px}.sk .ic{width:24px;height:24px}
+  .sk{width:calc((100vw - 44px)/5);min-width:0;max-width:74px;font-size:9px;min-height:56px;padding:3px 1px}.sk .ic{width:22px;height:22px}
+  #cbar{padding-top:4px}.skdesc{font-size:12px;padding:4px 8px;min-height:0}
+  #toasts .toast:nth-last-child(n+3){display:none}
   #hud .title{font-size:15px}#hud .res{font-size:13px;padding:2px 8px 2px 4px}
   .grid{--min:160px}
 }
@@ -573,7 +580,7 @@ const MONSTERS = {
     sk: [{ n: "Corde du gibet", m: .8, at: [1, 2, 3], fx: [{ k: "stun", t: 1, ch: .4 }] }, { n: "Râle d'agonie", m: .4, t: "ae", at: [1, 2, 3, 4], fx: [{ k: "weak", t: 2, ch: .6 }] }] },
   alpha: { n: "Loup alpha", art: "alpha", tags: ["bete"], elite: 1, sz: 1, hp: 58, dmg: [7, 12], prot: .08, spd: 7, dodge: 12, rk: [1, 2],
     sk: [{ n: "Égorger", m: 1.3, at: [1, 2], fx: [{ k: "bleed", v: .6, t: 3, ch: 1 }] }, { n: "Hurlement", t: "ae", at: [1, 2, 3, 4], m: 0, fx: [{ k: "weak", t: 2, ch: .7 }], w: .5 }] },
-  mere_ronces: { n: "La Mère des Ronces", art: "mere_ronces", tags: ["impie"], boss: 1, sz: 2, hp: 240, dmg: [7, 12], prot: .1, spd: 4, dodge: 5, res: 30, rk: [2],
+  mere_ronces: { n: "La Mère des Ronces", art: "mere_ronces", tags: ["impie"], boss: 1, sz: 2, hp: 205, dmg: [7, 12], prot: .1, spd: 4, dodge: 5, res: 30, rk: [2],
     sk: [{ n: "Fouet de ronces", m: .8, t: "ae", at: [1, 2], fx: [{ k: "bleed", v: .5, t: 3, ch: 1 }] }, { n: "Étreinte", m: 1.2, at: [1, 2, 3, 4], fx: [{ k: "stun", t: 1, ch: .6 }] }, { n: "Floraison", t: "self", heal: .1, sfx: [{ k: "regen", v: .04, t: 3 }], w: .5 }, { n: "Pollen", m: .4, t: "ae", at: [1, 2, 3, 4], fx: [{ k: "poison", v: .5, t: 3, ch: 1 }] }],
     phase: { at: .5, n: "Les ronces s'embrasent !", sfx: [{ k: "dmgUp", v: .3, t: 99 }] } },
   // Région 3 — Les Catacombes de Saint-Morne
@@ -589,7 +596,7 @@ const MONSTERS = {
     sk: [{ n: "Serres de pierre", m: 1, at: [1, 2, 3] }, { n: "Peau de pierre", t: "self", sfx: [{ k: "protUp", v: .3, t: 2 }], w: .4 }, { n: "Piqué", m: 1.2, at: [3, 4] }] },
   chevalier_os: { n: "Chevalier d'os", art: "chevalier_os", tags: ["impie"], elite: 1, hp: 70, dmg: [8, 13], prot: .3, spd: 3, dodge: 2, rk: [1],
     sk: [{ n: "Taille", m: 1.2, t: "ae", at: [1, 2] }, { n: "Défi", t: "self", sfx: [{ k: "protUp", v: .25, t: 2 }, { k: "riposte", v: .8, t: 2 }], w: .5 }, { n: "Lance d'os", m: 1, at: [2, 3, 4], fx: [{ k: "bleed", v: .5, t: 2, ch: 1 }] }] },
-  liche: { n: "La Liche couronnée", art: "liche", tags: ["impie"], boss: 1, sz: 2, hp: 430, dmg: [9, 15], prot: .15, spd: 5, dodge: 8, res: 35, rk: [2],
+  liche: { n: "La Liche couronnée", art: "liche", tags: ["impie"], boss: 1, sz: 2, hp: 470, dmg: [9, 15], prot: .15, spd: 5, dodge: 8, res: 35, rk: [2],
     sk: [{ n: "Rayon de nécrose", m: 1.3, at: [1, 2, 3, 4], fx: [{ k: "vuln", t: 2, ch: 1 }] }, { n: "Tempête d'âmes", m: .6, t: "ae", at: [1, 2, 3, 4], fx: [{ k: "weak", t: 2, ch: .7 }] }, { n: "Phylactère", t: "self", heal: .1, sfx: [{ k: "shield", v: .1, t: 2 }], w: .5 }, { n: "Gel de la tombe", m: .5, t: "ae", at: [1, 2, 3, 4], fx: [{ k: "stun", t: 1, ch: .3 }] }],
     phase: { at: .5, n: "La couronne de la Liche s'embrase de vert !", sfx: [{ k: "dmgUp", v: .35, t: 99 }, { k: "spdUp", v: 2, t: 99 }] } },
   // Région 4 — Le Marais des Noyés
@@ -607,7 +614,7 @@ const MONSTERS = {
     sk: [{ n: "Trois morsures", m: .55, at: [1, 2, 3], hits: 3, fx: [{ k: "poison", v: .3, t: 2, ch: .6 }] }, { n: "Repousse", t: "self", heal: .15, w: .4 }, { n: "Crachat", m: .8, t: "ae", at: [1, 2, 3], fx: [{ k: "poison", v: .4, t: 3, ch: 1 }] }] },
   mere_noyes: { n: "La Mère des Noyés", art: "mere_noyes", tags: ["impie"], boss: 1, sz: 2, hp: 600, dmg: [10, 17], prot: .15, spd: 5, dodge: 6, res: 40, rk: [2],
     sk: [{ n: "Marée noire", m: .7, t: "ae", at: [1, 2, 3, 4], fx: [{ k: "spdDn", v: 3, t: 2, ch: 1 }] }, { n: "Appel des profondeurs", m: 1, at: [2, 3, 4], pull: 3, fx: [{ k: "stun", t: 1, ch: .5 }] }, { n: "Étreinte", m: 1.4, at: [1, 2], leech: .5 }, { n: "Chant funèbre", t: "ae", at: [1, 2, 3, 4], m: .3, fx: [{ k: "weak", t: 2, ch: .8 }, { k: "vuln", t: 2, ch: .6 }] }],
-    phase: { at: .5, n: "Les eaux montent : la Mère révèle sa vraie forme !", sfx: [{ k: "dmgUp", v: .35, t: 99 }, { k: "regen", v: .03, t: 99 }] } },
+    phase: { at: .5, n: "Les eaux montent : la Mère révèle sa vraie forme !", sfx: [{ k: "dmgUp", v: .35, t: 99 }, { k: "regen", v: .015, t: 99 }] } },
   // Région 5 — La Citadelle de Cendres
   chevalier_dechu: { n: "Chevalier déchu", art: "chevalier_dechu", tags: ["impie"], hp: 44, dmg: [8, 13], prot: .3, spd: 4, dodge: 4, rk: [1, 2],
     sk: [{ n: "Lame de cendre", m: 1, at: [1, 2], fx: [{ k: "burn", v: .4, t: 2, ch: .7 }] }, { n: "Garde noire", t: "self", sfx: [{ k: "protUp", v: .25, t: 2 }, { k: "riposte", v: .7, t: 2 }], w: .5 }] },
@@ -619,7 +626,7 @@ const MONSTERS = {
     sk: [{ n: "Poing de lave", m: 1.2, at: [1, 2], fx: [{ k: "burn", v: .5, t: 2, ch: 1 }] }, { n: "Séisme", m: .6, t: "ae", at: [1, 2, 3, 4], fx: [{ k: "stun", t: 1, ch: .3 }] }] },
   bourreau: { n: "Le Bourreau", art: "bourreau", tags: ["humain"], elite: 1, hp: 120, dmg: [10, 16], prot: .2, spd: 4, dodge: 2, rk: [1],
     sk: [{ n: "Décapitation", m: 1.5, at: [1, 2], bonus: { low: .5, x: 1.8 } }, { n: "Fouet", m: .7, t: "ae", at: [1, 2, 3], fx: [{ k: "bleed", v: .5, t: 3, ch: 1 }] }, { n: "Sentence", m: .5, at: [1, 2, 3, 4], fx: [{ k: "mark", t: 2, ch: 1 }, { k: "vuln", t: 2, ch: 1 }] }] },
-  roi_cendres: { n: "Le Roi de Cendres", art: "roi", tags: ["impie"], boss: 1, sz: 2, hp: 820, dmg: [12, 19], prot: .2, spd: 6, dodge: 8, res: 45, rk: [2],
+  roi_cendres: { n: "Le Roi de Cendres", art: "roi", tags: ["impie"], boss: 1, sz: 2, hp: 1000, dmg: [12, 19], prot: .2, spd: 6, dodge: 8, res: 45, rk: [2],
     sk: [{ n: "Lame du Roi", m: 1.3, at: [1, 2], fx: [{ k: "burn", v: .5, t: 3, ch: 1 }] }, { n: "Couronne ardente", m: .8, t: "ae", at: [1, 2, 3, 4], fx: [{ k: "burn", v: .5, t: 3, ch: 1 }] }, { n: "Décret", m: .4, t: "ae", at: [1, 2, 3, 4], fx: [{ k: "weak", t: 2, ch: .8 }, { k: "stun", t: 1, ch: .25 }] }, { n: "Trône de cendres", t: "self", heal: .08, sfx: [{ k: "shield", v: .12, t: 2 }], w: .4 }],
     phase: { at: .5, n: "Le Roi se lève de son trône. Les cendres s'enflamment !", sfx: [{ k: "dmgUp", v: .4, t: 99 }, { k: "spdUp", v: 3, t: 99 }] } },
   // Abîme
@@ -779,7 +786,35 @@ const EVENTS = [
   { id: "chaudron", n: "Le chaudron de la sorcière", t: "Une potion bouillonne. Elle sent la menthe… et le soufre.", ch: [
     { n: "En boire une gorgée", fx: { gamble: [.6, { buff: 1 }, { hurt: .1, poison: 1 }] } }, { n: "Renverser le chaudron", fx: { mat: 2 } }] },
   { id: "pretre", n: "Le prêtre fou", t: "« Repentez-vous ! » hurle un prêtre en haillons, une torche à la main.", ch: [
-    { n: "Se confesser", fx: { morale: 12, cleanse: 1 } }, { n: "Lui prendre sa torche", fx: { light: 25, morale: -5 } }, { n: "L'ignorer", fx: {} }] },
+    { n: "Se confesser", fx: { morale: 12, cleanse: 1 } }, { n: "Lui prendre sa torche", fx: { light: 25, morale: -5 } }, { n: "L'ignorer", fx: {} }] },  { id: "ossuaire", n: "L'ossuaire", t: "Des crânes empilés jusqu'à la voûte. L'un d'eux porte une couronne de fer rouillée.", ch: [
+    { n: "Prendre la couronne", fx: { gamble: [.5, { relic: 1 }, { fight: 1 }] } }, { n: "Réciter une prière des morts", fx: { morale: 10, light: 10 } }, { n: "Fouiller les os", fx: { mat: 3, morale: -6 } }] },
+  { id: "deserteur", n: "Le déserteur", t: "Un soldat blessé, l'uniforme du Bastion en lambeaux. « Ne me ramenez pas… ils me pendront. »", ch: [
+    { n: "Lui donner une potion", fx: { potionCost: 1, gold: 120, morale: 8 } }, { n: "Le dépouiller", fx: { trinket: 1, morale: -12 } }, { n: "Le laisser partir", fx: { morale: 4 } }] },
+  { id: "statue", n: "La statue qui pleure", t: "Une sainte de pierre verse des larmes de sang. Le sol autour est fertile, étrangement.", ch: [
+    { n: "Recueillir les larmes", fx: { heal: .3, cleanse: 1 } }, { n: "Briser la statue", fx: { gold: 70, curse: 1 } }, { n: "S'agenouiller", fx: { xp: 60 } }] },
+  { id: "tanniere", n: "Le hurlement", t: "Un hurlement tout proche. Des traces énormes, encore fraîches, mènent à une tanière.", ch: [
+    { n: "Suivre les traces", fx: { fight: 1, loot: 1 } }, { n: "Poser des pièges", fx: { petXp: 40, morale: 5 } }, { n: "Faire un détour", fx: { light: -12 } }] },
+  { id: "aveugle", n: "La prêtresse aveugle", t: "« Je vois votre fin, voyageurs. Voulez-vous la connaître ? »", ch: [
+    { n: "Écouter la prophétie", fx: { gamble: [.5, { buff: 1, morale: 12 }, { morale: -15 }] } }, { n: "Lui offrir 50 or", fx: { cost: 50, relic: 1 } }, { n: "Refuser", fx: {} }] },
+  { id: "pont", n: "Le pont effondré", t: "Le pont est à moitié écroulé au-dessus d'un gouffre. Il y a peut-être un autre chemin.", ch: [
+    { n: "Traverser quand même", fx: { gamble: [.65, { light: 5, xp: 40 }, { hurt: .18 }] } }, { n: "Chercher un passage", fx: { light: -15, loot: 1 } }] },
+  { id: "fontaine", n: "La fontaine aux pièces", t: "Une fontaine pleine de pièces d'or, gardée par une inscription : « Qui prend sera pris. »", ch: [
+    { n: "Prendre l'or", fx: { gold: 160, curse: 1 } }, { n: "Jeter une pièce (20 or)", fx: { cost: 20, heal: .2, morale: 6 } }, { n: "Passer", fx: {} }] },
+  { id: "forge_ruine", n: "La forge en ruine", t: "Une forge éteinte depuis cent ans. Le soufflet fonctionne encore.", ch: [
+    { n: "Rallumer la forge", fx: { upgrade: 1, light: -8 } }, { n: "Récupérer le métal", fx: { mat: 4 } }] },
+  { id: "corbeaux", n: "L'assemblée des corbeaux", t: "Des centaines de corbeaux, immobiles, vous fixent. Un seul croasse.", ch: [
+    { n: "Leur jeter de la nourriture", fx: { petXp: 50, relic: 1, light: -10 } }, { n: "Les disperser", fx: { gamble: [.5, { gold: 60 }, { fight: 1 }] } }] },
+  { id: "chevalier_mort", n: "Le chevalier agenouillé", t: "Un chevalier mort, agenouillé, les mains sur son épée. Sa visière est relevée : il sourit.", ch: [
+    { n: "Prendre son épée", fx: { loot: 1, gamble: [.6, {}, { fight: 1 }] } }, { n: "Lui fermer les yeux", fx: { morale: 14 } }] },
+  { id: "brume", n: "La brume rouge", t: "Une brume écarlate envahit le chemin. Elle sent le fer et la rose.", ch: [
+    { n: "La traverser en courant", fx: { hurt: .08, light: 5 } }, { n: "Attendre qu'elle se dissipe", fx: { light: -15, heal: .1 } }, { n: "La respirer", fx: { gamble: [.5, { buff: 1 }, { poison: 1 }] } }] },
+  { id: "cachot", n: "Le cachot", t: "Derrière une grille, un prisonnier squelettique tend la main. « La clé… elle est là, sous la dalle. »", ch: [
+    { n: "Le libérer", fx: { gamble: [.6, { gold: 90, morale: 10 }, { fight: 1 }] } }, { n: "Prendre la clé pour vous", fx: { trinket: 1, morale: -10 } }, { n: "Partir", fx: {} }] },
+  { id: "banquet", n: "Le banquet fantôme", t: "Une longue table dressée, des chandelles, un festin fumant. Aucun convive. Une chaise vide par héros.", ch: [
+    { n: "S'asseoir et manger", fx: { gamble: [.55, { heal: .45, morale: 10 }, { hurt: .15, morale: -10 }] } }, { n: "Voler l'argenterie", fx: { gold: 110, morale: -5 } }, { n: "Souffler les chandelles", fx: { light: 20 } }] },
+  { id: "flagellants", n: "La procession", t: "Des flagellants passent en chantant, le dos en sang. Leur chef vous tend un fouet.", ch: [
+    { n: "Se joindre à eux", fx: { hurt: .1, xp: 70, morale: 8 } }, { n: "Leur acheter des cierges (40 or)", fx: { cost: 40, light: 35 } }, { n: "Les éviter", fx: {} }] },
+
 ];
 // bâtiments du Bastion
 const BUILDINGS = {
@@ -991,7 +1026,10 @@ function heroUnit(h, relicH) {
 }
 function monUnit(key, lvl, mods = {}) {
   const M = MONSTERS[key], L = lvl - 1;
-  const hpM = 1.2 * (1 + .2 * L) * (mods.hp || 1) * (M.boss ? 1 + (mods.bossHp || 0) : 1), dM = 1.4 * (1 + .11 * L) * (mods.dmg || 1) * (M.boss ? 1.1 : 1);
+  // difficulté : les combats ordinaires mordent dès le chapitre II, les derniers gardiens sont de vrais murs
+  const late = lvl >= 11 ? 1 : 0, early = lvl <= 3 ? 1 : 0;
+  const hpM = 1.2 * (1 + (M.boss ? .12 : .2) * L) * (mods.hp || 1) * (M.boss ? (1 + (mods.bossHp || 0)) * (late ? 1.75 : 1) : early ? 1 : 1.2),
+    dM = 1.4 * (1 + .11 * L) * (mods.dmg || 1) * (M.boss ? (late ? 1.38 : 1.1) : early ? 1.08 : 1.45);
   const u = { uid: uid("E"), side: "e", key, name: M.name || M.n, art: M.art, tags: M.tags, sz: M.sz || 1, boss: !!M.boss, elite: !!M.elite, lvl,
     hpMax: Math.round(M.hp * hpM), dmgLo: Math.max(1, Math.round(M.dmg[0] * dM)), dmgHi: Math.max(2, Math.round(M.dmg[1] * dM)), prot: clamp(M.prot + (mods.prot || 0), 0, .7),
     spd: M.spd + Math.floor(L / 5) + (mods.spd || 0), crit: 4 + L * .3, dodge: M.dodge + L * .4, acc: 90 + L * .7, res: (M.res || 15) + L * 1.4, healPow: 1, leech: 0, hooks: {},
@@ -1027,6 +1065,9 @@ function startRound(B) {
   for (const u of all) u._ini = effSpd(u) + rint(0, 3) + (u.side === "h" ? .5 : 0) + (B.firstRound && B.relicH.firstStrike && u.side === "h" ? 50 : 0);
   B.order = all.sort((a, b) => b._ini - a._ini).map(u => u.uid);
   B.turn = -1; B.firstRound = false;
+  // rage : un combat qui s'éternise devient de plus en plus mortel (pas d'impasse)
+  if (B.round > 14) for (const e of B.enemies.filter(alive)) { const r = e.st.find(z => z.k === "dmgUp" && z.rage); if (r) { r.v += .12; r.t = 99; } else e.st.push({ k: "dmgUp", v: .12, t: 99, rage: 1 }); }
+  if (B.round === 15) B.rageMsg = 1;
   if (B.relicH.roundHeal) for (const h of B.heroes.filter(alive)) healUnit(B, null, h, h.hpMax * B.relicH.roundHeal, []);
   planIntents(B);
 }
@@ -1659,6 +1700,7 @@ function resolveEvent(run, evId, ci) {
     if (f.xp) { for (const h of party) giveXp(h, f.xp); out.text.push("+" + f.xp + " expérience"); }
     if (f.petXp && run.pet) { givePetXp(run.pet, f.petXp); out.text.push("Votre compagnon gagne en expérience."); }
     if (f.potion) { run.potions++; out.text.push("+1 potion"); }
+    if (f.potionCost) { if (run.potions > 0) { run.potions--; out.text.push("-1 potion"); } else out.text.push("Vous n'aviez plus de potion… il vous remercie quand même."); }
     if (f.cleanse) out.text.push("Les esprits s'apaisent.");
     if (f.curse) { run.curse = (run.curse || 0) + 1; out.text.push("Une malédiction pèse sur vous : les ennemis frappent plus fort."); }
     if (f.poison) { for (const h of party) { const mx = heroStats(h, relicHooks(run)).hp; h.hp = Math.max(1, Math.round((h.hp == null ? mx : h.hp) - mx * .08)); } out.text.push("Empoisonnés !"); }
@@ -3614,9 +3656,10 @@ function go(name, arg) {
   if (UI.screen && SCREENS[UI.screen] && SCREENS[UI.screen].leave) SCREENS[UI.screen].leave();
   UI.screen = name; UI.arg = arg; SC.click = null; SC.hover = null;
   const Sx = SCREENS[name];
-  const v = $("#view"); v.className = ""; v.scrollTop = 0;
+  renderHud(); renderNav();
+  const v = $("#view"); v.className = Sx.pass ? "pass" : ""; v.scrollTop = 0;
   v.innerHTML = Sx.html ? Sx.html(arg) : "";
-  v.classList.add("enter"); setTimeout(() => v.classList.remove("enter"), 600);
+  v.classList.add("enter"); setTimeout(() => v.classList.remove("enter"), 700);
   SC.draw = Sx.scene ? Sx.scene(arg) : backdrop("bastion", { dark: .45 });
   if (Sx.mount) Sx.mount(arg);
   renderHud(); renderNav();
@@ -3715,8 +3758,13 @@ function skillText(sk, u) {
   return out.join(" · ");
 }
 /* ═══════════════════════ Écran-titre et nouvelle partie ═══════════════════════ */
-const PWA = { prompt: null };
-if (HASWIN) addEventListener("beforeinstallprompt", e => { e.preventDefault(); PWA.prompt = e; });
+const GAME_URL = "https://norbeo.github.io/Mists-Forge/";
+const PWA = { prompt: null,
+  standalone: HASWIN && ((window.matchMedia && (matchMedia("(display-mode: standalone)").matches || matchMedia("(display-mode: fullscreen)").matches)) || navigator.standalone === true),
+  framed: HASWIN && (() => { try { return window.top !== window.self; } catch (e) { return true; } })(),
+  ios: HASWIN && (/iphone|ipad|ipod/i.test(navigator.userAgent || "") || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)),
+  android: HASWIN && /android/i.test(navigator.userAgent || "") };
+if (HASWIN) { addEventListener("beforeinstallprompt", e => { e.preventDefault(); PWA.prompt = e; if (UI.screen === "title" || UI.screen === "options") refresh(); }); addEventListener("appinstalled", () => { PWA.prompt = null; toast("Couronne de Cendres est installée !", "good"); }); }
 SCREENS.title = {
   noHud: 1, noNav: 1,
   scene: () => backdrop("titre", { align: .6, after: (x, t) => { const w = SC.w, h = SC.h; glow(x, w / 2, h * .32, Math.min(w, h) * .45, "#ff5a1a", .12 + Math.sin(t * 1.3) * .04); } }),
@@ -3727,7 +3775,7 @@ SCREENS.title = {
       <p class="lore" style="max-width:460px;margin:6px 0 14px">Un royaume maudit. Une couronne brisée. Dix héros perdus, et vous pour les mener dans l'ombre.</p>
       ${has ? `<button class="btn main glow" data-a="continue">${ico("castle")}Continuer</button>` : ""}
       <button class="btn ${has ? "" : "main glow"}" data-a="newgame">${ico("plus")}Nouvelle partie</button>
-      ${PWA.prompt ? `<button class="btn ghost" data-a="install">${ico("install")}Installer le jeu</button>` : ""}
+      ${PWA.standalone ? "" : `<button class="btn ghost" data-a="install">${ico("install")}Installer l'appli</button>`}
       <p class="tiny dim" style="margin-top:10px">Jeu sauvegardé sur cet appareil · fonctionne hors connexion une fois installé</p>
     </div>`;
   },
@@ -3735,7 +3783,15 @@ SCREENS.title = {
 };
 ACT.continue = () => { S = load(); if (!S) return; dailyCheck(); musicPlay("bastion"); const bank = idleBank(); if (S.run) go("map"); else go("bastion"); if (bank >= 10) toast(`${ico("furnace", "#ff9a3a")} La Fonderie a produit <b>${bank} or</b> en votre absence.`, "good"); };
 ACT.newgame = () => { const go2 = () => { NG.step = 0; NG.pet = "loup"; NG.hard = false; NG.heroes = {}; for (const c of START_CLASSES) NG.heroes[c] = makeHero(c); go("newgame"); musicPlay("titre"); }; if (load()) confirmBox("Une partie existe déjà sur cet appareil. Elle sera <b>effacée</b>.", go2, { yes: "Recommencer" }); else go2(); };
-ACT.install = async () => { if (!PWA.prompt) { toast("Sur iPhone : bouton Partager puis « Sur l'écran d'accueil »."); return; } PWA.prompt.prompt(); try { await PWA.prompt.userChoice; } catch (e) { } PWA.prompt = null; refresh(); };
+ACT.install = async () => {
+  if (PWA.prompt) { PWA.prompt.prompt(); try { await PWA.prompt.userChoice; } catch (e) { } PWA.prompt = null; refresh(); return; }
+  let how;
+  if (PWA.framed) how = `<p>Ici, le jeu est affiché dans un aperçu : il ne peut pas s'installer depuis cette page.</p><p>Ouvrez le jeu sur son site, puis installez-le :</p><p style="text-align:center"><a class="btn main" href="${GAME_URL}" target="_blank" rel="noopener">${ico("map")}Ouvrir le jeu</a></p><p class="small dim" style="text-align:center">${GAME_URL}</p>`;
+  else if (PWA.ios) how = `<ol><li>Ouvrez cette page dans <b>Safari</b>.</li><li>Touchez le bouton <b>Partager</b> (le carré avec une flèche vers le haut).</li><li>Choisissez <b>« Sur l'écran d'accueil »</b>, puis <b>Ajouter</b>.</li></ol>`;
+  else if (PWA.android) how = `<ol><li>Ouvrez cette page dans <b>Chrome</b>.</li><li>Touchez le menu <b>⋮</b> en haut à droite.</li><li>Choisissez <b>« Installer l'application »</b> (ou « Ajouter à l'écran d'accueil »).</li></ol>`;
+  else how = `<ol><li>Dans <b>Chrome</b> ou <b>Edge</b>, cliquez sur l'icône d'installation à droite de la barre d'adresse (un écran avec une flèche).</li><li>Ou menu <b>⋮</b> → <b>« Installer Couronne de Cendres »</b>.</li></ol>`;
+  modal(`<h2>${ico("install", "#e8c878")} Installer le jeu</h2>${how}<p class="small dim">Une fois installé, le jeu s'ouvre en plein écran depuis l'écran d'accueil et fonctionne hors connexion. Votre sauvegarde reste sur l'appareil.</p>`);
+};
 
 const NG = { step: 0, pet: "loup", hard: false, heroes: {} };
 SCREENS.newgame = {
@@ -3747,12 +3803,12 @@ SCREENS.newgame = {
       const pets = PET_IDS.filter(k => PETS[k].starter);
       return `<div class="wrap"><h1 style="text-align:center;margin-top:10px">Votre premier compagnon</h1><p class="lore" style="text-align:center">Une bête vous a suivi jusqu'aux portes du Bastion. Elle combattra à vos côtés, gagnera en puissance et pourra évoluer.</p>
       <div class="grid" style="--min:200px;margin-top:12px">${pets.map(k => { const P = PETS[k]; return `<div class="card ${NG.pet === k ? "sel" : ""}" data-a="ngPet" data-v="${k}" style="text-align:center">${canvasSlot("pet:" + k, 200, 150)}<h3>${P.n}</h3>${roleTag(P.role)}<p class="small dim">${P.d}</p><p class="tiny">${P.sk.map(s => "<b>" + s.n + "</b>").join(" · ")}</p></div>`; }).join("")}</div>
-      <div class="row" style="justify-content:center;margin-top:16px"><button class="btn main glow" data-a="ngNext">Choisir ${PETS[NG.pet].n}</button></div></div>`;
+      <div class="stickybar"><button class="btn main glow" data-a="ngNext">Choisir ${PETS[NG.pet].n}</button></div></div>`;
     }
     return `<div class="wrap"><h1 style="text-align:center;margin-top:10px">Votre compagnie</h1><p class="lore" style="text-align:center">Quatre âmes ont répondu à l'appel. Un mur, une lame, un arc et une prière. Les autres viendront à la Taverne.</p>
       <div class="grid" style="--min:180px;margin-top:12px">${START_CLASSES.map(c => { const h = NG.heroes[c], C = CLASSES[c]; return `<div class="card" style="text-align:center">${canvasSlot("hero:" + c, 170, 212)}<h3>${esc(h.name)}</h3><div class="row" style="justify-content:center">${roleTag(C.role)}<span class="tag">${C.n}</span></div><p class="tiny dim">${h.traits.map(t => `<span class="${TRAITS[t].good ? "good" : "bad"}">${TRAITS[t].n}</span>`).join(" · ")}</p><button class="btn ghost sm" data-a="ngReroll" data-v="${c}">${ico("dice")}Autre recrue</button></div>`; }).join("")}</div>
       <div class="panel" style="padding:12px;margin-top:14px"><label class="row" style="cursor:pointer"><input type="checkbox" id="ng-hard" ${NG.hard ? "checked" : ""}> <b>Mode Hardi</b> <span class="small dim">— les héros tombés meurent pour de bon. Pour les vétérans.</span></label></div>
-      <div class="row" style="justify-content:center;margin-top:16px"><button class="btn ghost" data-a="ngBack">Retour</button><button class="btn main glow" data-a="ngStart">${ico("castle")}Entrer au Bastion</button></div></div>`;
+      <div class="stickybar"><button class="btn ghost" data-a="ngBack">Retour</button><button class="btn main glow" data-a="ngStart">${ico("castle")}Entrer au Bastion</button></div></div>`;
   },
   mount: () => {
     fillCanvases($("#view"), (c, id) => { const [k, v] = id.split(":"); if (k === "pet") paintPet(c, v, 0); if (k === "hero") paintHero(c, NG.heroes[v], true); });
@@ -3877,7 +3933,9 @@ SCREENS.bastion = {
     const names = { porte: "La Porte", ...Object.fromEntries(Object.keys(BUILDINGS).map(k => [k, BUILDINGS[k].n])) };
     const note = k => (k === "taverne" && S.heroes.length < 4) || (k === "fonderie" && idleBank() >= fonderieRate()) || (k === "academie" && S.heroes.some(h => h.lvl >= EVO_LVL && !h.evo)) || (k === "chapelle" && S.heroes.some(isInjured));
     const ct = S.daily.contracts || [];
-    return `${L.map(b => `<button class="hot" style="left:${b.x}px;top:${b.y - b.s * (b.k === "porte" ? 1.55 : b.k === "academie" ? 1.9 : 1.2)}px" data-a="bld" data-v="${b.k}"><span class="lbl">${note(b.k) ? '<i class="dotn"></i>' : ""}${names[b.k]}${b.k !== "porte" ? ` <b>${"I II III IV V".split(" ")[S.bld[b.k] - 1]}</b>` : ""}</span></button>`).join("")}
+    const off = $("#view") ? $("#view").getBoundingClientRect().top : 0;
+    if (UI.hideDaily == null) UI.hideDaily = (SC.w || innerWidth) < (SC.h || innerHeight);
+    return `${L.map(b => { const hh = b.s * (b.k === "porte" ? 1.62 : b.k === "academie" ? 2.0 : b.k === "chapelle" ? 1.9 : 1.3); return `<button class="hot" style="left:${b.x}px;top:${b.y - off - hh}px;width:${b.s * 1.3}px;height:${hh}px" data-a="bld" data-v="${b.k}"><span class="lbl">${note(b.k) ? '<i class="dotn"></i>' : ""}${names[b.k]}${b.k !== "porte" ? ` <b>${"I II III IV V".split(" ")[S.bld[b.k] - 1]}</b>` : ""}</span></button>`; }).join("")}
     <div class="panel" style="position:absolute;left:10px;top:6px;width:min(300px,calc(100vw - 20px));padding:10px 12px" id="dailyp">
       <div class="row sp"><h3 style="margin:0">${ico("daily", "#e8c878", 16)} Défis du jour</h3><button class="btn ghost sm" data-a="toggleDaily">${UI.hideDaily ? "+" : "–"}</button></div>
       ${UI.hideDaily ? "" : ct.map((c, i) => `<div style="margin-top:6px"><div class="row sp small"><span>${c.n}</span><span class="${c.p >= c.goal ? "good" : "dim"}">${c.p}/${c.goal}</span></div><div class="row" style="gap:6px"><div class="bar xp" style="flex:1"><i style="width:${100 * c.p / c.goal}%"></i></div>${c.claimed ? '<span class="tiny good">✓</span>' : c.p >= c.goal ? `<button class="btn gold sm" data-a="claimCt" data-v="${i}">+${c.gold}</button>` : `<span class="tiny dim">${c.gold} or</span>`}</div></div>`).join("") + `<div class="sep" style="margin:8px 0"></div><button class="btn ${S.daily.done ? "ghost off" : "main"} sm" style="width:100%" data-a="dailyRun">${ico("star")}${S.daily.done ? "Expédition du jour accomplie" : "Expédition du jour (+récompenses)"}</button>`}
@@ -4060,11 +4118,11 @@ SCREENS.expe = {
     <h2>Destination</h2><div class="grid" style="--min:200px">${regs.map(r => { const un = regionUnlocked(r.id), p = S.prog[r.id]; return `<div class="card ${E.region === r.id ? "sel" : ""} ${un ? "" : "lock"}" data-a="${un && !E.daily ? "pickReg" : ""}" data-v="${r.id}" style="padding:0">${canvasSlot("reg:" + r.id, 280, 120)}<div style="padding:8px 10px"><div class="tiny dim">${r.sub}${r.id === "abime" ? ` · record ${S.abyss.best}` : ` · niv ${r.lvl}+`}</div><h3 style="margin:0">${r.n} ${!un ? ico("lock", "#9a8c7a", 14) : p && p.clears ? ico("crown", "#e8c878", 14) : ""}</h3><p class="tiny dim" style="margin:2px 0 0">${un ? r.d : "Terminez le chapitre précédent."}</p></div></div>`; }).join("")}</div>
     ${E.region === "abime" ? abyssOpts(E) : cleared && !E.daily ? `<div class="row" style="margin-top:8px"><span class="small">Menace :</span>${[0, 1, 2].map(t => `<button class="btn sm ${E.threat === t ? "gold" : "ghost"}" data-a="threat" data-v="${t}">${["I", "II", "III"][t]}</button>`).join("")}<span class="tiny dim">Ennemis +${E.threat * 2} niveaux, récompenses +${E.threat * 30} %</span></div>` : ""}
     <h2 style="margin-top:14px">Ordre de marche</h2><p class="tiny dim" style="margin-top:-4px">Le rang 1 est en première ligne, face à l'ennemi. Touchez un héros pour l'ajouter ou le retirer, et une flèche pour changer son rang.</p>
-    <div class="row" style="justify-content:center;gap:8px;flex-wrap:nowrap;overflow-x:auto;padding:4px">${[3, 2, 1, 0].map(i => { const h = heroById(E.party[i]); return `<div class="card" style="width:112px;flex:none;text-align:center;padding:6px" data-a="${h ? "unparty" : ""}" data-v="${i}"><div class="tiny gold">Rang ${i + 1}</div>${h ? canvasSlot("pt:" + h.id, 96, 120) + `<div class="tiny"><b>${esc(h.name.split(" ")[0])}</b></div><div class="tiny dim">${CLASSES[h.cls].n} ${h.lvl}</div>${isInjured(h) ? '<div class="tiny bad">Blessé (50 % PV)</div>' : ""}<div class="row" style="justify-content:center;gap:2px;margin-top:3px"><button class="btn ghost sm" data-a="mvParty" data-v="${i}:1" ${i >= 3 || !E.party[i + 1] ? "disabled" : ""}>◀</button><button class="btn ghost sm" data-a="mvParty" data-v="${i}:-1" ${i <= 0 ? "disabled" : ""}>▶</button></div>` : '<div class="empty" style="padding:40px 4px">vide</div>'}</div>`; }).join("")}</div>
+    <div class="partyrow">${[3, 2, 1, 0].map(i => { const h = heroById(E.party[i]); return `<div class="card" style="text-align:center;padding:6px 3px" data-a="${h ? "unparty" : ""}" data-v="${i}"><div class="tiny gold">Rang ${i + 1}</div>${h ? canvasSlot("pt:" + h.id, 96, 120) + `<div class="tiny"><b>${esc(h.name.split(" ")[0])}</b></div><div class="tiny dim">${CLASSES[h.cls].n} ${h.lvl}</div>${isInjured(h) ? '<div class="tiny bad">Blessé (50 % PV)</div>' : ""}<div class="row" style="justify-content:center;gap:2px;margin-top:3px"><button class="btn ghost sm" data-a="mvParty" data-v="${i}:1" ${i >= 3 || !E.party[i + 1] ? "disabled" : ""}>◀</button><button class="btn ghost sm" data-a="mvParty" data-v="${i}:-1" ${i <= 0 ? "disabled" : ""}>▶</button></div>` : '<div class="empty" style="padding:40px 4px">vide</div>'}</div>`; }).join("")}</div>
     ${warn.length ? `<div class="small bad" style="text-align:center">${warn.join("<br>")}</div>` : ""}
     <div class="row" style="gap:6px;margin-top:8px">${S.heroes.filter(h => !E.party.includes(h.id)).map(h => `<div class="card" style="padding:4px 8px" data-a="addParty" data-v="${h.id}"><div class="row" style="gap:6px;flex-wrap:nowrap">${canvasSlot("ro:" + h.id, 40, 40)}<div class="tiny"><b>${esc(h.name.split(" ")[0])}</b><br><span class="dim">${CLASSES[h.cls].n} ${h.lvl}${isInjured(h) ? ' · <span class="bad">blessé</span>' : ""}</span></div></div></div>`).join("")}<button class="btn ghost sm" data-a="autoParty">${ico("auto")}Composition auto</button></div>
     <h2 style="margin-top:14px">Compagnon</h2><div class="row">${S.pets.owned.map(id => `<div class="card ${E.pet === id ? "sel" : ""}" style="padding:4px 10px;text-align:center" data-a="pickPet" data-v="${id}">${canvasSlot("pe:" + id, 90, 64)}<div class="tiny"><b>${petName(id)}</b> niv ${petLvl(id)}</div></div>`).join("")}</div>
-    <div class="row" style="justify-content:center;margin:18px 0 8px"><span class="small dim">${ico("potion", "#e86a5a", 16)} ${potionMax() - (E.region === "abime" && (S.abyss.oaths || []).includes("jeune") ? 1 : 0)} potions</span><button class="btn main glow" data-a="launch" ${E.party.length ? "" : "disabled"}>${ico("map")}Partir</button></div></div>`;
+    <div class="stickybar"><span class="small dim">${ico("potion", "#e86a5a", 16)} ${potionMax() - (E.region === "abime" && (S.abyss.oaths || []).includes("jeune") ? 1 : 0)} potions</span><button class="btn main glow" data-a="launch" ${E.party.length ? "" : "disabled"}>${ico("map")}Partir</button></div></div>`;
   },
   mount: () => fillCanvases($("#view"), (c, id) => { const [k, v] = id.split(":"); if (k === "reg") regionThumb(c, v); if (k === "pt") paintHero(c, heroById(v), true); if (k === "ro") paintHero(c, heroById(v)); if (k === "pe") paintPet(c, v, petEvolved(v)); }),
 };
@@ -4128,13 +4186,54 @@ ACT.retreat = () => confirmBox("Rentrer au Bastion ? Vous gardez l'or et le buti
 ACT.node = v => {
   const [c, i] = v.split(":").map(Number); const run = S.run, n = run.map[c][i];
   if (!availableNodes(run).includes(n)) return;
-  enterNode(run, n); sfx("step"); save();
+  enterNode(run, n); save();
+  go("travel", { node: n });
+};
+function resolveNode(n) {
+  const run = S.run; UI.resolving = 1; setTimeout(() => UI.resolving = 0, 50);
   if (["combat", "elite", "boss"].includes(n.type)) { go("combat", { node: n }); return; }
+  go("map");
   if (n.type === "event") return showEvent(n);
-  if (n.type === "treasure") { const R = rewardFor(run, n); grantReward(run, R); n.done = 1; save(); sfx("coin"); rewardModal("Trésor", "Un coffre oublié, une bourse sur un cadavre…", R); return; }
+  if (n.type === "treasure") { const R = rewardFor(run, n); grantReward(run, R); n.done = 1; save(); sfx("coin"); rewardModal("Trésor", pick(["Un coffre oublié sous les gravats.", "Une bourse encore pleine, serrée par une main morte.", "Une cache de contrebandier, derrière une pierre descellée."]), R); return; }
   if (n.type === "camp") return showCamp(n);
   if (n.type === "shop") return showShop(n);
+}
+// ── marche entre deux salles : le groupe avance à travers le décor ──
+const WALK_CACHE = {};
+const WALK = [{ lFh: .5, lFk: -.25, lBh: -.5, lBk: -.55, aFs: .1, lean: .12 }, { lFh: .1, lFk: -.45, lBh: -.08, lBk: -.2, hy: -3, lean: .1 }, { lFh: -.42, lFk: -.6, lBh: .45, lBk: -.15, aFs: .5, lean: .12 }, { lFh: -.05, lFk: -.2, lBh: .1, lBk: -.5, hy: -3, lean: .1 }];
+const TRAVEL_TXT = { combat: ["Des grognements dans l'ombre…", "Quelque chose bouge devant vous.", "L'odeur du sang frais."], elite: ["Une présence terrible vous attend.", "Le sol tremble sous des pas lourds."], event: ["Un bruit étrange, plus loin…", "Une lueur vacille entre les ruines.", "Quelqu'un — ou quelque chose — vous observe."], treasure: ["Un éclat doré sous la poussière.", "Un coffre, oublié de tous."], camp: ["Un abri. Enfin.", "Des braises encore chaudes."], shop: ["Une lanterne, et une silhouette encapuchonnée.", "Le tintement de pièces dans le noir."], boss: ["Le gardien vous attend.", "L'air devient glacé. C'est ici."] };
+SCREENS.travel = {
+  noNav: 1, noHud: 1, mount: () => { $("#toasts").innerHTML = ""; },
+  html: a => { const T = NODE_T[a.node.type]; return `<div style="position:absolute;inset:0" data-a="skipTravel"><div style="position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top) + 18%);text-align:center;pointer-events:none"><div class="tag" style="font-size:14px;padding:6px 14px;color:${T.c}">${ico(T.ic, T.c)} ${T.n}</div><p class="lore" style="font-size:17px;text-shadow:0 2px 8px #000;margin-top:10px">${pick(TRAVEL_TXT[a.node.type] || [""])}</p></div><p class="tiny dim" style="position:absolute;bottom:calc(env(safe-area-inset-bottom) + 14px);width:100%;text-align:center">Touchez pour passer</p></div>`; },
+  scene: a => {
+    const run = S.run, party = runParty().filter(h => !run.fallen.includes(h.id));
+    const W = SC.w, H = SC.h, port = W < H;
+    const sc = Math.min(H * (port ? .2 : .32) / 200, W / (port ? 6 : 9.5) / 70);
+    const frames = party.map(h => { const L = heroLook(h), hurt = h.hp != null && h.hp / heroStats(h).hp < .3; return WALK.map((p, j) => { const key = L.key + sc.toFixed(3) + j + (hurt ? "h" : ""); return WALK_CACHE[key] = WALK_CACHE[key] || heroSprite(L, Object.assign({}, p, hurt ? { lean: .3, head: .3 } : {}), 0, sc); }); });
+    const pet = run.pet ? [petSprite(run.pet, { evo: petEvolved(run.pet) }, 0, sc * .9), petSprite(run.pet, { evo: petEvolved(run.pet) }, .4, sc * .9)] : null;
+    const t0 = SC.t, dur = a.node.type === "boss" ? 2.6 : 1.7;
+    let doneOnce = false; UI.travelDone = () => { if (doneOnce) return; doneOnce = true; resolveNode(a.node); };
+    let stepT = 0;
+    return (x, t, dt) => {
+      const k = (t - t0) / dur, bg = paintRegion(run.region, 1280, 720);
+      const bw = Math.max(W, H * 16 / 9) * 1.25, bh = bw * 9 / 16, scroll = ((t - t0) * 70) % bw;
+      for (const o of [0, 1]) x.drawImage(bg, -scroll + o * bw - (bw - W) / 2 * 0, Math.min(0, H - bh) * .6, bw, Math.max(bh, H));
+      if (!SC.amb || SC.ambKind !== run.region) { SC.amb = makeAmbient(REGION_AMB[run.region] || "braises", 36, W, H); SC.ambKind = run.region; }
+      drawAmbient(x, SC.amb, t, dt);
+      const gy = H * (port ? .78 : .86), gap = 64 * sc * 1.15, fi = Math.floor((t - t0) * 7);
+      if (fi !== stepT && fi % 2 === 0) { stepT = fi; sfx("step"); }
+      const front = W * (port ? .62 : .58) + Math.min(1, k * 1.5) * 20;
+      if (pet) { const cv = pet[fi % 2]; x.save(); x.translate(front - gap * (party.length + .3), gy - Math.abs(Math.sin(t * 9)) * 4); x.fillStyle = "rgba(0,0,0,.4)"; x.beginPath(); x.ellipse(0, 4, 30 * sc, 6 * sc, 0, 0, 7); x.fill(); x.drawImage(cv, -cv.ax, -cv.ay); x.restore(); }
+      party.forEach((h, i) => { const cv = frames[i][(fi + i) % 4]; const px = front - gap * i; x.fillStyle = "rgba(0,0,0,.45)"; x.beginPath(); x.ellipse(px, gy + 2, 34 * sc, 7 * sc, 0, 0, 7); x.fill(); x.drawImage(cv, px - cv.ax, gy - cv.ay); });
+      // torche portée par le groupe
+      const f = .8 + Math.sin(t * 9) * .1; glow(x, front + 20 * sc, gy - 120 * sc, 200 * sc * (run.light / 100 + .4), "#ff9a4a", .22 * f);
+      const vg = x.createRadialGradient(front, gy - 60, 40, front, gy - 60, Math.max(W, H) * (.35 + run.light / 250)); vg.addColorStop(0, "rgba(0,0,0,0)"); vg.addColorStop(1, "rgba(0,0,0,.85)"); x.fillStyle = vg; x.fillRect(0, 0, W, H);
+      const fade = k < .12 ? 1 - k / .12 : k > .88 ? (k - .88) / .12 : 0; if (fade > 0) { x.fillStyle = `rgba(0,0,0,${clamp(fade, 0, 1)})`; x.fillRect(0, 0, W, H); }
+      if (k >= 1) UI.travelDone();
+    };
+  },
 };
+ACT.skipTravel = () => { if (UI.travelDone) UI.travelDone(); };
 function showEvent(n) {
   const E = EVENTS.find(e => e.id === n.ev);
   modal(`<h2>${ico("quest", "#b48cff")} ${E.n}</h2><p class="lore">${E.t}</p>${E.ch.map((c, i) => `<button class="btn choice" data-a="evChoice" data-v="${i}">${c.n}</button>`).join("")}`, { close: false });
@@ -4200,7 +4299,7 @@ SCREENS.results = {
 
 // reprise après rechargement : une salle entamée mais pas terminée est rejouée
 function resumeNode() {
-  const run = S.run; if (!run || !run.pos || !$("#modal").hidden) return;
+  const run = S.run; if (!run || !run.pos || !$("#modal").hidden || UI.resolving) return;
   const n = run.map[run.pos.c][run.pos.i]; if (!n || n.done) return;
   if (["combat", "elite", "boss"].includes(n.type)) { setTimeout(() => { if (UI.screen === "map") go("combat", { node: n }); }, 300); return; }
   if (n.type === "event") showEvent(n); else if (n.type === "camp") showCamp(n); else if (n.type === "shop") showShop(n); else if (n.type === "treasure") { n.done = 1; }
@@ -4234,13 +4333,13 @@ function cbLayout() {
   CB.port = port; CB.stageH = H;
   const pos = {};
   if (!port) {
-    const mid = W / 2, gap = Math.min(W / 10, H * .27), gy = H * .9;
+    const mid = W / 2, gap = Math.min(W / 10, H * .27), gy = H * .86;
     CB.scale = Math.min(H * .44 / 200, gap / 84); CB.ground = gy;
     let r = 1; for (const u of B.heroes) { pos[u.uid] = [mid - gap * .85 - gap * (r - 1), gy]; r += 1; }
     r = 1; for (const u of B.enemies) { const s = u.sz || 1; pos[u.uid] = [mid + gap * .85 + gap * (r - 1 + (s - 1) / 2), gy]; r += s; }
   } else {
-    const colW = W / 4.1, eY = H * .5, hY = H * .95;
-    CB.scale = Math.min((hY - eY) * .7 / 200, colW / 74); CB.ground = hY;
+    const colW = W / 4.1, eY = H * .47, hY = H * .89;
+    CB.scale = Math.min((hY - eY) * .68 / 200, colW / 82); CB.ground = hY;
     const cx = rk => W - colW * (rk - .5) - W * .012;
     let r = 1; for (const u of B.heroes) { pos[u.uid] = [cx(r), hY]; r++; }
     r = 1; for (const u of B.enemies) { const s = u.sz || 1; pos[u.uid] = [cx(r + (s - 1) / 2), eY]; r += s; }
@@ -4253,7 +4352,7 @@ function cbLayout() {
 }
 // ── écran ──
 SCREENS.combat = {
-  noNav: 1, noHud: 1,
+  noNav: 1, noHud: 1, pass: 1,
   scene: () => drawCombat,
   html: () => `<div class="ctop l" id="cb-tl"></div><div class="ctop" id="cb-tr"><button class="btn ghost sm" data-a="cbSpeed" title="Vitesse">${ico("speed")}<span id="cb-spd">×${CB.speed}</span></button><button class="btn ghost sm ${CB.auto ? "on" : ""}" data-a="cbAuto" title="Combat automatique">${ico("auto")}<span id="cb-auto">${CB.auto ? "Auto" : "Manuel"}</span></button><button class="btn ghost sm" data-a="cbFlee" id="cb-flee" title="Fuir">${ico("flee")}</button></div><div id="cbar"><div class="skdesc" id="cb-desc"></div><div class="skills" id="cb-skills"></div></div>`,
   mount: arg => startCombat(arg.node),
@@ -4281,6 +4380,7 @@ async function combatLoop() {
   const B = CB.B;
   while (B && !B.over && CB.B === B) {
     startRound(B); cbTopLeft();
+    if (B.rageMsg === 1) { B.rageMsg = 2; await showBanner("Rage !", "Les ennemis frappent de plus en plus fort", "#ff3a2a", 1100); }
     let u;
     while (!B.over && CB.B === B && (u = nextActor(B))) {
       CB.actor = u; cbTopLeft();
@@ -4353,8 +4453,9 @@ function cbBar(u) {
   const btn = (sk) => { const ok = canUse(B, u, sk); const cd = u.cds[sk.id] > 0 ? u.cds[sk.id] : 0; return `<button class="sk ${ok ? "" : "no"} ${sk.isUlt ? "ult" + (u.ultV >= 100 ? " ready" : "") : ""}" data-a="cbSk" data-v="${sk.id}">${ico(sk.ic, sk.isUlt ? "#ff9a4a" : ok ? "#e8d8b8" : "#6a5a4a")}<span>${sk.n}</span>${sk.rank > 1 ? `<span class="rk">${"I II III IV V".split(" ")[sk.rank - 1]}</span>` : ""}${cd ? `<span class="cd">${cd}</span>` : ""}${sk.isUlt && u.ultV < 100 ? `<span class="cd" style="font-size:13px">${Math.floor(u.ultV)} %</span>` : ""}</button>`; };
   box.innerHTML = u.skills.map(btn).join("") + btn(u.ult) +
     `<button class="sk ${S.run.potions ? "" : "no"}" data-a="cbPotion" data-v="potion">${ico("potion", "#e86a5a")}<span>Potion ×${S.run.potions}</span></button>` +
-    `<div style="display:flex;flex-direction:column;gap:4px"><button class="sk" style="min-height:34px;width:44px" data-a="cbMove" data-v="-1" ${r <= 1 ? 'class="sk no"' : ""}>▶</button><button class="sk" style="min-height:34px;width:44px" data-a="cbMove" data-v="1">◀</button></div>` +
-    `<button class="sk" style="width:44px" data-a="cbPass" title="Passer">${ico("skip", "#9a8c7a")}</button>`;
+    `<button class="sk ${r >= n ? "no" : ""}" data-a="cbMove" data-v="1" title="Reculer">${ico("back", "#c8b8a0")}<span>Reculer</span></button>` +
+    `<button class="sk ${r <= 1 ? "no" : ""}" data-a="cbMove" data-v="-1" title="Avancer">${ico("charge", "#c8b8a0")}<span>Avancer</span></button>` +
+    `<button class="sk" data-a="cbPass" title="Passer">${ico("skip", "#9a8c7a")}<span>Passer</span></button>`;
   d.innerHTML = `<b>${esc(u.name)}</b> <span class="dim small">${CLASSES[u.cls].n} · rang ${r}</span>`;
   void n;
   CB.barH = $("#cbar").offsetHeight + 6; cbLayout();
@@ -4657,7 +4758,7 @@ SCREENS.options = {
     <div class="row sp"><span>${ico("speed")} Vitesse des combats</span><span>${[1, 2, 3].map(v => `<button class="btn sm ${S.opts.speed === v ? "gold" : "ghost"}" data-a="optSpeed" data-v="${v}">×${v}</button>`).join(" ")}</span></div>
     <div class="row sp"><span>${ico("skull")} Mode</span><span class="gold">${S.opts.hardcore ? "Hardi (mort définitive)" : "Normal"}</span></div>
     <div class="sep"></div>
-    <div class="row"><button class="btn" data-a="install">${ico("install")}Installer sur l'appareil</button><button class="btn ghost" data-a="exportSave">${ico("scroll")}Exporter la sauvegarde</button><button class="btn ghost" data-a="importSave">Importer</button></div>
+    <div class="row">${PWA.standalone ? `<span class="tag good">Appli installée</span>` : `<button class="btn" data-a="install">${ico("install")}Installer sur l'appareil</button>`}<button class="btn ghost" data-a="exportSave">${ico("scroll")}Exporter la sauvegarde</button><button class="btn ghost" data-a="importSave">Importer</button></div>
     <div class="sep"></div><button class="btn ghost" data-a="toTitle">Écran-titre</button><button class="btn ghost" style="color:var(--bad)" data-a="wipeSave">Effacer la partie</button>
   </div></div><p class="tiny dim" style="text-align:center;margin-top:10px">Couronne de Cendres · RPG tactique dark fantasy · sauvegarde locale automatique</p></div>`,
   mount: () => document.querySelectorAll("[data-opt]").forEach(i => i.onchange = () => { S.opts[i.dataset.opt] = i.checked ? 1 : 0; if (i.dataset.opt === "music") musicMute(i.checked); save(); }),
