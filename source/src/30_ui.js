@@ -55,7 +55,7 @@ function patternSVG(k, sz = 56) {
 
 // ── écran-titre ──
 SCREENS.title = {
-  scene: () => (x, t) => { drawForgeRoom(x, SC.w, SC.h, t); const v = x.createRadialGradient(SC.w / 2, SC.h * .45, 50, SC.w / 2, SC.h * .45, Math.max(SC.w, SC.h) * .8); v.addColorStop(0, "rgba(0,0,0,.1)"); v.addColorStop(1, "rgba(0,0,0,.8)"); x.fillStyle = v; x.fillRect(0, 0, SC.w, SC.h); },
+  scene: () => (x, t, dt) => drawForgeScene(x, t, dt, { actors: false, dark: .85, dim: .25 }),
   mid: () => `<div class="title" style="pointer-events:auto"><div class="logo">La Forge<br>des Brumes<small>LA MINE SANS FOND</small></div><p class="lore" style="max-width:380px">Sous la forge, une mine maudite. Descendez, frappez, remontez forger. Plus bas, toujours plus bas.</p><button class="btn main" data-a="play" style="min-width:250px">${ico("hammer")}${loadF() ? "Continuer" : "Jouer"}</button>${PWA.standalone ? "" : `<button class="btn ghost sm" data-a="install">${ico("install")}Installer l'appli</button>`}</div>`,
 };
 ACT.play = () => { S = loadF() || newSave(); musicPlay("bastion"); if (S.run && S.run.board) go("mine"); else go("forge"); };
@@ -66,30 +66,50 @@ ACT.install = async () => {
   sheet(`<h2>${ico("install")} Installer</h2>${how}<p class="small dim">Le jeu s'ouvre alors en plein écran et fonctionne sans connexion.</p>`);
 };
 
+// ── la forge en pixels (écran-titre, forge, résultats) ──
+const FG = { fx: [], hammer: 0, lastHit: 0 };
+function forgeLay() { const dpr = SC.dpr, Wd = SC.w * dpr, Hd = SC.h * dpr, port = SC.w < SC.h; const kd = Math.max(1, Math.floor(Math.min(Wd / (port ? 124 : 160), Hd / (port ? 230 : 190)))); const w = Math.ceil(Wd / kd), h = Math.ceil(Hd / kd); return { kd, w, h, fy: Math.round(h * (port ? .56 : .62)), cx: Math.round(w / 2) }; }
+function rackKey() { return S ? WEAPON_IDS.filter(k => S.weapons[k]).map(k => WEAPONS[k].art + ":" + S.weapons[k].tier).join(",") : "marteau:0"; }
+function drawForgeScene(x, t, dt, o = {}) {
+  const F = forgeLay(), k = F.kd; FG.lay = F;
+  x.setTransform(k, 0, 0, k, 0, 0); x.imageSmoothingEnabled = false;
+  const look = S ? S.look : defaultLook();
+  x.drawImage(forgeStatic(F.w, F.h, F.fy, F.cx, look, rackKey()), 0, 0);
+  const fx = F.cx - 46, fw = 34; fireFrame(x, fx + fw / 2 - 8, F.fy - 3, 16, t);
+  const fl = .32 + Math.sin(t * 9) * .03 + Math.sin(t * 23) * .02;
+  x.save(); x.globalCompositeOperation = "lighter"; glow(x, fx + fw / 2, F.fy - 14, 90, "#ff6a1a", fl); glow(x, fx + fw / 2, F.fy - 12, 26, "#ffb050", fl * .9); x.restore();
+  // braises qui montent du four
+  if (Math.random() < dt * 12) FG.fx.push({ x: fx + fw / 2 + (Math.random() - .5) * 14, y: F.fy - 16, vx: (Math.random() - .5) * 6, vy: -12 - Math.random() * 16, g: -2, t: 0, life: 1.4 + Math.random(), col: Math.random() < .5 ? "#ffb04a" : "#ff6a1a" });
+  if (o.actors !== false && S) {
+    const sx = F.cx - 6, sy = F.fy + 20;
+    const ph = (t * 1.1) % 1, pose = ph < .55 ? "forge" : "forge2";
+    if (pose === "forge2" && !FG.hammer) { FG.hammer = 1; for (let i = 0; i < 12; i++) FG.fx.push({ x: sx + 22, y: sy - 8, vx: (Math.random() - .3) * 60, vy: -20 - Math.random() * 50, g: 160, t: 0, life: .4 + Math.random() * .4, col: Math.random() < .5 ? "#ffe08a" : "#ff9a3a" }); if (t - FG.lastHit > .5) { FG.lastHit = t; if (o.sound && $("#sheet").hidden) sfx("forge"); } }
+    if (pose === "forge") FG.hammer = 0;
+    blit(x, petPix(S.pet, 0), sx - 26, sy + 2, 1);
+    blit(x, smithPix(smithLook(), pose), sx, sy, 1);
+    blit(x, anvilPix(), sx + 21, sy + 9, 1);
+    FG.smith = [sx, sy];
+    // métal chaud sur l'enclume
+    x.fillStyle = pose === "forge2" ? "#fff0b0" : "#ff8a3a"; x.fillRect(sx + 16, sy - 7, 7, 1);
+    x.save(); x.globalCompositeOperation = "lighter"; glow(x, sx + 20, sy - 7, pose === "forge2" ? 22 : 12, "#ff9a3a", .35); x.restore();
+  }
+  x.save(); x.globalCompositeOperation = "lighter";
+  for (const f of FG.fx) { f.t += dt; f.vy += f.g * dt; f.x += f.vx * dt; f.y += f.vy * dt; x.globalAlpha = Math.max(0, 1 - f.t / f.life); x.fillStyle = f.col; x.fillRect(Math.round(f.x), Math.round(f.y), 1, 1); }
+  x.restore(); FG.fx = FG.fx.filter(f => f.t < f.life);
+  x.setTransform(SC.dpr, 0, 0, SC.dpr, 0, 0);
+  const cy0 = F.fy * k / SC.dpr, v = x.createRadialGradient(SC.w / 2, cy0 - 40, 60, SC.w / 2, cy0 - 40, Math.max(SC.w, SC.h) * .75); v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, `rgba(0,0,0,${o.dark || .7})`); x.fillStyle = v; x.fillRect(0, 0, SC.w, SC.h);
+  if (o.dim) { x.fillStyle = `rgba(0,0,0,${o.dim})`; x.fillRect(0, 0, SC.w, SC.h); }
+}
+function forgeTap(px, py) { const F = FG.lay; if (!F || !FG.smith) return; const wx = px * SC.dpr / F.kd, wy = py * SC.dpr / F.kd; if (Math.abs(wx - FG.smith[0]) < 14 && wy < FG.smith[1] + 2 && wy > FG.smith[1] - 34) ACT.look(); }
+
 // ── la forge (écran principal) ──
 SCREENS.forge = {
-  top: () => `${oreChips(S.ore, true)}<span class="pill" style="color:#ffb060" title="Braises">${ico("ember", "#ff8a3a")}${S.braises}</span><span class="grow"></span><span class="pill">${ico("up", "#e8c878")}${S.best}</span><button class="btn ghost icon" data-a="opts">${ico("gear")}</button>`,
-  bot: () => `<p class="hint">${S.best ? `Record : profondeur <b>${S.best}</b>` : "La mine attend. Le minerai aussi."}</p><button class="btn main" data-a="descend" style="width:100%;max-width:460px">${ico("map")}Descendre${S.up.raccourci && S.bossDepth ? ` · prof. ${S.bossDepth + 1}` : ""}</button><div class="row w"><button class="btn" data-a="forgeOpen">${ico("anvil")}Forger</button><button class="btn" data-a="petOpen">${ico("paw")}Compagnon</button></div>`,
-  scene: () => {
-    let hammer = 0, lastHit = 0;
-    return (x, t, dt) => {
-      const R = drawForgeRoom(x, SC.w, SC.h, t);
-      const port = SC.w < SC.h, sc = Math.min(SC.h * .0019, SC.w * .0034) * (port ? 1 : .9);
-      const ax = port ? SC.w * .56 : SC.w * .38, ay = R.floorY + SC.h * .04;
-      // compagnon
-      const ps = petSpr(S.pet, 0, sc * .9); x.save(); x.translate(ax - 125 * sc, ay + 8); x.scale(-1, 1); x.drawImage(ps, -ps.ax, -ps.ay); x.restore();
-      drawAnvil(x, ax + 40 * sc, ay, sc * 1.1);
-      // le forgeron frappe l'enclume
-      const ph = (t * 1.1) % 1, pose = ph < .55 ? "forge" : "forge2";
-      if (pose === "forge2" && hammer === 0) { hammer = 1; if (t - lastHit > .5) { lastHit = t; if (UI.screen === "forge" && $("#sheet").hidden) sfx("forge"); } }
-      if (pose === "forge") hammer = 0;
-      const sp = smithSprite(pose, sc); x.drawImage(sp, ax - 30 * sc - sp.ax, ay - sp.ay);
-      if (pose === "forge2" && ph < .7) { x.save(); x.globalCompositeOperation = "lighter"; for (let i = 0; i < 6; i++) glow(x, ax + 50 * sc + Math.cos(i) * (ph - .55) * 300 * sc, ay - 52 * sc - Math.abs(Math.sin(i * 2)) * (ph - .55) * 200 * sc, 4, "#ffd08a", .9); x.restore(); }
-      const v = x.createRadialGradient(ax, ay - 80, 80, ax, ay - 80, Math.max(SC.w, SC.h) * .75); v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(0,0,0,.75)"); x.fillStyle = v; x.fillRect(0, 0, SC.w, SC.h);
-    };
-  },
-  mount: () => { if (!S.tuto.forge) { S.tuto.forge = 1; sheet(`<h2>${ico("anvil")} La forge</h2><p class="lore">Votre grand-père a creusé trop profond. La mine s'est réveillée.</p><p><b>Descendre</b> : chaque étage est une petite grille. À votre tour, vous pouvez <b>vous déplacer</b> d'une case et <b>frapper</b> une fois.</p><p>Les cases <b class="bad">rouges</b> montrent où les monstres vont frapper : ne restez pas dessus.</p><p>Frappez les <b>filons</b> pour récolter du minerai, puis remontez <b>forger</b> de meilleures armes et armures.</p><div class="center"><button class="btn main" data-a="close">À l'enclume</button></div>`); } },
+  top: () => `${oreChips(S.ore, true)}<span class="pill" style="color:#ffb060" title="Braises">${ico("ember", "#ff8a3a")}${S.braises}</span><span class="grow"></span><button class="btn ghost icon crest" data-a="look" title="Forgeron">${crestImg(S.look.crest, 22)}</button><button class="btn ghost icon" data-a="opts">${ico("gear")}</button>`,
+  bot: () => `<p class="hint"><b>${esc(S.look.name)}</b>, maître forgeron · ${S.best ? `record : profondeur <b>${S.best}</b>` : "la mine attend"}</p><button class="btn main" data-a="descend" style="width:100%;max-width:460px">${ico("map")}Descendre${S.up.raccourci && S.bossDepth ? ` · prof. ${S.bossDepth + 1}` : ""}</button><div class="row w"><button class="btn" data-a="forgeOpen">${ico("anvil")}Forger</button><button class="btn" data-a="petOpen">${ico("paw")}Compagnon</button></div>`,
+  scene: () => (x, t, dt) => drawForgeScene(x, t, dt, { sound: UI.screen === "forge" }),
+  mount: () => { SC.tap = forgeTap; if (!S.look.done) return ACT.look(); forgeTuto(); },
 };
+function forgeTuto() { if (!S.tuto.forge) { S.tuto.forge = 1; sheet(`<h2>${ico("anvil")} La forge</h2><p class="lore">Votre grand-père a creusé trop profond. La mine s'est réveillée.</p><p><b>Descendre</b> : chaque étage est une petite grille. À votre tour, vous pouvez <b>vous déplacer</b> d'une case et <b>frapper</b> une fois.</p><p>Les cases <b class="bad">rouges</b> montrent où les monstres vont frapper : ne restez pas dessus.</p><p>Frappez les <b>filons</b> pour récolter du minerai, puis remontez <b>forger</b> de meilleures armes et armures.</p><div class="center"><button class="btn main" data-a="close">À l'enclume</button></div>`); } }
 ACT.descend = () => { startRun(); saveF(); sfx("door"); go("mine"); };
 ACT.opts = () => sheet(`<h2>${ico("gear")} Options</h2><div class="item"><span class="grow">Effets sonores</span><button class="btn sm ${S.opts.sound ? "" : "ghost"}" data-a="optSnd">${S.opts.sound ? "Oui" : "Non"}</button></div><div class="item"><span class="grow">Musique</span><button class="btn sm ${S.opts.music ? "" : "ghost"}" data-a="optMus">${S.opts.music ? "Oui" : "Non"}</button></div><div class="item"><span class="grow">Animations rapides</span><button class="btn sm ${S.opts.fast ? "" : "ghost"}" data-a="optFast">${S.opts.fast ? "Oui" : "Non"}</button></div>${PWA.standalone ? "" : `<button class="btn" style="width:100%" data-a="install">${ico("install")}Installer l'appli</button>`}<p class="small dim center">${S.runs} descentes · ${S.kills} monstres tués · ${S.deaths} morts</p><button class="btn ghost sm" style="width:100%;color:var(--bad)" data-a="wipe">Effacer la partie</button>`);
 ACT.optSnd = () => { S.opts.sound = S.opts.sound ? 0 : 1; saveF(); ACT.opts(); };
@@ -110,7 +130,13 @@ function forgeHTML() {
   return `<div class="tabs">${T.map(([k, n]) => `<button class="btn ${tab === k ? "on" : "ghost"}" data-a="ftab" data-v="${k}">${n}</button>`).join("")}</div><div class="row" style="flex-wrap:wrap;margin-bottom:10px">${oreChips(S.ore, true)}<span class="pill" style="color:#ffb060">${ico("ember", "#ff8a3a")}${S.braises}</span></div>${body}`;
 }
 function canvasMark(id, w, h) { return `<canvas data-cv="${id}" width="${w}" height="${h}"></canvas>`; }
-function paintMarks(root) { root.querySelectorAll("canvas[data-cv]").forEach(c => { const [k, v] = c.dataset.cv.split(":"); const x = c.getContext("2d"); if (k === "arm") { const L = Object.assign(smithLook(), { tier: ARMOR[+v].look }); const sp = heroSprite(L, {}, 0, c.width / 160); x.drawImage(sp, c.width / 2 - sp.ax, c.height - 2 - sp.ay); } if (k === "pet") { const sp = petSpr(v, 0, c.width / 170); x.drawImage(sp, c.width / 2 - sp.ax, c.height - 4 - sp.ay); } }); }
+function paintMarks(root) { root.querySelectorAll("canvas[data-cv]").forEach(c => { const [k, v, w2] = c.dataset.cv.split(":"); const x = c.getContext("2d"); x.clearRect(0, 0, c.width, c.height); x.imageSmoothingEnabled = false;
+  const put = (sp, by) => { const sc = Math.max(1, Math.floor(Math.min(c.width / sp.width, (c.height - 2) / sp.height))); blit(x, sp, Math.round(c.width / 2 - (sp.width / 2 - sp.ax) * sc), by != null ? by : c.height - 2 - (sp.height - 1 - sp.ay) * sc, sc); };
+  if (k === "arm") put(smithPix(smithLook(+v), "idle"));
+  if (k === "smith") put(smithPix(smithLook(), "idle"));
+  if (k === "pet") put(petPix(v, 0));
+  if (k === "crest") put(crestPix({ f: +v, c: +w2 }));
+}); }
 ACT.forgeOpen = () => { sheet(forgeHTML(), { mount: paintMarks, onClose: () => refreshBars() }); };
 ACT.ftab = v => { UI.ftab = v; ACT.forgeOpen(); };
 ACT.equipW = k => { S.equip.wpn = k; saveF(); ACT.forgeOpen(); };
@@ -132,3 +158,27 @@ function minigame(name, done) {
 }
 ACT.petOpen = () => sheet(`<h2>${ico("paw")} Compagnon</h2><p class="small dim">Il agit seul, juste après vous. S'il tombe, il rentre à la forge et vous rejoint au prochain gardien.</p><div class="cards">${PET_IDS.map(k => { const P = PETS[k], un = petUnlocked(k); return `<div class="card ${S.pet === k ? "on" : ""} ${un ? "" : "lock"}" data-a="${un ? "pickPet" : ""}" data-v="${k}">${canvasMark("pet:" + k, 140, 96)}<h3 style="margin:4px 0 2px">${P.n}</h3><p class="small dim" style="margin:0">${un ? P.d : "Profondeur " + P.unlock}</p></div>`; }).join("")}</div>`, { mount: paintMarks });
 ACT.pickPet = k => { S.pet = k; saveF(); ACT.petOpen(); };
+// ── le forgeron : visage, corps, couleurs, nom et blason ──
+const CREST_IMG = {};
+function crestImg(cr, sz = 22) { cr = cr || { f: 0, c: 0 }; const k = cr.f + "|" + cr.c; if (!CREST_IMG[k]) { const c = document.createElement("canvas"); c.width = 48; c.height = 54; const g = c.getContext("2d"); g.imageSmoothingEnabled = false; g.drawImage(crestPix(cr), 0, 0, 48, 54); CREST_IMG[k] = c.toDataURL(); } return `<img class="px" src="${CREST_IMG[k]}" alt="" style="width:${sz}px;height:${Math.round(sz * 1.125)}px">`; }
+const LOOK_ROWS = [
+  ["Corps", [["body", "Carrure", BODY_N], ["skin", "Peau", SKINS.map(s => s[0])], ["scar", "Cicatrice", ["Non", "Oui"]]]],
+  ["Visage", [["hair", "Coiffure", HAIR_N], ["hairCol", "Cheveux", HAIRS], ["beard", "Barbe", BEARD_N]]],
+  ["Équipement", [["cloth", "Tenue", CLOTHS], ["cape", "Cape", ["Aucune", ...CLOTHS]], ["finish", "Métal", FINISH], ["helm", "Casque", ["Caché", "Visible"]]]],
+];
+function lookHTML() {
+  const L = S.look, first = !L.done;
+  const opt = (key, val, cur, lab) => { const col = /^#/.test(lab); return `<button class="${col ? "sw" : "chip"} ${val === cur ? "on" : ""}" data-a="lk" data-v="${key}:${val}" ${col ? `style="background:${lab}" aria-label="couleur ${val + 1}"` : ""}>${col ? "" : lab}</button>`; };
+  const rows = LOOK_ROWS.map(([sec, list]) => `<h3>${sec}</h3>` + list.map(([key, n, vals]) => `<div class="lrow"><span class="ln">${n}</span><div class="lopts">${vals.map((lab, i) => opt(key, i, L[key], lab)).join("")}</div></div>`).join("")).join("");
+  const crest = `<h3>Nom et blason</h3><div class="lrow"><span class="ln">Nom</span><input id="lname" maxlength="16" value="${esc(L.name)}" autocomplete="off" spellcheck="false"></div>
+    <div class="lrow"><span class="ln">Champ</span><div class="lopts">${CREST_FIELDS.map((c, i) => opt("cf", i, L.crest.f, c)).join("")}</div></div>
+    <div class="lrow"><span class="ln">Meuble</span><div class="lopts">${CREST_CHARGES.map((c, i) => `<button class="chip cr ${i === L.crest.c ? "on" : ""}" data-a="lk" data-v="cc:${i}" title="${CREST_N[c]}">${crestImg({ f: L.crest.f, c: i }, 20)}</button>`).join("")}</div></div>`;
+  return `<h2 class="center">${first ? "Votre forgeron" : "Le forgeron"}</h2>
+    <div class="lookhead"><canvas data-cv="smith" width="168" height="168" class="px"></canvas><div class="arms">${ARMOR.map((A, i) => `<div><canvas data-cv="arm:${i}" width="48" height="48" class="px"></canvas><span class="small dim">${["Cuir", "Fer", "Argent", "Âme"][i]}</span></div>`).join("")}</div></div>
+    <p class="center small dim">L'armure se forge à l'enclume ; ici, vous choisissez qui la porte.</p>
+    ${crest}${rows}
+    <div class="center" style="margin-top:14px"><button class="btn main" data-a="lookOk" style="min-width:220px">${ico("anvil")}${first ? "À la forge" : "Valider"}</button></div>`;
+}
+ACT.look = () => { const box = $("#sheet .box"), st = box ? box.scrollTop : 0; sheet(lookHTML(), { close: !!S.look.done, mount: r => { paintMarks(r); const b = $("#sheet .box"); if (b) b.scrollTop = st; const n = $("#lname"); if (n) n.oninput = () => { S.look.name = n.value.replace(/[<>]/g, "").slice(0, 16); saveF(); }; }, onClose: () => refreshBars() }); };
+ACT.lk = v => { const [k, val] = v.split(":"), n = +val, L = S.look; if (k === "cf") L.crest.f = n; else if (k === "cc") L.crest.c = n; else L[k] = n; saveF(); ACT.look(); };
+ACT.lookOk = () => { const L = S.look; if (!L.name.trim()) L.name = "Bran"; const first = !L.done; L.done = 1; saveF(); closeSheet(); refreshBars(); if (first) forgeTuto(); };

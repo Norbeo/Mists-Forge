@@ -4,7 +4,7 @@ function newSave() {
   return { v: 2, ore: { fer: 0, argent: 0, ame: 0 }, braises: 0,
     weapons: { marteau: { tier: 0, q: 1 } }, equip: { wpn: "marteau", armor: 0, armorQ: 1, rune: null },
     runes: [], pet: "loup", up: { pv: 0, potion: 0, sacoche: 0, dressage: 0, raccourci: 0 },
-    best: 0, bossDepth: 0, runs: 0, deaths: 0, kills: 0, run: null, seen: {}, tuto: {}, opts: { sound: 1, music: 1, fast: 0 }, created: Date.now() };
+    look: defaultLook(), best: 0, bossDepth: 0, runs: 0, deaths: 0, kills: 0, run: null, seen: {}, tuto: {}, opts: { sound: 1, music: 1, fast: 0 }, created: Date.now() };
 }
 const DIRS8 = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]];
 const DIRS4 = DIRS8.slice(0, 4);
@@ -17,8 +17,9 @@ const key = (x, y) => x + "," + y;
 function heroDmg(run) { const W = WEAPONS[S.equip.wpn], w = S.weapons[S.equip.wpn]; return W.dmg + w.tier + (QUALITY[w.q].b) + run.boons.filter(b => b === "force").length; }
 function heroHpMax() { return 6 + ARMOR[S.equip.armor].hp + (S.equip.armor ? QUALITY[S.equip.armorQ].b : 0) + S.up.pv; }
 function heroMoves(run) { return 1 + (S.equip.rune === "pas" ? 1 : 0) + run.boons.filter(b => b === "leger").length; }
-function smithLook() { const w = S.weapons[S.equip.wpn]; const at = ARMOR[S.equip.armor].look + (S.equip.armor && S.equip.armorQ === 2 && S.equip.armor < 3 ? 1 : 0); return { cls: "forgeron", tier: Math.min(5, at), wtier: TIERS[w.tier].look + (w.q === 2 ? 1 : 0), wpn: WEAPONS[S.equip.wpn].art, skin: "#d0a07a", hair: 1, hairCol: "#2a1a10", beard: 2, scar: 0 }; }
-function smithKey() { const L = smithLook(); return [L.tier, L.wtier, L.wpn].join("|"); }
+function defaultLook() { return { name: "Bran", body: 0, skin: 1, hair: 1, hairCol: 1, beard: 2, scar: 0, cloth: 0, cape: 0, finish: 0, helm: 1, crest: { f: 0, c: 0 }, done: 0 }; }
+// apparence complète du forgeron (pour le dessin) : choix du joueur + équipement porté
+function smithLook(armor) { const L = S.look || defaultLook(), w = S.weapons[S.equip.wpn], a = armor != null ? armor : S.equip.armor; return { body: L.body, skin: L.skin, hair: L.hair, hairCol: L.hairCol, beard: L.beard, scar: L.scar, cloth: L.cloth, cape: L.cape, finish: L.finish, helm: L.helm, armor: a, mw: a && a === S.equip.armor && S.equip.armorQ === 2 ? 1 : 0, wpn: WEAPONS[S.equip.wpn].art, wt: w ? w.tier : 0 }; }
 
 // ── descente ──
 function startRun() {
@@ -369,4 +370,4 @@ function petUnlocked(k) { return PETS[k].unlock <= S.best; }
 // sauvegarde
 function saveF() { if (!HASWIN || !S) return; try { localStorage.setItem(SAVE_KEY_F, JSON.stringify(Object.assign({}, S, { run: S.run ? Object.assign({}, S.run, { board: serialBoard(S.run.board) }) : null }))); } catch (e) { } }
 function serialBoard(B) { if (!B) return null; const o = Object.assign({}, B); delete o.rng; delete o.ev; return o; }
-function loadF() { if (!HASWIN) return null; try { const s = JSON.parse(localStorage.getItem(SAVE_KEY_F)); if (!s) return null; const b = newSave(); for (const k in b) if (s[k] === undefined) s[k] = b[k]; for (const k in b.up) if (s.up[k] === undefined) s.up[k] = 0; if (s.run && s.run.board) s.run.board.rng = RNG; return s; } catch (e) { return null; } }
+function loadF() { if (!HASWIN) return null; try { const s = JSON.parse(localStorage.getItem(SAVE_KEY_F)); if (!s) return null; const b = newSave(); for (const k in b) if (s[k] === undefined) s[k] = b[k]; for (const k in b.up) if (s.up[k] === undefined) s.up[k] = 0; s.look = Object.assign(defaultLook(), s.look || {}); if (s.run && s.run.board) s.run.board.rng = RNG; return s; } catch (e) { return null; } }

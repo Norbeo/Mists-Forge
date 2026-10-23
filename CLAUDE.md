@@ -10,10 +10,17 @@ Un forgeron et un compagnon descendent une mine maudite sans fond, étage par é
 - Gardien tous les 5 étages (rune offerte, choix remonter / continuer), campement avec 1 faveur sur 3.
 - À la forge : 7 armes aux frappes différentes, 3 paliers de métal, armures visibles sur le forgeron, mini-jeu de 3 coups de marteau (qualité), runes, améliorations en braises.
 - Mort : on perd une partie du minerai de la descente.
+- Personnalisation du forgeron (`S.look`) : carrure, peau, coiffure, cheveux, barbe, cicatrice, tenue, cape, finition du métal, casque, nom et blason (champ + meuble). Ouverte au premier lancement, puis via le blason en haut ou en touchant le forgeron.
+
+## Style graphique
+Pixel art sombre **dessiné par le code** (rien de Couronne de Cendres) : petits sprites en pixels, contour auto, agrandis d'un facteur entier sans lissage.
+- La mine en **losanges isométriques** (case 32×16, blocs en relief, tri par profondeur), 5 ambiances selon la profondeur.
+- Police Pixelify Sans (titres, boutons), Alegreya (textes).
+- Canva : un fond de forge peint a été généré (compte de l'utilisateur), mais les crédits de génération étaient épuisés. L'utilisateur dira quand reprendre avec Canva (style peint, forgerons au choix en 4 armures, tuiles iso peintes). L'export PNG Canva se télécharge bien depuis export-download.canva.com.
 
 ## Structure
 - Racine = jeu publié (GitHub Pages) : https://norbeo.github.io/Mists-Forge/
-- `source/src/` : 00 util · 01 données · 02 règles (testables sous node) · 10–15 rendu · 20–21 son et icônes · 30 interface/forge · 31 mine · 39 démarrage.
+- `source/src/` : 00 util · 01 données · 02 règles (testables sous node) · 10–13 pixel art (moteur, forgeron, monstres, monde iso) · 20–21 son et icônes · 30 interface/forge · 31 mine · 39 démarrage.
 - `source/build.sh` → `index.html` (aperçu) et `dist/` (à copier à la racine pour publier).
 - `source/test/sim.js` : bots (`node test/sim.js 10 25 3`) — erreurs, équilibrage, record moyen.
 - Sauvegarde : localStorage `forge-brumes-v2`.
